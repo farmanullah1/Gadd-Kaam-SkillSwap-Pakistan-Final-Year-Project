@@ -157,7 +157,7 @@
   text-decoration: underline;
 }
 
-/* NEW: Radio Button Group Styling */
+/* Radio Button Group Styling */
 .radio-group {
   display: flex;
   gap: 1.5rem; /* Spacing between radio options */

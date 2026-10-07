@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+// src/components/Navbar.js
+import React, { useState, useEffect, useRef } from 'react'; // Import useRef
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
 import { Link } from 'react-router-dom';
+import LogoutConfirmationModal from './LogoutConfirmationModal'; // Import the new modal
 
 function Navbar(props) {
   const { t } = useTranslation();
@@ -14,6 +16,10 @@ function Navbar(props) {
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
   const [showLanguageOptions, setShowLanguageOptions] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false); // State for profile dropdown
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false); // State for logout confirmation modal
+
+  const profileMenuRef = useRef(null); // Ref for click outside detection
 
   useEffect(() => {
     if (isDarkMode) {
@@ -24,6 +30,19 @@ function Navbar(props) {
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
   }, [isDarkMode]);
 
+  // Handle clicks outside the profile menu
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [profileMenuRef]);
+
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode);
   };
@@ -32,6 +51,31 @@ function Navbar(props) {
     i18n.changeLanguage(langCode);
     setShowLanguageOptions(false);
   };
+
+  const handleProfileClick = () => {
+    setShowProfileMenu(prev => !prev);
+  };
+
+  const handleLogoutClick = () => {
+    setShowProfileMenu(false); // Close profile menu
+    setShowLogoutConfirm(true); // Show confirmation modal
+  };
+
+  const confirmLogout = () => {
+    props.onLogout(); // Call the actual logout function passed from parent
+    setShowLogoutConfirm(false); // Hide modal
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false); // Hide modal
+  };
+
+  // Determine the full URL for the profile picture
+  const profilePicUrl = props.user && props.user.profilePicture
+    ? `http://localhost:5000/${props.user.profilePicture.replace(/\\/g, '/')}`
+    : 'https://placehold.co/150x150/cccccc/ffffff?text=No+Pic'; // Fallback placeholder
+
+  const isFemaleUser = props.user && props.user.gender === 'Female';
 
   return (
     <>
@@ -66,7 +110,7 @@ function Navbar(props) {
                 </div>
               )}
             </div>
-            {/* Phone Call Button - Now correctly calls the prop function */}
+            {/* Phone Call Button */}
             <button className="utility-btn top-utility-btn call-helpline" onClick={props.onHelplineClick} aria-label={t("call_helpline")}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-phone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
             </button>
@@ -123,26 +167,72 @@ function Navbar(props) {
           </div>
 
           <div className="navbar-links-desktop">
-            <Link to="/marketplace" className="nav-link">{t("navbar_marketplace")}</Link>
+            <Link to="/" className="nav-link">{t("navbar_marketplace")}</Link>
             <Link to="/about" className="nav-link">{t("navbar_about_us")}</Link>
-            <Link to="/women-zone" className="nav-link">{t("navbar_women_zone")}</Link>
+            {isFemaleUser && ( // Conditionally render "Women-Only Zone"
+              <Link to="/women-zone" className="nav-link">{t("navbar_women_zone")}</Link>
+            )}
             <Link to="/contact" className="nav-link">{t("navbar_contact")}</Link>
-            <Link to="/login" className="btn btn-login">{t("navbar_login_btn")}</Link>
-            <Link to="/signup" className="btn btn-signup">{t("navbar_signup_btn")}</Link>
+
+            {/* Conditional rendering for Login/Signup vs. Profile Picture */}
+            {props.user ? (
+              <div className="profile-dropdown-container" ref={profileMenuRef}>
+                <button className="profile-picture-button" onClick={handleProfileClick} aria-label="User Profile Menu">
+                  <img
+                    src={profilePicUrl}
+                    alt={`${props.user.username}'s Profile`}
+                    className="nav-profile-picture"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = 'https://placehold.co/40x40/cccccc/ffffff?text=User'; // Fallback on error
+                    }}
+                  />
+                </button>
+                {showProfileMenu && (
+                  <div className="profile-dropdown-menu">
+                    <Link to="/dashboard" className="dropdown-item" onClick={() => setShowProfileMenu(false)}>Dashboard</Link>
+                    <button onClick={handleLogoutClick} className="dropdown-item logout-item">Log Out</button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className="btn btn-login">{t("navbar_login_btn")}</Link>
+                <Link to="/signup" className="btn btn-signup">{t("navbar_signup_btn")}</Link>
+              </>
+            )}
           </div>
         </div>
 
         {isMenuOpen && (
           <div className="navbar-mobile-menu">
-            <Link to="/marketplace" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>{t("navbar_marketplace")}</Link>
-            <Link to="/about" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>{t("navbar_about_us")}</Link>
-            <Link to="/women-zone" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>{t("navbar_women_zone")}</Link>
-            <Link to="/contact" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>{t("navbar_contact")}</Link>
-            <Link to="/login" className="btn btn-login-mobile" onClick={() => setIsMenuOpen(false)}>{t("navbar_login_btn")}</Link>
-            <Link to="/signup" className="btn btn-signup-mobile" onClick={() => setIsMenuOpen(false)}>{t("navbar_signup_btn")}</Link>
+            <Link to="/" className="nav-link-mobile">{t("navbar_marketplace")}</Link>
+            <Link to="/about" className="nav-link-mobile">{t("navbar_about_us")}</Link>
+            {isFemaleUser && ( // Conditionally render "Women-Only Zone" in mobile menu
+              <Link to="/women-zone" className="nav-link-mobile">{t("navbar_women_zone")}</Link>
+            )}
+            <Link to="/contact" className="nav-link-mobile">{t("navbar_contact")}</Link>
+            {props.user ? (
+              <>
+                <Link to="/dashboard" className="btn btn-login-mobile">Dashboard</Link>
+                <button onClick={handleLogoutClick} className="btn btn-signup-mobile">Log Out</button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="btn btn-login-mobile">{t("navbar_login_btn")}</Link>
+                <Link to="/signup" className="btn btn-signup-mobile">{t("navbar_signup_btn")}</Link>
+              </>
+            )}
           </div>
         )}
       </nav>
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmationModal
+        isOpen={showLogoutConfirm}
+        onConfirm={confirmLogout}
+        onCancel={cancelLogout}
+      />
     </>
   );
 }

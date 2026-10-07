@@ -1,14 +1,29 @@
-// src/components/LoginPage.js
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import HelplinePopup from './HelplinePopup';
+// src/pages/LoginPage.js
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import HelplinePopup from '../components/HelplinePopup';
+import SuccessMessageModal from '../components/SuccessMessageModal'; // Import the new modal
+import axios from 'axios';
 
 function LoginPage() {
-  const [credential, setCredential] = useState(''); // For email, username, or CNIC
+  const navigate = useNavigate();
+  const [credential, setCredential] = useState('');
   const [password, setPassword] = useState('');
   const [showHelplinePopup, setShowHelplinePopup] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // State for success modal
+  const [successMessage, setSuccessMessage] = useState(''); // State for success message
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const openHelplinePopup = () => {
     setShowHelplinePopup(true);
@@ -18,16 +33,56 @@ function LoginPage() {
     setShowHelplinePopup(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    navigate('/login');
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Attempting to log in with:', { credential, password });
-    alert(`Login attempted for: ${credential}`);
-    // In a real application, you'd send this data to an API and handle success/failure
+    setError(null);
+    setLoading(true);
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        credential,
+        password,
+      });
+
+      console.log('Login successful:', response.data);
+
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      setUser(response.data.user);
+
+      // Show success modal instead of alert
+      setSuccessMessage('You have successfully logged in!');
+      setShowSuccessModal(true);
+
+    } catch (err) {
+      console.error('Login error:', err.response ? err.response.data : err.message);
+      if (err.response && err.response.data && err.response.data.errors) {
+        setError(err.response.data.errors.map(e => e.msg).join(', '));
+      } else if (err.response && err.response.data && err.response.data.msg) {
+        setError(err.response.data.msg);
+      } else {
+        setError('An unexpected error occurred during login. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    navigate('/dashboard'); // Redirect to dashboard after closing the modal
   };
 
   return (
     <div className="login-page-container">
-      <Navbar onHelplineClick={openHelplinePopup} />
+      <Navbar onHelplineClick={openHelplinePopup} onLogout={handleLogout} user={user} />
 
       <main className="login-section section-container">
         <div className="login-form-card">
@@ -35,6 +90,8 @@ function LoginPage() {
           <p className="login-subtitle">Log in to access your account and start swapping skills.</p>
 
           <form className="login-form" onSubmit={handleSubmit}>
+            {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
+
             <div className="form-group">
               <label htmlFor="credential">Email, Username, or CNIC</label>
               <input
@@ -60,8 +117,8 @@ function LoginPage() {
               <Link to="/forgot-password" className="forgot-password-link">Forgot password?</Link>
             </div>
 
-            <button type="submit" className="btn btn-primary-orange login-btn"> {/* Use btn-primary-orange directly */}
-              Log In
+            <button type="submit" className="btn btn-primary-orange login-btn" disabled={loading}>
+              {loading ? 'Logging In...' : 'Log In'}
             </button>
 
             <p className="signup-prompt">
@@ -73,15 +130,21 @@ function LoginPage() {
 
       <Footer />
 
-      {/* Sticky Chatbot Button */}
       <button className="chatbot-sticky-btn" aria-label="Open chatbot">
         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
       </button>
 
-      {/* Helpline Popup Modal */}
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />
       )}
+
+      {/* New Success Message Modal */}
+      <SuccessMessageModal
+        isOpen={showSuccessModal}
+        title="Login Successful!"
+        message={successMessage}
+        onClose={handleSuccessModalClose}
+      />
     </div>
   );
 }

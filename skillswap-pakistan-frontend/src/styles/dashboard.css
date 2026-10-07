@@ -1,0 +1,286 @@
+/* src/styles/dashboard.css */
+
+.dashboard-page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--dark-background-color); /* Overall dark background */
+  color: var(--dark-text-light); /* Default text color for dashboard */
+}
+
+/* Main content area beneath header (Navbar) and above footer */
+.dashboard-main-content {
+  display: flex;
+  flex: 1; /* Allows it to grow and fill available space */
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  width: 100%;
+  padding-top: 20px; /* Space from navbar */
+  padding-bottom: 20px; /* Space to footer */
+}
+
+/* Sidebar Styling */
+.dashboard-sidebar {
+  width: 250px; /* Fixed width sidebar */
+  background-color: var(--dark-sidebar-background); /* Darker background for sidebar */
+  padding: 1.5rem 0;
+  border-radius: 0.75rem; /* Rounded corners for the sidebar */
+  margin-right: 2rem; /* Space between sidebar and main content */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  height: fit-content; /* Adjust height to content */
+  position: sticky; /* Makes sidebar sticky */
+  top: calc(var(--navbar-height) + 20px); /* Adjust based on your navbar height */
+}
+
+.dashboard-nav-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  text-decoration: none;
+  color: var(--dark-text-medium);
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  gap: 0.75rem; /* Space between icon and text */
+}
+
+.dashboard-nav-item svg {
+  color: var(--dark-icon-color); /* Icon color */
+}
+
+.dashboard-nav-item:hover {
+  background-color: var(--dark-sidebar-hover);
+  color: var(--logo-orange);
+}
+
+.dashboard-nav-item.active {
+  background-color: var(--logo-orange); /* Highlight for active item */
+  color: white; /* Text color for active item */
+  border-left: 5px solid var(--logo-orange-dark); /* Stronger indicator */
+  font-weight: 600;
+}
+
+.dashboard-nav-item.active svg {
+  color: white; /* Active icon color */
+}
+
+
+/* Main Content Area */
+.dashboard-content-area {
+  flex: 1; /* Takes up remaining space */
+  padding: 0 1.5rem; /* Inner padding for content */
+}
+
+.dashboard-welcome-heading {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--dark-text-light);
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-sub-heading {
+  font-size: 1.1rem;
+  color: var(--dark-text-medium);
+  margin-bottom: 2rem;
+}
+
+/* Summary Cards Grid */
+.dashboard-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.summary-card {
+  background-color: var(--dark-card-background); /* Dark card background */
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align text to start */
+  text-align: left;
+}
+
+.summary-icon {
+  background-color: rgba(227, 139, 64, 0.2); /* Light orange background for icons */
+  border-radius: 50%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.summary-icon svg {
+  width: 24px;
+  height: 24px;
+  color: var(--logo-orange); /* Orange color for icons */
+}
+
+.summary-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--dark-text-light);
+  margin-bottom: 0.5rem;
+}
+
+.summary-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--logo-orange); /* Highlight value in orange */
+  margin-bottom: 0.5rem;
+}
+
+.summary-detail {
+  font-size: 0.9rem;
+  color: var(--dark-text-medium);
+}
+
+/* Action Cards */
+.dashboard-action-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.action-card {
+  background-color: var(--dark-card-background);
+  padding: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.action-icon {
+  background-color: rgba(227, 139, 64, 0.2);
+  border-radius: 50%;
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-icon svg {
+  width: 48px; /* Larger icons for action cards */
+  height: 48px;
+  color: var(--logo-orange);
+}
+
+.action-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--dark-text-light);
+  margin-bottom: 0.75rem;
+}
+
+.action-description {
+  font-size: 1rem;
+  color: var(--dark-text-medium);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none; /* Remove underline */
+  white-space: nowrap; /* Prevent text wrap */
+}
+
+.action-button .arrow-right {
+  font-size: 1.2em; /* Make arrow slightly larger */
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .dashboard-main-content {
+    flex-direction: column; /* Stack sidebar and content on smaller screens */
+    padding: 1rem;
+  }
+
+  .dashboard-sidebar {
+    width: 100%; /* Full width sidebar */
+    margin-right: 0;
+    margin-bottom: 1.5rem; /* Space between stacked elements */
+    position: static; /* No longer sticky */
+    top: auto;
+  }
+
+  .dashboard-nav {
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap */
+    justify-content: center; /* Center nav items */
+    gap: 0.5rem; /* Reduce gap */
+  }
+
+  .dashboard-nav-item {
+    flex-basis: 48%; /* Two items per row */
+    justify-content: center;
+    border-left: none; /* Remove left border from active state */
+    border-bottom: 2px solid transparent; /* Add bottom border for active state */
+    padding: 0.8rem 1rem;
+  }
+
+  .dashboard-nav-item.active {
+    border-bottom: 2px solid var(--logo-orange-dark); /* Active state for bottom border */
+    background-color: var(--dark-sidebar-hover); /* Keep subtle hover color */
+    color: var(--logo-orange);
+  }
+
+  .dashboard-nav-item.active svg {
+    color: var(--logo-orange);
+  }
+
+  .dashboard-content-area {
+    padding: 0;
+  }
+
+  .dashboard-welcome-heading {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .dashboard-sub-heading {
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .dashboard-summary-grid,
+  .dashboard-action-cards {
+    grid-template-columns: 1fr; /* Single column layout for cards */
+  }
+
+  .summary-card, .action-card {
+    align-items: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-welcome-heading {
+    font-size: 1.8rem;
+  }
+  .dashboard-sub-heading {
+    font-size: 0.95rem;
+  }
+  .summary-value {
+    font-size: 1.8rem;
+  }
+  .action-title {
+    font-size: 1.5rem;
+  }
+  .action-icon svg {
+    width: 40px;
+    height: 40px;
+  }
+}

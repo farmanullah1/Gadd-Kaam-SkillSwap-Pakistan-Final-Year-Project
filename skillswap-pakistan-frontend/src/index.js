@@ -4,15 +4,19 @@ import ReactDOM from 'react-dom/client';
 import './styles/global.css';
 import './styles/navbar.css';
 import './styles/homepage.css';
-import './styles/forms.css'; // Renamed from signup.css
+import './styles/forms.css';
 import './styles/footer.css';
 import './styles/popup.css';
+import './styles/dashboard.css';
+import './styles/profile.css'; // <--- NEW: Import profile styles
 
 import HomePage from './components/HomePage';
 import SignupPage from './components/SignupPage';
-import LoginPage from './components/LoginPage'; // Import the new LoginPage
+import LoginPage from './components/LoginPage';
+import DashboardPage from './components/DashboardPage';
+import ProfilePage from './components/ProfilePage'; // <--- NEW: Import ProfilePage
 
-import './i18n'; // Import your i18n configuration
+import './i18n';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -23,6 +27,8 @@ root.render(
         <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard/profile" element={<ProfilePage />} /> {/* <--- NEW: Profile Route */}
         {/* Add more routes here as needed */}
         <Route path="/about" element={<HomePage />} />
         <Route path="/women-zone" element={<HomePage />} />
@@ -32,7 +38,7 @@ root.render(
         <Route path="/dispute" element={<HomePage />} />
         <Route path="/privacy-policy" element={<HomePage />} />
         <Route path="/terms-of-service" element={<HomePage />} />
-        <Route path="/forgot-password" element={<LoginPage />} /> {/* Placeholder for forgot password */}
+        <Route path="/forgot-password" element={<LoginPage />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

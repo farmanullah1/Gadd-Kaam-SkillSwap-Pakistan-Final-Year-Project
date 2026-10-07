@@ -1,4 +1,5 @@
 // models/User.js
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
@@ -71,6 +72,15 @@ const UserSchema = new mongoose.Schema({
   registrationDate: {
     type: Date,
     default: Date.now,
+  },
+  // Add new fields for profile updates
+  location: {
+    type: String,
+    required: false, // Not required for registration
+  },
+  aboutMe: {
+    type: String,
+    required: false, // Not required for registration
   },
 });
 

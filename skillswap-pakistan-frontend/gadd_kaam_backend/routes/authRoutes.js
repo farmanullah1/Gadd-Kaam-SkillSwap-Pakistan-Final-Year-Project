@@ -1,17 +1,19 @@
 // routes/authRoutes.js
+
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
-const upload = require('../middleware/upload'); // Multer middleware
+const upload = require('../middleware/upload');
 const User = require('../models/User');
 const keys = require('../config/keys');
-const path = require('path'); // Import path module
-const fs = require('fs');   // Import file system module
+const path = require('path');
+const fs = require('fs');
+// The auth middleware is no longer needed in this file as the update route has been moved.
 
 // Helper function to generate JWT
 const generateToken = (id) => {
-  return jwt.sign({ user: { id: id } }, keys.jwtSecret, { expiresIn: '1h' });
+  return jwt.sign({ user: { id: id } }, keys.jwtSecret, { expiresIn: '1d' });
 };
 
 // @route   POST /api/auth/register
@@ -19,9 +21,8 @@ const generateToken = (id) => {
 // @access  Public
 router.post(
   '/register',
-  upload, // Multer middleware to handle file uploads
+  upload,
   [
-    // ... (Your existing validation checks) ...
     check('firstName', 'First Name is required').not().isEmpty(),
     check('lastName', 'Last Name is required').not().isEmpty(),
     check('username', 'Username is required').not().isEmpty(),
@@ -38,7 +39,6 @@ router.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // If validation errors, remove uploaded files before returning error
       if (req.files) {
         Object.values(req.files).forEach(fileArray => {
           fileArray.forEach(file => {
@@ -64,9 +64,7 @@ router.post(
       confirmPassword,
     } = req.body;
 
-    // Check if passwords match
     if (password !== confirmPassword) {
-      // Remove uploaded files if passwords don't match
       if (req.files) {
         Object.values(req.files).forEach(fileArray => {
           fileArray.forEach(file => {
@@ -84,11 +82,9 @@ router.post(
     let cnicBackPicturePath = undefined;
 
     try {
-      // Check if user already exists (username, email, or CNIC)
       let user = await User.findOne({ $or: [{ username }, { email }, { cnicNumber }] });
 
       if (user) {
-        // Remove uploaded files if user already exists
         if (req.files) {
           Object.values(req.files).forEach(fileArray => {
             fileArray.forEach(file => {
@@ -98,7 +94,6 @@ router.post(
             });
           });
         }
-        // Return specific error for existing credentials
         if (user.username === username) {
           return res.status(400).json({ errors: [{ msg: 'Username already exists' }] });
         }
@@ -110,17 +105,15 @@ router.post(
         }
       }
 
-      // --- File Renaming Logic ---
-      const uploadsDir = path.join(__dirname, '..', 'uploads'); // Path to uploads directory
+      const uploadsDir = path.join(__dirname, '..', 'uploads');
 
       if (req.files && req.files['profilePicture'] && req.files['profilePicture'][0]) {
-        const oldPath = req.files['profilePicture'][0].path; // e.g., 'uploads/profilePicture-123456.png'
-        const ext = path.extname(req.files['profilePicture'][0].originalname); // e.g., '.png'
-        const newFilename = `profile_picture_${username}${ext}`; // e.g., 'profile_picture_farmanullah.png'
+        const oldPath = req.files['profilePicture'][0].path;
+        const ext = path.extname(req.files['profilePicture'][0].originalname);
+        const newFilename = `profile_picture_${username}${ext}`;
         const newPath = path.join(uploadsDir, newFilename);
-
-        fs.renameSync(oldPath, newPath); // Rename the file synchronously
-        profilePicturePath = `uploads/${newFilename}`; // Store new relative path
+        fs.renameSync(oldPath, newPath);
+        profilePicturePath = `uploads/${newFilename}`;
       }
 
       if (req.files && req.files['cnicFrontPicture'] && req.files['cnicFrontPicture'][0]) {
@@ -128,7 +121,6 @@ router.post(
         const ext = path.extname(req.files['cnicFrontPicture'][0].originalname);
         const newFilename = `cnic_front_picture_${cnicNumber}${ext}`;
         const newPath = path.join(uploadsDir, newFilename);
-
         fs.renameSync(oldPath, newPath);
         cnicFrontPicturePath = `uploads/${newFilename}`;
       }
@@ -138,14 +130,10 @@ router.post(
         const ext = path.extname(req.files['cnicBackPicture'][0].originalname);
         const newFilename = `cnic_back_picture_${cnicNumber}${ext}`;
         const newPath = path.join(uploadsDir, newFilename);
-
         fs.renameSync(oldPath, newPath);
         cnicBackPicturePath = `uploads/${newFilename}`;
       }
-      // --- End File Renaming Logic ---
 
-
-      // Create new user instance with updated file paths
       user = new User({
         firstName,
         lastName,
@@ -155,16 +143,13 @@ router.post(
         dateOfBirth,
         cnicNumber,
         gender,
-        password, // Password will be hashed by pre-save hook in model
+        password,
         profilePicture: profilePicturePath,
         cnicFrontPicture: cnicFrontPicturePath,
         cnicBackPicture: cnicBackPicturePath,
       });
 
-      // Save user to database
       await user.save();
-
-      // Generate and return JWT
       const token = generateToken(user.id);
 
       res.status(201).json({
@@ -174,22 +159,22 @@ router.post(
           id: user.id,
           username: user.username,
           email: user.email,
-          profilePicture: user.profilePicture // Send back new image path
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phoneNumber: user.phoneNumber,
+          profilePicture: user.profilePicture
         }
       });
-
     } catch (err) {
       console.error(err.message);
-      // Ensure any partially uploaded/renamed files are cleaned up on error
       if (profilePicturePath && fs.existsSync(profilePicturePath)) fs.unlinkSync(profilePicturePath);
       if (cnicFrontPicturePath && fs.existsSync(cnicFrontPicturePath)) fs.unlinkSync(cnicFrontPicturePath);
       if (cnicBackPicturePath && fs.existsSync(cnicBackPicturePath)) fs.unlinkSync(cnicBackPicturePath);
 
-      // Also clean up any temporary files that Multer might have saved
       if (req.files) {
         Object.values(req.files).forEach(fileArray => {
           fileArray.forEach(file => {
-            if (fs.existsSync(file.path)) { // Check if file still exists (might have been renamed)
+            if (fs.existsSync(file.path)) {
               fs.unlink(file.path, (err) => {
                 if (err) console.error('Error deleting temp/old file on error:', err);
               });
@@ -197,14 +182,14 @@ router.post(
           });
         });
       }
-
       res.status(500).send('Server Error');
     }
   }
 );
 
-// ... (Your existing login route below this) ...
-
+// @route   POST /api/auth/login
+// @desc    Authenticate user & get token
+// @access  Public
 router.post(
   '/login',
   [
@@ -220,7 +205,6 @@ router.post(
     const { credential, password } = req.body;
 
     try {
-      // Find user by username, email, or CNIC
       const user = await User.findOne({
         $or: [{ username: credential.toLowerCase() }, { email: credential.toLowerCase() }, { cnicNumber: credential }],
       });
@@ -229,14 +213,12 @@ router.post(
         return res.status(400).json({ msg: 'Invalid Credentials' });
       }
 
-      // Check password
       const isMatch = await user.comparePassword(password);
 
       if (!isMatch) {
         return res.status(400).json({ msg: 'Invalid Credentials' });
       }
 
-      // Generate and return JWT
       const token = generateToken(user.id);
 
       res.status(200).json({
@@ -249,15 +231,17 @@ router.post(
           firstName: user.firstName,
           lastName: user.lastName,
           gender: user.gender,
-          profilePicture: user.profilePicture // Send back image path
+          phoneNumber: user.phoneNumber, // THIS LINE IS THE FIX
+          profilePicture: user.profilePicture
         }
       });
-
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server Error');
     }
   }
 );
+
+// The profile update route has been moved to its own file (routes/profileRoutes.js).
 
 module.exports = router;

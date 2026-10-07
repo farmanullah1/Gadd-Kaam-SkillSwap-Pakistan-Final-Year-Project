@@ -1,18 +1,30 @@
-// src/components/SignupPage.js
-import React, { useState } from 'react';
+// src/pages/SignupPage.js
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 import HelplinePopup from '../components/HelplinePopup';
-import axios from 'axios'; // Import axios
+import SuccessMessageModal from '../components/SuccessMessageModal'; // Import the new modal
+import axios from 'axios';
 
 function SignupPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const navigate = useNavigate();
   const [showHelplinePopup, setShowHelplinePopup] = useState(false);
-  const [loading, setLoading] = useState(false); // New state for loading indicator
-  const [error, setError] = useState(null); // New state for error messages
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // State for success modal
+  const [successMessage, setSuccessMessage] = useState(''); // State for success message
+
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const openHelplinePopup = () => {
     setShowHelplinePopup(true);
@@ -22,7 +34,13 @@ function SignupPage() {
     setShowHelplinePopup(false);
   };
 
-  // State variables for form fields
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    navigate('/login');
+  };
+
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
@@ -34,23 +52,27 @@ function SignupPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // States for file inputs
   const [profilePicture, setProfilePicture] = useState(null);
   const [cnicFrontPicture, setCnicFrontPicture] = useState(null);
   const [cnicBackPicture, setCnicBackPicture] = useState(null);
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null); // Clear previous errors
-    setLoading(true); // Set loading to true
+    setError(null);
+    setLoading(true);
 
     if (password !== confirmPassword) {
       setError("Passwords do not match!");
       setLoading(false);
       return;
     }
+    if (!gender) {
+        setError("Please select your gender.");
+        setLoading(false);
+        return;
+    }
 
-    // Create a FormData object to send text data and files
     const formData = new FormData();
     formData.append('firstName', firstName);
     formData.append('lastName', lastName);
@@ -63,7 +85,6 @@ function SignupPage() {
     formData.append('password', password);
     formData.append('confirmPassword', confirmPassword);
 
-    // Append file objects if they exist
     if (profilePicture) {
       formData.append('profilePicture', profilePicture);
     }
@@ -75,42 +96,40 @@ function SignupPage() {
     }
 
     try {
-      // Send the formData to your backend API
       const response = await axios.post('http://localhost:5000/api/auth/register', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data', // This header is crucial for file uploads
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       console.log('Signup successful:', response.data);
-      alert('Account created successfully! Please log in.'); // Show a success alert
 
-      // Optionally, store the JWT token if you need it immediately for authenticated requests
-      // localStorage.setItem('token', response.data.token);
-
-      // Redirect to login page or dashboard
-      navigate('/login');
+      // Show success modal instead of alert
+      setSuccessMessage('Account has been successfully created! Please log in.');
+      setShowSuccessModal(true);
 
     } catch (err) {
       console.error('Signup error:', err.response ? err.response.data : err.message);
-      // Display error messages from the backend
       if (err.response && err.response.data && err.response.data.errors) {
-        // If backend sends an array of errors (from express-validator)
         setError(err.response.data.errors.map(e => e.msg).join(', '));
       } else if (err.response && err.response.data && err.response.data.msg) {
-        // If backend sends a single message
         setError(err.response.data.msg);
       } else {
         setError('An unexpected error occurred during signup.');
       }
     } finally {
-      setLoading(false); // End loading
+      setLoading(false);
     }
+  };
+
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    navigate('/login'); // Redirect to login page after closing the modal
   };
 
   return (
     <div className="signup-page-container">
-      <Navbar onHelplineClick={openHelplinePopup} />
+      <Navbar onHelplineClick={openHelplinePopup} onLogout={handleLogout} user={user} />
 
       <main className="signup-section section-container">
         <div className="signup-form-card">
@@ -118,7 +137,7 @@ function SignupPage() {
           <p className="signup-subtitle">Create an account to start offering and finding skills in your community.</p>
 
           <form className="signup-form" onSubmit={handleSubmit}>
-            {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>} {/* Display error message */}
+            {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
 
             <div className="form-group-row">
               <div className="form-group">
@@ -147,7 +166,6 @@ function SignupPage() {
 
             <div className="form-group">
               <label htmlFor="profilePicture">Profile Picture</label>
-              {/* Capture the file object directly */}
               <input type="file" id="profilePicture" accept="image/*" onChange={(e) => setProfilePicture(e.target.files[0])} />
             </div>
 
@@ -212,7 +230,6 @@ function SignupPage() {
               />
             </div>
 
-            {/* Gender Selection Field */}
             <div className="form-group">
               <label>Choose Male or Female</label>
               <div className="radio-group">
@@ -244,12 +261,10 @@ function SignupPage() {
             <div className="form-group-row">
               <div className="form-group">
                 <label htmlFor="cnicFrontPicture">CNIC Front Picture</label>
-                {/* Capture the file object directly */}
                 <input type="file" id="cnicFrontPicture" accept="image/*" onChange={(e) => setCnicFrontPicture(e.target.files[0])} />
               </div>
               <div className="form-group">
                 <label htmlFor="cnicBackPicture">CNIC Back Picture</label>
-                {/* Capture the file object directly */}
                 <input type="file" id="cnicBackPicture" accept="image/*" onChange={(e) => setCnicBackPicture(e.target.files[0])} />
               </div>
             </div>
@@ -290,15 +305,21 @@ function SignupPage() {
 
       <Footer />
 
-      {/* Sticky Chatbot Button */}
       <button className="chatbot-sticky-btn" aria-label="Open chatbot">
         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
       </button>
 
-      {/* Helpline Popup Modal */}
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />
       )}
+      
+      {/* New Success Message Modal */}
+      <SuccessMessageModal
+        isOpen={showSuccessModal}
+        title="Account Created!"
+        message={successMessage}
+        onClose={handleSuccessModalClose}
+      />
     </div>
   );
 }

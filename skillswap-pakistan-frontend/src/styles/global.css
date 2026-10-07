@@ -1,32 +1,73 @@
 /* src/styles/global.css */
 
 /* Define CSS Variables for your colors */
+/* src/styles/global.css */
+
 :root {
-  --logo-orange: rgb(227, 139, 64);
-  --background-beige: rgb(245, 245, 220);
-  --text-dark: rgb(50, 50, 50);
-  --text-light-gray: rgb(100, 100, 100);
-  --card-background: rgb(255, 255, 255); /* White background for cards */
-  --star-gold: #FFD700; /* Gold color for stars */
-  --footer-dark-bg: rgb(235, 235, 210); /* Slightly darker beige for footer sections */
-  --footer-heading-color: rgb(70, 70, 70); /* Darker heading for footer columns */
-  --top-bar-bg: rgb(230, 230, 210); /* Slightly lighter for the very top bar */
-  --border-color: rgba(0, 0, 0, 0.08); /* General border color */
+  /* Light Mode Variables */
+  --primary-orange: #e38b40;
+  --primary-hover: #cc7a36;
+  --primary-hover-light: #f5e4d7;
+  --secondary-light: #f5f5f5;
+  --secondary-dark: #666;
+  --text-dark: #333;
+  --text-light-gray: #777;
+  --background-beige: #f9f7f4;
+  --card-background: #fff;
+  --border-color: #e0e0e0;
+  --border-color-light: #f0f0f0;
+  --logo-orange: #e38b40;
+  --logo-orange-dark: #cc7a36;
+  --logo-dark: #333;
+  --red-error: #dc3545;
+  --red-error-light: #f8d7da;
+  --green-success: #28a745;
+  --green-success-light: #d4edda;
+  --top-bar-bg: #f2f2f2;
+  --icon-color: #666;
+  --navbar-background: var(--background-beige); /* Changed to use beige */
+
+  /* Max content width for consistency */
+  --max-content-width: 1280px;
+  /* Navbar height variable for sticky positioning */
+  --navbar-height: 80px; /* Adjust this if your actual navbar height changes */
 }
 
-/* Dark Mode Variables */
+/* Dark Mode Variables (added/verified for dashboard) */
 body.dark-mode {
-  --background-beige: rgb(30, 30, 30);
-  --text-dark: rgb(220, 220, 220);
-  --text-light-gray: rgb(180, 180, 180);
-  --card-background: rgb(45, 45, 45);
-  --footer-dark-bg: rgb(40, 40, 40);
-  --footer-heading-color: rgb(200, 200, 200);
-  --top-bar-bg: rgb(25, 25, 25);
-  --border-color: rgba(255, 255, 255, 0.1);
-  color-scheme: dark; /* Helps browser apply dark scrollbars etc. */
+  --primary-orange: #e38b40; /* Keep orange consistent */
+  --primary-hover: #ff9933;
+  --primary-hover-light: #442a0b; /* Darker hover for dark mode */
+  --secondary-light: #444;
+  --secondary-dark: #bbb;
+  --text-dark: #e0e0e0; /* Light text on dark background */
+  --text-light-gray: #ccc;
+  --background-beige: #121212; /* Overall very dark background */
+  --card-background: #1e1e1e; /* Darker card background */
+  --border-color: #333;
+  --border-color-light: #2a2a2a;
+  --logo-orange: #e38b40;
+  --logo-orange-dark: #cc7a36;
+  --logo-dark: #f0f0f0; /* Light logo on dark background */
+  --red-error: #ff6b6b;
+  --red-error-light: #5e1f1f;
+  --green-success: #63c563;
+  --green-success-light: #1c4a1c;
+  --top-bar-bg: #1f1f1f; /* Darker top bar */
+  --icon-color: #bbb;
+  --navbar-background: #1e1e1e; /* Darker navbar */
+
+  /* Dashboard specific dark mode colors */
+  --dark-background-color: #121212; /* Main dashboard background */
+  --dark-sidebar-background: #1e1e1e; /* Sidebar background */
+  --dark-sidebar-hover: #2a2a2a; /* Sidebar item hover */
+  --dark-text-light: #e0e0e0; /* Primary text */
+  --dark-text-medium: #b0b0b0; /* Secondary text */
+  --dark-icon-color: #b0b0b0; /* Default icon color */
+  --dark-card-background: #282828; /* Card background in dark mode */
 }
 
+/* ... (rest of your global.css) ... */
 body {
   margin: 0;
   padding: 0;
@@ -120,4 +161,107 @@ body {
   .btn-secondary-light {
     width: auto; /* Remove 100% width on smaller screens */
   }
+}
+/* src/styles/global.css (Add or verify these if not already in popup.css) */
+
+/* ... (existing global styles) ... */
+
+/* Popup/Modal Overlay (for LogoutConfirmationModal) */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000; /* Ensure it's on top of everything */
+}
+
+/* Popup/Modal Content Box */
+.popup-content {
+  background-color: var(--card-background);
+  padding: 2.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  max-width: 450px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  animation: fadeIn 0.3s ease-out; /* Simple fade-in animation */
+}
+
+.popup-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.popup-message {
+  font-size: 1.1rem;
+  color: var(--text-light-gray);
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem; /* Space between buttons */
+}
+
+.popup-btn {
+  padding: 0.8rem 1.8rem;
+  font-size: 1rem;
+  min-width: 120px;
+}
+
+/* Animation for popup */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Dark Mode Adjustments for Popup */
+body.dark-mode .popup-content {
+  background-color: var(--dark-card-background);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .popup-title {
+  color: var(--dark-text-light);
+}
+
+body.dark-mode .popup-message {
+  color: var(--dark-text-medium);
+}
+/* Light mode styles (default) */
+body {
+  background-color: rgb(245, 245, 220);
+  color: rgb(50, 50, 50);
+}
+
+/* Dark mode styles */
+body.dark-mode {
+  background-color: rgb(30, 30, 30);
+  color: rgb(220, 220, 220);
+}
+
+.profile-container {
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+
+body.dark-mode .profile-container {
+  background-color: #1e1e1e;
+  border: 1px solid #444;
 }
