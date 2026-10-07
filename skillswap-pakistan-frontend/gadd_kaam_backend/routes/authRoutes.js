@@ -1,4 +1,3 @@
-// routes/authRoutes.js
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
@@ -13,6 +12,7 @@ const generateToken = (id) => {
   return jwt.sign({ user: { id: id } }, keys.jwtSecret, { expiresIn: '1d' });
 };
 
+// @route   POST api/auth/register
 router.post(
   '/register',
   upload,
@@ -59,15 +59,6 @@ router.post(
     } = req.body;
 
     if (password !== confirmPassword) {
-      if (req.files) {
-        Object.values(req.files).forEach(fileArray => {
-          fileArray.forEach(file => {
-            fs.unlink(file.path, (err) => {
-              if (err) console.error('Error deleting temp file:', err);
-            });
-          });
-        });
-      }
       return res.status(400).json({ errors: [{ msg: 'Passwords do not match' }] });
     }
 
@@ -79,52 +70,29 @@ router.post(
       let user = await User.findOne({ $or: [{ username }, { email }, { cnicNumber }] });
 
       if (user) {
-        if (req.files) {
-          Object.values(req.files).forEach(fileArray => {
-            fileArray.forEach(file => {
-              fs.unlink(file.path, (err) => {
-                if (err) console.error('Error deleting temp file:', err);
-              });
-            });
-          });
-        }
-        if (user.username === username) {
-          return res.status(400).json({ errors: [{ msg: 'Username already exists' }] });
-        }
-        if (user.email === email) {
-          return res.status(400).json({ errors: [{ msg: 'Email already registered' }] });
-        }
-        if (user.cnicNumber === cnicNumber) {
-          return res.status(400).json({ errors: [{ msg: 'CNIC number already registered' }] });
-        }
+        return res.status(400).json({ errors: [{ msg: 'User with these credentials already exists' }] });
       }
 
       const uploadsDir = path.join(__dirname, '..', 'uploads');
 
       if (req.files && req.files['profilePicture'] && req.files['profilePicture'][0]) {
-        const oldPath = req.files['profilePicture'][0].path;
-        const ext = path.extname(req.files['profilePicture'][0].originalname);
-        const newFilename = `profile_picture_${username}${ext}`;
-        const newPath = path.join(uploadsDir, newFilename);
-        fs.renameSync(oldPath, newPath);
+        const file = req.files['profilePicture'][0];
+        const newFilename = `profile_picture_${username}${path.extname(file.originalname)}`;
+        fs.renameSync(file.path, path.join(uploadsDir, newFilename));
         profilePicturePath = `uploads/${newFilename}`;
       }
 
       if (req.files && req.files['cnicFrontPicture'] && req.files['cnicFrontPicture'][0]) {
-        const oldPath = req.files['cnicFrontPicture'][0].path;
-        const ext = path.extname(req.files['cnicFrontPicture'][0].originalname);
-        const newFilename = `cnic_front_picture_${cnicNumber}${ext}`;
-        const newPath = path.join(uploadsDir, newFilename);
-        fs.renameSync(oldPath, newPath);
+        const file = req.files['cnicFrontPicture'][0];
+        const newFilename = `cnic_front_${cnicNumber}${path.extname(file.originalname)}`;
+        fs.renameSync(file.path, path.join(uploadsDir, newFilename));
         cnicFrontPicturePath = `uploads/${newFilename}`;
       }
 
       if (req.files && req.files['cnicBackPicture'] && req.files['cnicBackPicture'][0]) {
-        const oldPath = req.files['cnicBackPicture'][0].path;
-        const ext = path.extname(req.files['cnicBackPicture'][0].originalname);
-        const newFilename = `cnic_back_picture_${cnicNumber}${ext}`;
-        const newPath = path.join(uploadsDir, newFilename);
-        fs.renameSync(oldPath, newPath);
+        const file = req.files['cnicBackPicture'][0];
+        const newFilename = `cnic_back_${cnicNumber}${path.extname(file.originalname)}`;
+        fs.renameSync(file.path, path.join(uploadsDir, newFilename));
         cnicBackPicturePath = `uploads/${newFilename}`;
       }
 
@@ -141,6 +109,7 @@ router.post(
         profilePicture: profilePicturePath,
         cnicFrontPicture: cnicFrontPicturePath,
         cnicBackPicture: cnicBackPicturePath,
+        role: 'user' // Default role is user
       });
 
       await user.save();
@@ -156,35 +125,22 @@ router.post(
           firstName: user.firstName,
           lastName: user.lastName,
           phoneNumber: user.phoneNumber,
-          profilePicture: user.profilePicture
+          profilePicture: user.profilePicture,
+          role: user.role // ✅ SENT ROLE HERE
         }
       });
     } catch (err) {
       console.error(err.message);
-      if (profilePicturePath && fs.existsSync(profilePicturePath)) fs.unlinkSync(profilePicturePath);
-      if (cnicFrontPicturePath && fs.existsSync(cnicFrontPicturePath)) fs.unlinkSync(cnicFrontPicturePath);
-      if (cnicBackPicturePath && fs.existsSync(cnicBackPicturePath)) fs.unlinkSync(cnicBackPicturePath);
-
-      if (req.files) {
-        Object.values(req.files).forEach(fileArray => {
-          fileArray.forEach(file => {
-            if (fs.existsSync(file.path)) {
-              fs.unlink(file.path, (err) => {
-                if (err) console.error('Error deleting temp/old file on error:', err);
-              });
-            }
-          });
-        });
-      }
       res.status(500).send('Server Error');
     }
   }
 );
 
+// @route   POST api/auth/login
 router.post(
   '/login',
   [
-    check('credential', 'Credential (Email, Username, or CNIC) is required').not().isEmpty(),
+    check('credential', 'Credential is required').not().isEmpty(),
     check('password', 'Password is required').not().isEmpty(),
   ],
   async (req, res) => {
@@ -196,6 +152,7 @@ router.post(
     const { credential, password } = req.body;
 
     try {
+      // Find by username OR email OR cnic
       const user = await User.findOne({
         $or: [{ username: credential.toLowerCase() }, { email: credential.toLowerCase() }, { cnicNumber: credential }],
       });
@@ -208,6 +165,11 @@ router.post(
 
       if (!isMatch) {
         return res.status(400).json({ msg: 'Invalid Credentials' });
+      }
+
+      // Check if user is banned
+      if (user.isBanned) {
+        return res.status(403).json({ msg: 'Your account has been banned. Contact support.' });
       }
 
       const token = generateToken(user.id);
@@ -223,7 +185,8 @@ router.post(
           lastName: user.lastName,
           gender: user.gender,
           phoneNumber: user.phoneNumber,
-          profilePicture: user.profilePicture
+          profilePicture: user.profilePicture,
+          role: user.role // ✅ CRITICAL: Sending role to frontend
         }
       });
     } catch (err) {

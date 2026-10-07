@@ -4,13 +4,13 @@ const auth = require('../middleware/auth');
 const Request = require('../models/Request');
 const User = require('../models/User'); 
 const SkillOffer = require('../models/SkillOffer'); 
-const Notification = require('../models/Notification'); // ✅ Import Notification Model
+const Notification = require('../models/Notification');
 const { check, validationResult } = require('express-validator');
+const { awardBadge } = require('../utils/badgeUtils'); // ✅ Import Badge Utils
 
 // ✅ Helper function to create notifications safely
 const createNotification = async (recipientId, senderId, type, referenceId, text) => {
     try {
-        // Don't notify if user is interacting with themselves
         if (recipientId.toString() === senderId.toString()) return; 
         
         const newNotification = new Notification({
@@ -147,10 +147,10 @@ router.post('/:id/accept', auth, async (req, res) => {
         // ✅ TRIGGER NOTIFICATION: Request Accepted
         const accepter = await User.findById(req.user.id);
         await createNotification(
-            request.sender, // Notify the sender that their request was accepted
-            req.user.id,
-            'request_accepted',
-            request._id,
+            request.sender, 
+            req.user.id, 
+            'request_accepted', 
+            request._id, 
             `${accepter.username} accepted your skill swap request!`
         );
 
@@ -179,7 +179,6 @@ router.post('/:id/cancel', auth, async (req, res) => {
         await request.save();
 
         // ✅ TRIGGER NOTIFICATION: Request Cancelled
-        // Notify the OTHER person (not the one who cancelled)
         const recipient = request.sender.toString() === req.user.id ? request.receiver : request.sender;
         const canceller = await User.findById(req.user.id);
         
@@ -223,6 +222,14 @@ router.post('/:id/confirm-skill-received', auth, async (req, res) => {
         if (updated) {
             if (request.senderConfirmedReceived && request.receiverConfirmedReceived) {
                 request.status = 'completed';
+                
+                // ✅ AWARD BADGES for completing a swap
+                try {
+                    await awardBadge(request.sender, 'First Swap');
+                    await awardBadge(request.receiver, 'First Swap');
+                } catch (bErr) {
+                    console.error("Badge Award Error:", bErr);
+                }
             }
             await request.save();
 

@@ -1,3 +1,4 @@
+// src/components/ProfilePage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Navbar from './Navbar';
@@ -6,11 +7,24 @@ import HelplinePopup from './HelplinePopup';
 import '../styles/profile.css';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import LoadingSpinner from './LoadingSpinner'; // Assuming you have this component
+import LoadingSpinner from './LoadingSpinner';
 
 import {
-  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star, Award, Camera, Save, X, MapPin, Phone, Mail as MailIcon
+  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star, Award, Camera, Save, X, MapPin, Phone, Mail as MailIcon,
+  Handshake, Heart // Import specific badge icons
 } from 'lucide-react';
+
+// Icon mapping helper
+const BadgeIcon = ({ name, size=24, className }) => {
+    const icons = {
+        'Handshake': Handshake,
+        'Star': Star,
+        'Heart': Heart,
+        'Award': Award
+    };
+    const IconComponent = icons[name] || Award;
+    return <IconComponent size={size} className={className} />;
+};
 
 function ProfilePage({ onChatbotToggle }) {
   const { t } = useTranslation();
@@ -30,12 +44,12 @@ function ProfilePage({ onChatbotToggle }) {
   const [locationValue, setLocationValue] = useState('');
   const [aboutMe, setAboutMe] = useState('');
   const [profilePicture, setProfilePicture] = useState(null);
-  const [previewImage, setPreviewImage] = useState(null); // For immediate UI feedback
-  const [earnedBadges, setEarnedBadges] = useState([]);
+  const [previewImage, setPreviewImage] = useState(null);
+  
+  const [allBadges, setAllBadges] = useState([]);
+  const [earnedBadgeIds, setEarnedBadgeIds] = useState([]);
 
-  // Original state to revert changes
   const [originalState, setOriginalState] = useState({});
-
   const defaultProfilePicture = 'https://placehold.co/150x150/cccccc/ffffff?text=No+Pic';
 
   useEffect(() => {
@@ -44,7 +58,7 @@ function ProfilePage({ onChatbotToggle }) {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
       initializeFields(parsedUser);
-      fetchUserBadges(parsedUser.id);
+      fetchData(parsedUser.id);
     } else {
       navigate('/login');
     }
@@ -57,7 +71,6 @@ function ProfilePage({ onChatbotToggle }) {
     setLocationValue(userData.location || '');
     setAboutMe(userData.aboutMe || '');
     
-    // Store original for discard
     setOriginalState({
         location: userData.location || '',
         aboutMe: userData.aboutMe || '',
@@ -65,7 +78,6 @@ function ProfilePage({ onChatbotToggle }) {
     });
   };
 
-  // Detect changes to enable "Save" mode visually
   useEffect(() => {
     if (!user) return;
     const hasChanged = 
@@ -76,18 +88,26 @@ function ProfilePage({ onChatbotToggle }) {
     setIsEditing(hasChanged);
   }, [locationValue, aboutMe, profilePicture, originalState, user]);
 
-  const fetchUserBadges = async (userId) => {
+  const fetchData = async (userId) => {
     try {
       const token = localStorage.getItem('token');
-      // Ensure your backend endpoint returns populated badges
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/profile/me`, { // Changed to specific profile route if exists, or auth/me
+      const apiUrl = process.env.REACT_APP_API_URL;
+
+      // 1. Fetch User Data (with populated badges)
+      const userRes = await axios.get(`${apiUrl}/api/profile/me`, {
          headers: { Authorization: `Bearer ${token}` }
       });
-      // Handle different backend response structures
-      const badges = response.data.user?.badges || response.data.badges || [];
-      setEarnedBadges(badges);
+      const userBadges = userRes.data.user?.badges || [];
+      setEarnedBadgeIds(userBadges.map(b => b._id));
+
+      // 2. Fetch All Possible Badges
+      const badgesRes = await axios.get(`${apiUrl}/api/badges`, {
+         headers: { Authorization: `Bearer ${token}` }
+      });
+      setAllBadges(badgesRes.data);
+
     } catch (err) {
-      console.error('Failed to fetch user badges:', err);
+      console.error('Failed to fetch profile data:', err);
     }
   };
 
@@ -95,7 +115,7 @@ function ProfilePage({ onChatbotToggle }) {
     const file = e.target.files[0];
     if (file) {
       setProfilePicture(file);
-      setPreviewImage(URL.createObjectURL(file)); // Show preview immediately
+      setPreviewImage(URL.createObjectURL(file));
     }
   };
 
@@ -126,9 +146,6 @@ function ProfilePage({ onChatbotToggle }) {
         { headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } }
       );
 
-      // ✅ CRITICAL FIX: Merge response data correctly into user object
-      // The backend likely returns the updated fields or the whole user. 
-      // We assume response.data contains: { location, aboutMe, profilePicture, ... }
       const updatedUser = {
         ...user,
         location: response.data.location,
@@ -136,23 +153,21 @@ function ProfilePage({ onChatbotToggle }) {
         profilePicture: response.data.profilePicture || user.profilePicture
       };
 
-      // Update State & LocalStorage
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
       
-      // Update original state to new baseline
       setOriginalState({
           location: updatedUser.location,
           aboutMe: updatedUser.aboutMe,
           profilePicture: updatedUser.profilePicture
       });
 
-      setProfilePicture(null); // Clear pending file
+      setProfilePicture(null);
       setIsEditing(false);
       
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert(t('server_error_generic')); // Simple feedback
+      alert(t('server_error_generic'));
     } finally {
       setIsSaving(false);
     }
@@ -253,7 +268,6 @@ function ProfilePage({ onChatbotToggle }) {
             {/* Right Column: Editable Details */}
             <div className="profile-card details-card">
               <div className="form-grid">
-                
                 <div className="form-group full-width">
                   <label htmlFor="location">
                     <MapPin size={16} style={{display:'inline', marginBottom:'-2px'}}/> {t('location_label')}
@@ -283,9 +297,9 @@ function ProfilePage({ onChatbotToggle }) {
                 </div>
               </div>
 
-              {/* Action Bar (Only shows when editing) */}
+              {/* Action Bar */}
               <div className={`action-bar ${isEditing ? 'visible' : ''}`}>
-                 <div className="action-bar-content">
+                  <div className="action-bar-content">
                     <span>You have unsaved changes</span>
                     <div className="action-buttons">
                         <button type="button" className="btn btn-ghost" onClick={handleDiscardChanges}>
@@ -295,31 +309,32 @@ function ProfilePage({ onChatbotToggle }) {
                             {isSaving ? <LoadingSpinner size={18} color="#fff" /> : <><Save size={18} /> {t('save_changes_btn')}</>}
                         </button>
                     </div>
-                 </div>
+                  </div>
               </div>
             </div>
 
             {/* Badges Section */}
-            {earnedBadges.length > 0 && (
+            {allBadges.length > 0 && (
                 <div className="profile-card badges-card full-width">
                     <div className="card-header">
                         <h3><Award size={20}/> {t('my_badges_title')}</h3>
                     </div>
                     <div className="badges-grid">
-                        {earnedBadges.map(badge => (
-                            <div key={badge._id} className="badge-item">
-                                <div className="badge-icon-wrapper">
-                                    {React.createElement(
-                                        (require('lucide-react'))[badge.icon] || Award, 
-                                        { size: 28, className: "badge-lucide-icon" }
-                                    )}
+                        {allBadges.map(badge => {
+                            const isEarned = earnedBadgeIds.includes(badge._id);
+                            return (
+                                <div key={badge._id} className={`badge-item ${isEarned ? 'earned' : 'locked'}`}>
+                                    <div className="badge-icon-wrapper">
+                                        <BadgeIcon name={badge.icon} size={28} className="badge-lucide-icon"/>
+                                    </div>
+                                    <div className="badge-info">
+                                        <span className="badge-name">{badge.name}</span>
+                                        <p className="badge-desc">{badge.description}</p>
+                                    </div>
+                                    {!isEarned && <div className="lock-overlay"></div>}
                                 </div>
-                                <div className="badge-info">
-                                    <span className="badge-name">{badge.name}</span>
-                                    <p className="badge-desc">{badge.description}</p>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             )}

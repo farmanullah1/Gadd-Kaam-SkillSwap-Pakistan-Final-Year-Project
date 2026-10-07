@@ -6,12 +6,13 @@ import Navbar from './Navbar';
 import HelplinePopup from './HelplinePopup';
 import LoadingSpinner from './LoadingSpinner';
 import SuccessMessageModal from './SuccessMessageModal'; 
+import ReportUserModal from './ReportUserModal'; // ✅ Imported Report Modal
 import '../styles/my-skills.css'; 
 import '../styles/messages.css';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import {
-  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star, Search, Send, CheckCircle, XCircle
+  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star, Search, Send, CheckCircle, AlertTriangle
 } from 'lucide-react';
 
 const getPlaceholderImage = (size = 50) => `https://placehold.co/${size}x${size}/e0e0e0/666666?text=User`;
@@ -33,13 +34,16 @@ const ConversationInterface = ({ activeConversation, onSkillReceivedConfirmed, c
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  
+  // Modals State
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false); // ✅ Report Modal State
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   
   const messagesEndRef = useRef(null);
-  
-  // Track stringified data to prevent unnecessary re-renders/scrolls
   const lastJsonMessage = useRef("");
 
   const scrollToBottom = () => {
@@ -57,12 +61,10 @@ const ConversationInterface = ({ activeConversation, onSkillReceivedConfirmed, c
       
       const sortedMessages = response.data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
       
-      // Compare data content to stop auto-scroll jumping
       const currentJson = JSON.stringify(sortedMessages);
       if (currentJson !== lastJsonMessage.current) {
           setMessages(sortedMessages);
           lastJsonMessage.current = currentJson;
-          // Only scroll if data actually changed
           setTimeout(scrollToBottom, 100); 
       }
 
@@ -74,7 +76,7 @@ const ConversationInterface = ({ activeConversation, onSkillReceivedConfirmed, c
   // Initial load
   useEffect(() => {
     setMessages([]);
-    lastJsonMessage.current = ""; // Reset tracker
+    lastJsonMessage.current = ""; 
     if (activeConversation) {
       fetchMessages();
       const pollingInterval = setInterval(fetchMessages, 5000);
@@ -93,11 +95,10 @@ const ConversationInterface = ({ activeConversation, onSkillReceivedConfirmed, c
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      // Optimistic update
       const newMsg = response.data;
       setMessages(prev => {
           const updated = [...prev, newMsg];
-          lastJsonMessage.current = JSON.stringify(updated); // Update ref
+          lastJsonMessage.current = JSON.stringify(updated);
           return updated;
       });
       setNewMessage('');
@@ -140,6 +141,29 @@ const ConversationInterface = ({ activeConversation, onSkillReceivedConfirmed, c
     }
   };
 
+  // ✅ NEW: Handle Reporting User
+  const handleReportUser = async (reason) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/reports`, {
+        reportedUserId: activeConversation.participantId, // Ensure this exists in activeConversation
+        description: reason,
+        requestId: activeConversation.requestId
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setShowReportModal(false);
+      setSuccessMessage(t('report_submitted_success', 'Report submitted successfully.'));
+      setShowSuccessModal(true);
+    } catch (err) {
+      console.error("Report failed", err);
+      setShowReportModal(false);
+      setErrorMessage(err.response?.data?.msg || "Failed to submit report.");
+      setShowErrorModal(true);
+    }
+  };
+
   if (!activeConversation) {
     return (
       <div className="no-active-conversation">
@@ -155,7 +179,6 @@ const ConversationInterface = ({ activeConversation, onSkillReceivedConfirmed, c
 
   const isExchangeCompleted = activeConversation.status === 'completed';
 
-  // Fix image URL for header
   const headerProfilePic = activeConversation.profilePicUrl 
     ? activeConversation.profilePicUrl 
     : getPlaceholderImage(45);
@@ -182,8 +205,13 @@ const ConversationInterface = ({ activeConversation, onSkillReceivedConfirmed, c
               <CheckCircle size={16} style={{marginRight: '6px'}} /> {t('skill_received_btn')}
             </button>
           )}
-          <button className="btn btn-secondary-outline chat-action-btn">
-            <XCircle size={16} style={{marginRight: '6px'}} /> {t('report_btn')}
+          {/* ✅ REPORT BUTTON */}
+          <button 
+            className="btn btn-secondary-outline chat-action-btn" 
+            onClick={() => setShowReportModal(true)}
+            title="Report User"
+          >
+            <AlertTriangle size={16} style={{marginRight: '6px'}} /> {t('report_btn')}
           </button>
         </div>
       </div>
@@ -223,6 +251,9 @@ const ConversationInterface = ({ activeConversation, onSkillReceivedConfirmed, c
         </div>
       )}
 
+      {/* --- MODALS --- */}
+      
+      {/* Confirm Received */}
       {showConfirmModal && (
         <SuccessMessageModal
           isOpen={showConfirmModal}
@@ -233,6 +264,8 @@ const ConversationInterface = ({ activeConversation, onSkillReceivedConfirmed, c
           type="confirm"
         />
       )}
+
+      {/* Error Modal */}
       {showErrorModal && (
         <SuccessMessageModal
           isOpen={showErrorModal}
@@ -242,6 +275,28 @@ const ConversationInterface = ({ activeConversation, onSkillReceivedConfirmed, c
           type="error"
         />
       )}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <SuccessMessageModal
+          isOpen={showSuccessModal}
+          title="Success"
+          message={successMessage}
+          onClose={() => setShowSuccessModal(false)}
+          type="success"
+        />
+      )}
+
+      {/* ✅ REPORT MODAL */}
+      {showReportModal && (
+        <ReportUserModal 
+            isOpen={showReportModal}
+            onClose={() => setShowReportModal(false)}
+            onSubmit={handleReportUser}
+            reportedUserName={activeConversation.participant}
+        />
+      )}
+
     </div>
   );
 };
@@ -310,11 +365,9 @@ function MessagesPage({ onChatbotToggle }) {
             ? req.messages[req.messages.length - 1].text
             : (req.status === 'completed' ? t('exchange_completed_chat_summary') : t('chat_message_initial'));
 
-          // ✅ FIX: Clean the photo URL logic here. Add a slash '/'
           let cleanProfilePic = null;
           if (otherParticipant.profilePicture) {
              const rawPath = otherParticipant.profilePicture.replace(/\\/g, '/');
-             // Ensure we don't double slash if the path already has one
              const pathWithSlash = rawPath.startsWith('/') ? rawPath : `/${rawPath}`;
              cleanProfilePic = `${process.env.REACT_APP_API_URL}${pathWithSlash}`;
           }
@@ -324,13 +377,13 @@ function MessagesPage({ onChatbotToggle }) {
               id: conversationId,
               requestId: req._id,
               participant: participantName,
-              profilePicUrl: cleanProfilePic, // Use the cleaned URL
+              profilePicUrl: cleanProfilePic,
               lastMessage: lastMsg,
               status: req.status,
               senderConfirmed: req.senderConfirmedReceived,
               receiverConfirmed: req.receiverConfirmedReceived,
               isCurrentUserSender: isCurrentUserSender,
-              participantId: otherParticipant._id,
+              participantId: otherParticipant._id, // ✅ Critical for Reporting
               skillOfferSkills: req.skillOffer && req.skillOffer.skills ? req.skillOffer.skills.join(', ') : ''
             });
           }
@@ -384,7 +437,6 @@ function MessagesPage({ onChatbotToggle }) {
       navigate(`/dashboard/reviews?requestId=${updatedRequest._id}`);
     }
   };
-
 
   const openHelplinePopup = () => setShowHelplinePopup(true);
   const closeHelplinePopup = () => setShowHelplinePopup(false);

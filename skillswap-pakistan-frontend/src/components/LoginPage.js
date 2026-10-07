@@ -1,15 +1,16 @@
+// src/components/LoginPage.js
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import HelplinePopup from '../components/HelplinePopup';
-import SuccessMessageModal from '../components/SuccessMessageModal';
+import Navbar from './Navbar';
+import Footer from './Footer';
+import HelplinePopup from './HelplinePopup';
+import SuccessMessageModal from './SuccessMessageModal';
 import axios from 'axios';
-import { useTranslation } from 'react-i18next'; // Import useTranslation
+import { useTranslation } from 'react-i18next'; 
 
-// Accept onChatbotToggle as a prop
 function LoginPage({ onChatbotToggle }) {
-  const { t } = useTranslation(); // Use translation hook
+  const { t } = useTranslation(); 
   const navigate = useNavigate();
   const [credential, setCredential] = useState('');
   const [password, setPassword] = useState('');
@@ -27,13 +28,8 @@ function LoginPage({ onChatbotToggle }) {
     }
   }, []);
 
-  const openHelplinePopup = () => {
-    setShowHelplinePopup(true);
-  };
-
-  const closeHelplinePopup = () => {
-    setShowHelplinePopup(false);
-  };
+  const openHelplinePopup = () => setShowHelplinePopup(true);
+  const closeHelplinePopup = () => setShowHelplinePopup(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -48,7 +44,6 @@ function LoginPage({ onChatbotToggle }) {
     setLoading(true);
 
     try {
-      // Use process.env.REACT_APP_API_URL for the API endpoint
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
         credential,
         password,
@@ -56,12 +51,19 @@ function LoginPage({ onChatbotToggle }) {
 
       console.log('Login successful:', response.data);
 
+      // Save Token & User Data
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
+      
+      // Save role specifically if your backend sends it, otherwise rely on user object
+      if (response.data.user.role) {
+        localStorage.setItem('role', response.data.user.role);
+      }
+
       setUser(response.data.user);
 
       // Show success modal
-      setSuccessMessage(t('login_success_message')); // Use translation key
+      setSuccessMessage(t('login_success_message'));
       setShowSuccessModal(true);
 
     } catch (err) {
@@ -71,7 +73,7 @@ function LoginPage({ onChatbotToggle }) {
       } else if (err.response && err.response.data && err.response.data.msg) {
         setError(err.response.data.msg);
       } else {
-        setError(t('login_unexpected_error')); // Use translation key
+        setError(t('login_unexpected_error')); 
       }
     } finally {
       setLoading(false);
@@ -80,7 +82,16 @@ function LoginPage({ onChatbotToggle }) {
 
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
-    navigate('/dashboard'); // Redirect to dashboard after closing the modal
+    
+    // ✅ ADMIN REDIRECT LOGIC
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    
+    // Check if the user has the admin role
+    if (storedUser && storedUser.role === 'admin') {
+        navigate('/admin'); // Redirect to Admin Dashboard
+    } else {
+        navigate('/dashboard'); // Redirect to User Dashboard
+    }
   };
 
   return (

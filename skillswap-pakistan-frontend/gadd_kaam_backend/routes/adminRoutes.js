@@ -1,3 +1,4 @@
+// gadd_kaam_backend/routes/adminRoutes.js
 const express = require("express");
 const User = require("../models/User");
 const SkillOffer = require("../models/SkillOffer");
@@ -104,13 +105,13 @@ router.delete("/skills/:id", adminAuth, async (req, res) => {
 
 /**
  * ✅ Get all reports
+ * FIX: Removed 'reportedSkill' populate to prevent strictPopulate error
  */
 router.get("/reports", adminAuth, async (req, res) => {
   try {
     const reports = await Report.find()
       .populate("reporter", "username email")
       .populate("reportedUser", "username email")
-      .populate("reportedSkill", "title")
       .sort({ createdAt: -1 });
     res.json(reports);
   } catch (err) {

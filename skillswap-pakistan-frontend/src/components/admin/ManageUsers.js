@@ -1,43 +1,17 @@
+// src/components/admin/ManageUsers.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../styles/admin.css';
-
-const UserCard = ({ u, onBan, onDelete, onView }) => (
-  <div className={`card user-card ${u.isBanned ? 'banned-user' : ''}`}>
-    <div className="status-indicator" title={u.isBanned ? "Banned" : "Active"}></div>
-    <img
-      className="user-avatar"
-      src={u.profilePicture ? `${process.env.REACT_APP_API_URL}/${u.profilePicture}` : `https://placehold.co/128x128`}
-      alt={u.username}
-    />
-    <div className="user-info">
-      <h4>{u.firstName} {u.lastName}</h4>
-      <p className="muted">@{u.username}</p>
-      <p className="role-tag">{u.role}</p>
-    </div>
-    <div className="card-actions">
-      <button className="btn" onClick={() => onView(u)}>View</button>
-      {u.role !== 'admin' && (
-        <button 
-            className={`btn ${u.isBanned ? 'btn-success' : 'btn-danger'}`} 
-            onClick={() => onBan(u)}
-        >
-            {u.isBanned ? "Unban" : "Ban"}
-        </button>
-      )}
-    </div>
-  </div>
-);
+import { User, Mail, Phone, Slash, CheckCircle } from 'lucide-react';
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [query, setQuery] = useState('');
-  const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem('token');
-  const base = process.env.REACT_APP_API_URL || '';
+  const base = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     fetchUsers();
@@ -63,20 +37,20 @@ const ManageUsers = () => {
     const q = query.toLowerCase();
     setFiltered(users.filter(u =>
       `${u.firstName} ${u.lastName}`.toLowerCase().includes(q) ||
-      u.email.toLowerCase().includes(q) ||
-      u.username.toLowerCase().includes(q)
+      u.email.toLowerCase().includes(q)
     ));
   }, [query, users]);
 
   const toggleBan = async (user) => {
-    const action = user.isBanned ? "activate" : "BAN";
-    if (!window.confirm(`Are you sure you want to ${action} this user?`)) return;
-
+    if (!window.confirm(`Are you sure you want to ${user.isBanned ? "unban" : "ban"} this user?`)) return;
     try {
       const res = await axios.put(`${base}/api/admin/users/${user._id}/ban`, {}, { 
           headers: { Authorization: `Bearer ${token}` }
       });
-      setUsers(users.map(u => u._id === user._id ? { ...u, isBanned: res.data.isBanned } : u));
+      // Update local state
+      const updatedList = users.map(u => u._id === user._id ? { ...u, isBanned: res.data.isBanned } : u);
+      setUsers(updatedList);
+      setFiltered(updatedList); // Update filtered list too
     } catch (err) {
       alert('Failed to change user status');
     }
@@ -84,36 +58,58 @@ const ManageUsers = () => {
 
   return (
     <div className="manage-users">
-      <h2>Manage Users</h2>
-      <div className="toolbar">
+      <h2 className="admin-page-title">Manage Users</h2>
+      
+      <div className="search-bar-admin">
         <input
           type="search"
-          placeholder="Search users..."
+          placeholder="Search by name or email..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          className="admin-search-input"
         />
       </div>
 
-      {loading ? <div>Loading users...</div> : (
+      {loading ? <div className="admin-loading">Loading users...</div> : (
         <div className="user-grid">
           {filtered.map(u => (
-            <UserCard key={u._id} u={u} onBan={toggleBan} onView={setSelected} />
-          ))}
-        </div>
-      )}
+            <div key={u._id} className={`admin-user-card ${u.isBanned ? 'banned' : ''}`}>
+              <div className="card-header-user">
+                  <div className={`status-dot ${u.isBanned ? 'red' : 'green'}`}></div>
+                  <span className="role-badge">{u.role}</span>
+              </div>
+              
+              <div className="user-avatar-section">
+                  <img 
+                    src={u.profilePicture ? `${base}/${u.profilePicture}` : `https://placehold.co/100x100?text=${u.firstName?.charAt(0)}`} 
+                    alt={u.username} 
+                    className="avatar-lg"
+                  />
+                  <h3>{u.firstName} {u.lastName}</h3>
+                  <p className="username">@{u.username}</p>
+              </div>
 
-      {selected && (
-        <div className="modal-backdrop" onClick={() => setSelected(null)}>
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <img className="modal-avatar" src={selected.profilePicture ? `${base}/${selected.profilePicture}` : `https://placehold.co/150x150`} alt="avatar" />
-            <h3>{selected.firstName} {selected.lastName}</h3>
-            <p><strong>Email:</strong> {selected.email}</p>
-            <p><strong>Phone:</strong> {selected.phoneNumber}</p>
-            <p><strong>Status:</strong> <span style={{color: selected.isBanned ? 'red' : 'green'}}>{selected.isBanned ? 'Banned' : 'Active'}</span></p>
-            <div className="modal-actions">
-              <button className="btn" onClick={() => setSelected(null)}>Close</button>
+              <div className="user-details-list">
+                  <div className="detail-row">
+                      <Mail size={14} /> <span>{u.email}</span>
+                  </div>
+                  <div className="detail-row">
+                      <Phone size={14} /> <span>{u.phoneNumber || 'N/A'}</span>
+                  </div>
+              </div>
+
+              <div className="card-footer-actions">
+                  {u.role !== 'admin' && (
+                    <button 
+                        className={`btn-admin full-width ${u.isBanned ? 'btn-success' : 'btn-danger'}`} 
+                        onClick={() => toggleBan(u)}
+                    >
+                        {u.isBanned ? <><CheckCircle size={16}/> Unban User</> : <><Slash size={16}/> Ban User</>}
+                    </button>
+                  )}
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       )}
     </div>

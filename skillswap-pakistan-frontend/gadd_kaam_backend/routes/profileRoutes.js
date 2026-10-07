@@ -1,4 +1,4 @@
-// routes/profileRoutes.js
+// gadd_kaam_backend/routes/profileRoutes.js
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
@@ -6,6 +6,25 @@ const upload = require('../middleware/upload');
 const User = require('../models/User');
 const path = require('path');
 const fs = require('fs');
+
+// @route   GET /api/profile/me
+// @desc    Get current user profile (including badges)
+// @access  Private
+router.get('/me', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id)
+            .select('-password') // Exclude password
+            .populate('badges'); // ✅ Populate badges to show icons/descriptions
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+        res.json({ user });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
 
 // @route   PUT /api/profile/update
 // @desc    Update user profile details
@@ -46,6 +65,8 @@ router.put('/update', auth, upload, async (req, res) => {
         
         await user.save();
         
+        // Return updated user data (populated)
+        // We re-fetch or just return fields, but re-fetching ensures badges populate if needed later
         res.json({
             id: user.id,
             username: user.username,

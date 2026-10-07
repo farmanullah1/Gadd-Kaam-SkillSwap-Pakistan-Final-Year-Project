@@ -1,3 +1,4 @@
+// gadd_kaam_backend/models/Report.js
 const mongoose = require('mongoose');
 
 const ReportSchema = new mongoose.Schema({
@@ -9,18 +10,13 @@ const ReportSchema = new mongoose.Schema({
   reportedUser: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: false,
+    required: true,
   },
-  // ✅ Link to the specific conversation (Request)
+  // Link to the specific conversation (Request)
   requestId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Request', 
+    ref: 'Request',
     required: false, 
-  },
-  reportedSkill: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'SkillOffer',
-    required: false,
   },
   description: {
     type: String,

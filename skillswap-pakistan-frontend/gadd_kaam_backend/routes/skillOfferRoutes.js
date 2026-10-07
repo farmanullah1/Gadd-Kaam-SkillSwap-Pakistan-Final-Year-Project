@@ -1,9 +1,10 @@
+// gadd_kaam_backend/routes/skillOfferRoutes.js
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const SkillOffer = require('../models/SkillOffer');
 const User = require('../models/User'); 
-const Review = require('../models/Review'); // ✅ IMPORT REVIEW MODEL
+const Review = require('../models/Review'); 
 const { check, validationResult } = require('express-validator');
 const fs = require('fs');
 const path = require('path');
@@ -13,7 +14,9 @@ const multer = require('multer');
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, '..', 'uploads', 'skill_photos');
-    fs.mkdirSync(uploadPath, { recursive: true });
+    if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath, { recursive: true });
+    }
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
@@ -109,21 +112,27 @@ router.post(
 );
 
 // @route   GET /api/skill-offers/marketplace
-// ✅ UPDATED: Fetches latest review for each card
+// ✅ UPDATED: Fetches latest review and badges
 router.get('/marketplace', auth, async (req, res) => {
   try {
     const skillOffers = await SkillOffer.find({ shareWithWomenZone: false })
-      .populate('user', 'username phoneNumber profilePicture')
+      .populate({
+          path: 'user',
+          select: 'username phoneNumber profilePicture badges', // ✅ Include badges
+          populate: { path: 'badges' } // ✅ Populate badge details
+      })
       .sort({ date: -1 })
       .lean();
 
-    // Attach latest review to each offer
+    // Attach latest review safely
     for (let offer of skillOffers) {
+      if (!offer.user) continue;
+
       const latestReview = await Review.findOne({ reviewedFor: offer.user._id })
         .populate('reviewer', 'username')
         .sort({ createdAt: -1 });
 
-      if (latestReview) {
+      if (latestReview && latestReview.reviewer) {
         offer.latestReview = {
           reviewerName: latestReview.reviewer.username,
           comment: latestReview.comment,
@@ -155,26 +164,41 @@ router.get('/my-skills', auth, async (req, res) => {
 });
 
 // @route   GET /api/skill-offers/women-only
-// ✅ UPDATED: Fetches latest review for each card
+// ✅ FIXED: Added safety checks to prevent 500 Error
 router.get('/women-only', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
-    if (!user || user.gender !== 'Female') {
+    
+    // Check if user exists
+    if (!user) {
+        return res.status(404).json({ msg: 'User not found' });
+    }
+
+    // Gender Check
+    if (user.gender !== 'Female') {
       return res.status(403).json({ msg: 'Access denied. This zone is for female users only.' });
     }
     
     const skillOffers = await SkillOffer.find({ shareWithWomenZone: true })
-      .populate('user', 'username phoneNumber profilePicture')
+      .populate({
+          path: 'user',
+          select: 'username phoneNumber profilePicture badges', // ✅ Include badges
+          populate: { path: 'badges' }
+      })
       .sort({ date: -1 })
       .lean();
 
-    // Attach latest review
+    // Attach latest review safely
     for (let offer of skillOffers) {
+        // Skip loop iteration if user data is missing (deleted user)
+        if (!offer.user) continue;
+
         const latestReview = await Review.findOne({ reviewedFor: offer.user._id })
           .populate('reviewer', 'username')
           .sort({ createdAt: -1 });
   
-        if (latestReview) {
+        // ✅ FIX: Strict check for reviewer existence
+        if (latestReview && latestReview.reviewer) {
           offer.latestReview = {
             reviewerName: latestReview.reviewer.username,
             comment: latestReview.comment,
@@ -187,7 +211,7 @@ router.get('/women-only', auth, async (req, res) => {
 
     res.json(skillOffers);
   } catch (err) {
-    console.error(err.message);
+    console.error("WomenOnlyZone Route Error:", err.message);
     res.status(500).send('Server Error');
   }
 });

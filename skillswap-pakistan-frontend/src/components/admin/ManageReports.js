@@ -1,6 +1,8 @@
+// src/components/admin/ManageReports.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../styles/admin.css';
+import { X, MessageSquare, AlertTriangle, CheckCircle, Ban, User, Calendar } from 'lucide-react';
 
 const ManageReports = () => {
   const [reports, setReports] = useState([]);
@@ -10,7 +12,7 @@ const ManageReports = () => {
   const [chatLoading, setChatLoading] = useState(false);
 
   const token = localStorage.getItem('token');
-  const base = process.env.REACT_APP_API_URL || '';
+  const base = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     fetchReports();
@@ -29,15 +31,18 @@ const ManageReports = () => {
   };
 
   const updateStatus = async (id, status) => {
-    if (!window.confirm(`Change status to "${status}"?`)) return;
+    const previousReports = [...reports];
+    setReports(reports.map(r => r._id === id ? { ...r, status } : r));
+    
+    if (selectedReport && selectedReport._id === id) {
+       setSelectedReport(null);
+    }
+
     try {
       await axios.put(`${base}/api/admin/reports/${id}`, { status }, { headers: { Authorization: `Bearer ${token}` } });
-      setReports(reports.map(r => r._id === id ? { ...r, status } : r));
-      if (selectedReport && selectedReport._id === id) {
-        setSelectedReport({ ...selectedReport, status });
-      }
     } catch (err) {
-      alert('Failed to update report status');
+      alert('Failed to update status');
+      setReports(previousReports);
     }
   };
 
@@ -64,7 +69,7 @@ const ManageReports = () => {
   };
 
   const banUser = async (userId) => {
-    if (!window.confirm("🚨 Are you sure you want to BAN this user?")) return;
+    if (!window.confirm("🚨 Are you sure you want to BAN this user? This will prevent them from logging in.")) return;
     try {
       await axios.put(`${base}/api/admin/users/${userId}/ban`, {}, { headers: { Authorization: `Bearer ${token}` }});
       alert("User has been BANNED.");
@@ -76,23 +81,45 @@ const ManageReports = () => {
 
   return (
     <div className="manage-reports">
-      <h2>Manage Reports</h2>
-      {loading ? <div>Loading reports...</div> : (
-        <div className="report-list">
-          {reports.length === 0 && <p>No reports found.</p>}
+      <div className="page-header-flex">
+          <div>
+            <h2 className="admin-page-title">Report Center</h2>
+            <p className="admin-page-subtitle">Review flags and moderate disputes</p>
+          </div>
+      </div>
+      
+      {loading ? <div className="admin-loading"><div className="spinner-small"></div></div> : (
+        <div className="report-grid">
+          {reports.length === 0 && <div className="empty-admin-state">🎉 No open reports. The community is safe!</div>}
+          
           {reports.map(r => (
-            <div key={r._id} className="report-card">
-              <div className="report-body">
-                <div className="report-header-row">
-                    <span className={`status-badge status-${r.status}`}>{r.status}</span>
-                    <span className="report-date">{new Date(r.createdAt).toLocaleDateString()}</span>
-                </div>
-                <h4>Report Against: <strong>{r.reportedUser?.username || 'Unknown'}</strong></h4>
-                <p><strong>Reason:</strong> {r.description}</p>
-                <p className="muted">Reported by: {r.reporter?.username}</p>
+            <div key={r._id} className={`report-card ${r.status}`}>
+              <div className="report-header">
+                  <span className={`status-pill ${r.status}`}>
+                      {r.status === 'open' && <AlertTriangle size={12}/>} 
+                      {r.status}
+                  </span>
+                  <span className="report-date"><Calendar size={12} /> {new Date(r.createdAt).toLocaleDateString()}</span>
               </div>
-              <div className="report-actions">
-                <button className="btn btn-primary" onClick={() => viewConversation(r)}>Review Case</button>
+              
+              <div className="report-content">
+                  <div className="report-row">
+                    <span className="label">Accused:</span>
+                    <span className="value highlight-danger">{r.reportedUser?.username || 'Unknown'}</span>
+                  </div>
+                  <div className="report-row">
+                    <span className="label">Reason:</span>
+                    <p className="report-reason-text">"{r.description}"</p>
+                  </div>
+                  <div className="report-row small">
+                     <span className="label">Reporter:</span> {r.reporter?.username}
+                  </div>
+              </div>
+
+              <div className="report-actions-footer">
+                <button className="btn-admin btn-view" onClick={() => viewConversation(r)}>
+                    <MessageSquare size={16} /> Review Evidence
+                </button>
               </div>
             </div>
           ))}
@@ -100,38 +127,79 @@ const ManageReports = () => {
       )}
 
       {selectedReport && (
-        <div className="modal-backdrop" onClick={() => setSelectedReport(null)}>
-          <div className="modal-card wide-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-                <h3>Case Review: {selectedReport.reportedUser?.username}</h3>
-                <button className="close-btn" onClick={() => setSelectedReport(null)}>×</button>
+        <div className="admin-modal-overlay" onClick={() => setSelectedReport(null)}>
+          <div className="admin-modal-content wide" onClick={(e) => e.stopPropagation()}>
+            <div className="admin-modal-header">
+                <h3>Case Review <span className="case-id">#{selectedReport._id.slice(-6)}</span></h3>
+                <button className="close-icon" onClick={() => setSelectedReport(null)}><X size={24}/></button>
             </div>
             
-            <div className="case-details">
-                <p><strong>Accusation:</strong> {selectedReport.description}</p>
-                <div className="admin-chat-viewer">
-                    <h4>Conversation Evidence</h4>
-                    {chatLoading ? <div className="spinner"></div> : (
-                        <div className="chat-logs">
+            <div className="case-layout">
+                <div className="case-sidebar">
+                    <div className="info-block">
+                        <label>Reported User (Accused)</label>
+                        <div className="user-pill red">
+                            <User size={16}/> {selectedReport.reportedUser?.username || 'Unknown'}
+                        </div>
+                    </div>
+                    <div className="info-block">
+                        <label>Reporter</label>
+                        <div className="user-pill blue">
+                            <User size={16}/> {selectedReport.reporter?.username || 'Unknown'}
+                        </div>
+                    </div>
+                    <div className="info-block">
+                        <label>Violation Type</label>
+                        <p className="violation-text">{selectedReport.description}</p>
+                    </div>
+                    
+                    <div className="verdict-actions">
+                        <label>Admin Verdict</label>
+                        <button className="btn-admin btn-danger full-width" onClick={() => banUser(selectedReport.reportedUser?._id)}>
+                            <Ban size={16}/> Ban User & Resolve
+                        </button>
+                        <button className="btn-admin btn-secondary full-width" onClick={() => updateStatus(selectedReport._id, 'dismissed')}>
+                            <CheckCircle size={16}/> Dismiss (No Violation)
+                        </button>
+                        <button className="btn-admin btn-secondary full-width" onClick={() => updateStatus(selectedReport._id, 'resolved')}>
+                            <CheckCircle size={16}/> Mark Resolved (No Ban)
+                        </button>
+                    </div>
+                </div>
+
+                <div className="chat-evidence-container">
+                    <h4><MessageSquare size={18}/> Conversation Log</h4>
+                    {chatLoading ? <div className="spinner-small">Loading history...</div> : (
+                        <div className="chat-history-log">
                             {conversation.length === 0 ? (
-                                <p className="no-data">No conversation log available for this report.</p>
+                                <div className="no-chat-state">
+                                    <AlertTriangle size={32} style={{marginBottom:'10px', color:'var(--text-light)'}}/>
+                                    <p>No chat messages found for this request.</p>
+                                    <small>The report might be related to a profile or an offline interaction.</small>
+                                </div>
                             ) : (
-                                conversation.map((msg, idx) => (
-                                    <div key={idx} className={`chat-log-msg ${msg.sender._id === selectedReport.reportedUser?._id ? 'reported-user' : 'other-user'}`}>
-                                        <strong>{msg.sender.username}:</strong> {msg.text}
-                                        <span className="time">{new Date(msg.timestamp).toLocaleTimeString()}</span>
-                                    </div>
-                                ))
+                                conversation.map((msg, idx) => {
+                                    // Safely handle sender ID comparison
+                                    const senderId = typeof msg.sender === 'object' ? msg.sender._id : msg.sender;
+                                    const accusedId = selectedReport.reportedUser?._id;
+                                    const isAccused = senderId && accusedId && senderId.toString() === accusedId.toString();
+                                    
+                                    const senderName = typeof msg.sender === 'object' ? msg.sender.username : 'Unknown';
+
+                                    return (
+                                        <div key={idx} className={`log-message ${isAccused ? 'accused' : 'reporter'}`}>
+                                            <div className="log-meta">
+                                                <strong>{senderName}</strong>
+                                                <span>{new Date(msg.timestamp).toLocaleString()}</span>
+                                            </div>
+                                            <div className="log-text">{msg.text}</div>
+                                        </div>
+                                    );
+                                })
                             )}
                         </div>
                     )}
                 </div>
-            </div>
-
-            <div className="modal-actions-bar">
-              <button className="btn btn-secondary" onClick={() => updateStatus(selectedReport._id, 'dismissed')}>Dismiss Report</button>
-              <button className="btn btn-danger" onClick={() => banUser(selectedReport.reportedUser?._id)}>🚨 Ban User</button>
-              <button className="btn btn-success" onClick={() => updateStatus(selectedReport._id, 'resolved')}>Mark Resolved</button>
             </div>
           </div>
         </div>

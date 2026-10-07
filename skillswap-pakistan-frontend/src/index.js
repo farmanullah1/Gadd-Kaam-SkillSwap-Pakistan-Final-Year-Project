@@ -19,7 +19,7 @@ import './styles/LoadingSpinner.css';
 import './styles/chatbot-modal.css'; 
 import './styles/requests.css';
 import './styles/reviews.css';
-import './styles/admin.css'; // ✅ NEW: Admin dashboard styles
+import './styles/admin.css';
 
 // Import all your components
 import HomePage from './components/HomePage';
@@ -32,21 +32,24 @@ import MySkillPage from './components/MySkillPage';
 import MarketplacePage from './components/MarketplacePage';
 import WomenOnlyZonePage from './components/WomenOnlyZonePage';
 import ReceivedRequestsPage from './components/ReceivedRequestsPage';
-
-
-// New pages
 import MessagesPage from './components/MessagesPage';
 import ReviewsPage from './components/ReviewsPage';
 
-// Admin Components
+// Content Pages
+import AboutUsPage from './components/AboutUsPage';
+import ContactUsPage from './components/ContactUsPage';
+import FAQPage from './components/FAQPage';
+import DisputeResolutionPage from './components/DisputeResolutionPage';
+// ✅ New Legal Pages Imports
+import PrivacyPolicyPage from './components/PrivacyPolicyPage';
+import TermsOfServicePage from './components/TermsOfServicePage';
 
+// Admin Components
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/AdminDashboard';
 import ManageUsers from './components/admin/ManageUsers';
 import ManageSkills from './components/admin/ManageSkills';
 import ManageReports from './components/admin/ManageReports';
-
-// Admin route protection
 import AdminRoute from './components/AdminRoute';
 
 // Chatbot
@@ -70,6 +73,22 @@ const RootApp = () => {
           <Route path="/" element={<HomePage onChatbotToggle={toggleChatbot} />} />
           <Route path="/signup" element={<SignupPage onChatbotToggle={toggleChatbot} />} />
           <Route path="/login" element={<LoginPage onChatbotToggle={toggleChatbot} />} />
+          
+          {/* Content Pages */}
+          <Route path="/about-us" element={<AboutUsPage onChatbotToggle={toggleChatbot} />} />
+          <Route path="/about" element={<AboutUsPage onChatbotToggle={toggleChatbot} />} />
+          <Route path="/contact-us" element={<ContactUsPage onChatbotToggle={toggleChatbot} />} />
+          <Route path="/contact" element={<ContactUsPage onChatbotToggle={toggleChatbot} />} />
+          <Route path="/faq-page" element={<FAQPage onChatbotToggle={toggleChatbot} />} />
+          <Route path="/dispute-resolution-page" element={<DisputeResolutionPage onChatbotToggle={toggleChatbot} />} />
+          
+          {/* ✅ Legal Pages Routes (Updated) */}
+          <Route path="/privacy-policy" element={<PrivacyPolicyPage onChatbotToggle={toggleChatbot} />} />
+          <Route path="/terms-of-service" element={<TermsOfServicePage onChatbotToggle={toggleChatbot} />} />
+          
+          <Route path="/forgot-password" element={<LoginPage onChatbotToggle={toggleChatbot} />} />
+
+          {/* Protected Dashboard Routes */}
           <Route path="/dashboard" element={<DashboardPage onChatbotToggle={toggleChatbot} />} />
           <Route path="/dashboard/profile" element={<ProfilePage onChatbotToggle={toggleChatbot} />} />
           <Route path="/dashboard/my-skills" element={<MySkillPage onChatbotToggle={toggleChatbot} />} />
@@ -87,15 +106,6 @@ const RootApp = () => {
             <Route path="skills" element={<ManageSkills />} />
             <Route path="reports" element={<ManageReports />} />
           </Route>
-
-          {/* Misc */}
-          <Route path="/about" element={<HomePage onChatbotToggle={toggleChatbot} />} />
-          <Route path="/contact" element={<HomePage onChatbotToggle={toggleChatbot} />} />
-          <Route path="/faq" element={<HomePage onChatbotToggle={toggleChatbot} />} />
-          <Route path="/dispute" element={<HomePage onChatbotToggle={toggleChatbot} />} />
-          <Route path="/privacy-policy" element={<HomePage onChatbotToggle={toggleChatbot} />} />
-          <Route path="/terms-of-service" element={<HomePage onChatbotToggle={toggleChatbot} />} />
-          <Route path="/forgot-password" element={<LoginPage onChatbotToggle={toggleChatbot} />} />
         </Routes>
 
         {/* Chatbot overlay */}

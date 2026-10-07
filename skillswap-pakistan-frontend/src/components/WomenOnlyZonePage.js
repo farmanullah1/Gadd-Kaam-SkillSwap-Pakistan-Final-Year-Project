@@ -1,3 +1,4 @@
+// src/components/WomenOnlyZonePage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
@@ -12,13 +13,18 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
 import {
-  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star, Search, Tag, X, Lightbulb, MapPin, Send, Globe, Phone, EyeOff
+  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star, Search, Tag, X, Lightbulb, MapPin, Send, Globe, Phone, EyeOff, Award, Handshake, Heart
 } from 'lucide-react';
 
 const getPlaceholderImage = (width = 400, height = 300) =>
   `https://placehold.co/${width}x${height}/e0e0e0/666666?text=Skill`;
 
-// ✅ Reusing the improved SkillCard
+const BadgeIcon = ({ name, size=16 }) => {
+    const icons = { 'Handshake': Handshake, 'Star': Star, 'Heart': Heart, 'Award': Award };
+    const IconComponent = icons[name] || Award;
+    return <IconComponent size={size} />;
+};
+
 const SkillCard = ({ skillOffer, onViewDetails }) => {
   const { t } = useTranslation();
   const imageUrl = skillOffer.photo ? `${process.env.REACT_APP_API_URL}${skillOffer.photo.replace(/\\/g, '/')}` : getPlaceholderImage();
@@ -77,7 +83,6 @@ const SkillCard = ({ skillOffer, onViewDetails }) => {
   );
 };
 
-// ✅ Reusing the improved FullDetailsModal
 const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuccess }) => {
   const { t } = useTranslation();
   const [showRequestForm, setShowRequestForm] = useState(false);
@@ -93,6 +98,7 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
   const imageUrl = skillOffer.photo ? `${process.env.REACT_APP_API_URL}${skillOffer.photo.replace(/\\/g, '/')}` : getPlaceholderImage(800, 400);
   const authorName = skillOffer.anonymous ? t('anonymous_label') : (skillOffer.user?.username || t('anonymous_label'));
   const isOwnSkill = currentUserId === skillOffer.user?._id;
+  const authorBadges = skillOffer.user?.badges || [];
 
   const handleSendRequest = async () => {
     if (!skillRequested.trim()) {
@@ -136,17 +142,27 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
   return (
     <div className="full-details-modal-overlay">
       <div className="full-details-modal-content">
-        <button className="full-details-modal-close-btn" onClick={onClose}>
-          <X size={24} />
-        </button>
+        <button className="full-details-modal-close-btn" onClick={onClose}><X size={24} /></button>
         <div className="modal-scroll-content">
             <img src={imageUrl} alt={skillOffer.skills.join(', ')} className="modal-hero-image" 
                  onError={(e) => { e.target.onerror = null; e.target.src = getPlaceholderImage(800, 400); }}/>
             <div className="modal-body">
                 <div className="modal-header-section">
                     <h2 className="modal-title">{skillOffer.skills.join(', ')}</h2>
-                    <div className="modal-author">
-                        {t('offer_skill_label')} {t('by_label')} <strong>{authorName}</strong>
+                    <div className="modal-author-row">
+                        <div className="modal-author">
+                            {t('offer_skill_label')} {t('by_label')} <strong>{authorName}</strong>
+                        </div>
+                        {/* ✅ Display User Badges in Modal */}
+                        {authorBadges.length > 0 && (
+                            <div className="modal-badges-list">
+                                {authorBadges.map((badge, idx) => (
+                                    <div key={idx} className="mini-badge" title={badge.name}>
+                                        <BadgeIcon name={badge.icon} size={16} />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className="modal-details-grid">

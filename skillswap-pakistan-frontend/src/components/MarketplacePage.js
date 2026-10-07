@@ -1,29 +1,34 @@
+// src/components/MarketplacePage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import HelplinePopup from './HelplinePopup';
 import LoadingSpinner from './LoadingSpinner';
-import SuccessMessageModal from './SuccessMessageModal';
+import SuccessMessageModal from './SuccessMessageModal'; 
 import '../styles/marketplace.css';
 import '../styles/forms.css'; 
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
 import {
-  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star, Search, Tag, X, Lightbulb, MapPin, Send, Globe, Phone, EyeOff
+  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star, Search, Tag, X, Lightbulb, MapPin, Send, Globe, Phone, EyeOff, Award, Handshake, Heart
 } from 'lucide-react';
 
 const getPlaceholderImage = (width = 400, height = 300) =>
   `https://placehold.co/${width}x${height}/e0e0e0/666666?text=Skill`;
 
-// ✅ UPDATED SKILL CARD
+// Helper for Badge Icons
+const BadgeIcon = ({ name, size=16 }) => {
+    const icons = { 'Handshake': Handshake, 'Star': Star, 'Heart': Heart, 'Award': Award };
+    const IconComponent = icons[name] || Award;
+    return <IconComponent size={size} />;
+};
+
 const SkillCard = ({ skillOffer, onViewDetails }) => {
   const { t } = useTranslation();
   const imageUrl = skillOffer.photo ? `${process.env.REACT_APP_API_URL}${skillOffer.photo.replace(/\\/g, '/')}` : getPlaceholderImage();
   const authorName = skillOffer.anonymous ? t('anonymous_label') : (skillOffer.user?.username || t('anonymous_label'));
-
-  // Calculate review count (Assuming backend sends it, or we default to 1 if a latest review exists)
   const reviewCount = skillOffer.reviewCount || (skillOffer.latestReview ? 1 : 0);
 
   return (
@@ -41,14 +46,11 @@ const SkillCard = ({ skillOffer, onViewDetails }) => {
             </div>
         )}
       </div>
-      
       <div className="skill-card-content">
         <h3 className="skill-card-title">{skillOffer.skills.join(', ')}</h3>
         <p className="skill-card-author">
           <User size={14} style={{display:'inline', marginRight:'4px'}}/> {authorName}
         </p>
-
-        {/* ✅ ENHANCED Review Display */}
         <div className="skill-card-review-section">
           <div className="review-header">
              <div className="rating-badge">
@@ -59,7 +61,6 @@ const SkillCard = ({ skillOffer, onViewDetails }) => {
                 {reviewCount > 0 ? `(${reviewCount} reviews)` : '(No reviews yet)'}
              </span>
           </div>
-          
           {skillOffer.latestReview && (
             <div>
               <p className="review-text">"{skillOffer.latestReview.comment.substring(0, 60)}{skillOffer.latestReview.comment.length > 60 ? '...' : ''}"</p>
@@ -69,13 +70,11 @@ const SkillCard = ({ skillOffer, onViewDetails }) => {
             </div>
           )}
         </div>
-
         <div className="skill-card-tags">
           {skillOffer.remotely && <span className="skill-card-tag"><Globe size={12}/> {t('remotely_label')}</span>}
           {skillOffer.anonymous && <span className="skill-card-tag"><EyeOff size={12}/> {t('anonymous_label')}</span>}
           {skillOffer.shareWithWomenZone && <span className="skill-card-tag" style={{background:'#fce7f3', color:'#be185d'}}><Shield size={12}/> Women Zone</span>}
         </div>
-
         <button className="btn-view-details" onClick={() => onViewDetails(skillOffer)}>
           {t('view_full_details_btn')}
         </button>
@@ -84,7 +83,6 @@ const SkillCard = ({ skillOffer, onViewDetails }) => {
   );
 };
 
-// ✅ UPDATED FULL DETAILS MODAL
 const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuccess }) => {
   const { t } = useTranslation();
   const [showRequestForm, setShowRequestForm] = useState(false);
@@ -100,6 +98,9 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
   const imageUrl = skillOffer.photo ? `${process.env.REACT_APP_API_URL}${skillOffer.photo.replace(/\\/g, '/')}` : getPlaceholderImage(800, 400);
   const authorName = skillOffer.anonymous ? t('anonymous_label') : (skillOffer.user?.username || t('anonymous_label'));
   const isOwnSkill = currentUserId === skillOffer.user?._id;
+  
+  // Get Badges
+  const authorBadges = skillOffer.user?.badges || [];
 
   const handleSendRequest = async () => {
     if (!skillRequested.trim()) {
@@ -112,7 +113,6 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
       setShowErrorModal(true);
       return;
     }
-
     setSendingRequest(true); 
     try {
       const token = localStorage.getItem('token');
@@ -124,11 +124,9 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
         isRemote: isRemote,
         location: isRemote ? '' : location, 
       };
-
       await axios.post(`${process.env.REACT_APP_API_URL}/api/requests`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
       setSuccessMessage(t('request_sent_success_message')); 
       setShowSuccessModal(true);
       onSendRequestSuccess();
@@ -146,36 +144,39 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
   return (
     <div className="full-details-modal-overlay">
       <div className="full-details-modal-content">
-        <button className="full-details-modal-close-btn" onClick={onClose}>
-          <X size={24} />
-        </button>
-        
+        <button className="full-details-modal-close-btn" onClick={onClose}><X size={24} /></button>
         <div className="modal-scroll-content">
             <img src={imageUrl} alt={skillOffer.skills.join(', ')} className="modal-hero-image" 
                  onError={(e) => { e.target.onerror = null; e.target.src = getPlaceholderImage(800, 400); }}/>
-            
             <div className="modal-body">
                 <div className="modal-header-section">
                     <h2 className="modal-title">{skillOffer.skills.join(', ')}</h2>
-                    <div className="modal-author">
-                        {t('offer_skill_label')} {t('by_label')} <strong>{authorName}</strong>
+                    <div className="modal-author-row">
+                        <div className="modal-author">
+                            {t('offer_skill_label')} {t('by_label')} <strong>{authorName}</strong>
+                        </div>
+                        {/* ✅ Display User Badges in Modal */}
+                        {authorBadges.length > 0 && (
+                            <div className="modal-badges-list">
+                                {authorBadges.map((badge, idx) => (
+                                    <div key={idx} className="mini-badge" title={badge.name}>
+                                        <BadgeIcon name={badge.icon} size={16} />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
-
                 <div className="modal-details-grid">
-                    {/* Left Column: Description & Request */}
                     <div className="detail-column-main">
                         <div className="detail-group">
                             <div className="detail-label"><Lightbulb size={16}/> {t('description_label')}</div>
                             <p className="detail-value">{skillOffer.description}</p>
                         </div>
-
                         <div className="detail-group">
                             <div className="detail-label"><Tag size={16}/> {t('swap_skill_label')}</div>
                             <p className="detail-value highlight">{skillOffer.skillsToSwap?.join(', ') || t('skill_not_specified')}</p>
                         </div>
-
-                        {/* Request Action Area */}
                         <div className="request-action-area">
                             {!showRequestForm ? (
                                 isOwnSkill ? (
@@ -188,28 +189,18 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
                             ) : (
                                 <div className="request-form">
                                     <h3 style={{marginBottom:'10px', fontSize:'1.2rem'}}>{t('specify_skill_wanted_label')}</h3>
-                                    <textarea
-                                        placeholder={t('request_skill_placeholder')}
-                                        value={skillRequested}
-                                        onChange={(e) => setSkillRequested(e.target.value)}
-                                    />
-                                    
+                                    <textarea placeholder={t('request_skill_placeholder')} value={skillRequested} onChange={(e) => setSkillRequested(e.target.value)} />
                                     <label className="remote-toggle">
-                                        <input type="checkbox" checked={isRemote} onChange={(e) => {
-                                            setIsRemote(e.target.checked);
-                                            if (e.target.checked) setLocation('');
-                                        }} hidden />
+                                        <input type="checkbox" checked={isRemote} onChange={(e) => { setIsRemote(e.target.checked); if (e.target.checked) setLocation(''); }} hidden />
                                         <div className="toggle-slider"></div>
                                         <span>{t('work_can_be_remote_label')}</span>
                                     </label>
-
                                     {!isRemote && (
                                         <div className="location-input-container" style={{marginBottom:'1rem'}}>
                                             <label style={{display:'block', marginBottom:'5px', fontWeight:'600'}}>{t('location_label')}</label>
                                             <input type="text" className="input-field" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={t('enter_location_placeholder')} />
                                         </div>
                                     )}
-
                                     <button className="btn-send-request" onClick={handleSendRequest} disabled={sendingRequest}>
                                         {sendingRequest ? <LoadingSpinner size={20} color="#fff" /> : <><Send size={18}/> {t('send_request_btn')}</>}
                                     </button>
@@ -217,24 +208,19 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
                             )}
                         </div>
                     </div>
-
-                    {/* Right Column: Metadata */}
                     <div className="detail-column-side">
                         <div className="detail-group">
                             <div className="detail-label"><MapPin size={16}/> {t('location_label')}</div>
                             <p className="detail-value">{skillOffer.remotely ? "Anywhere (Remote)" : skillOffer.location || t('not_specified')}</p>
                         </div>
-
                         <div className="detail-group">
                             <div className="detail-label"><Globe size={16}/> {t('remotely_label')}</div>
                             <p className="detail-value">{skillOffer.remotely ? t('yes') : t('no')}</p>
                         </div>
-
                         <div className="detail-group">
                             <div className="detail-label"><EyeOff size={16}/> {t('anonymous_label')}</div>
                             <p className="detail-value">{skillOffer.anonymous ? t('yes') : t('no')}</p>
                         </div>
-
                         {!skillOffer.anonymous && skillOffer.user?.phoneNumber && (
                             <div className="detail-group">
                                 <div className="detail-label"><Phone size={16}/> {t('phone_label')}</div>
@@ -246,7 +232,6 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
             </div>
         </div>
       </div>
-
       {showSuccessModal && (
         <SuccessMessageModal
           isOpen={showSuccessModal}
@@ -256,7 +241,6 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
           type="success"
         />
       )}
-
       {showErrorModal && (
         <SuccessMessageModal
           isOpen={showErrorModal}

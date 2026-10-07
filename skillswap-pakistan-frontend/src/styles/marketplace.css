@@ -101,6 +101,19 @@
   box-shadow: 0 4px 10px rgba(227, 139, 64, 0.3);
 }
 
+.clear-filters-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.clear-filters-btn:hover {
+    color: var(--danger-color);
+}
+
 /* --- Skill Cards Grid --- */
 .skill-card-container, .women-only-skill-card-container {
   display: grid;
@@ -124,10 +137,6 @@
   transform: translateY(-8px);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
   border-color: var(--primary-orange);
-}
-
-body.dark-mode .skill-card:hover {
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
 }
 
 .skill-card-image-wrapper {
@@ -330,9 +339,38 @@ body.dark-mode .skill-card:hover {
   margin-bottom: 0.5rem;
 }
 
+.modal-author-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 5px;
+}
+
 .modal-author {
   font-size: 1.1rem;
   color: var(--text-medium);
+}
+
+/* Badges in Modal */
+.modal-badges-list {
+    display: flex;
+    gap: 6px;
+}
+
+.mini-badge {
+    background: var(--primary-hover-light);
+    color: var(--primary-orange);
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--primary-orange);
+    transition: transform 0.2s;
+}
+
+.mini-badge:hover {
+    transform: scale(1.1);
 }
 
 .modal-details-grid {
@@ -377,132 +415,11 @@ body.dark-mode .skill-card:hover {
 /* Request Form Area */
 .request-action-area {
   background: var(--background-section);
-  padding: 1.5rem;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  margin-top: 1rem;
-}
-
-.request-form textarea {
-  width: 100%;
-  padding: 1rem;
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  background: var(--input-background);
-  color: var(--text-dark);
-  font-family: inherit;
-  resize: vertical;
-  min-height: 110px;
-  margin-bottom: 1rem;
-  transition: border 0.3s;
-}
-
-.request-form textarea:focus {
-  border-color: var(--primary-orange);
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(227, 139, 64, 0.1);
-}
-
-.remote-toggle {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 1rem;
-  cursor: pointer;
-  user-select: none;
-}
-
-.toggle-slider {
-  width: 44px;
-  height: 24px;
-  background-color: #ccc;
-  border-radius: 34px;
-  position: relative;
-  transition: .4s;
-}
-
-.toggle-slider::before {
-  content: "";
-  position: absolute;
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  border-radius: 50%;
-  transition: .4s;
-}
-
-input:checked + .toggle-slider {
-  background-color: var(--success-color);
-}
-
-input:checked + .toggle-slider::before {
-  transform: translateX(20px);
-}
-
-.btn-send-request {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, var(--primary-orange), #d9752b);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn-send-request:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(227, 139, 64, 0.3);
-}
-
-.btn-send-request:disabled {
-  background: var(--text-light);
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.initial-request-btn {
-  width: 100%;
-  padding: 16px;
-  background: var(--text-dark);
-  color: var(--card-background);
-  font-size: 1.2rem;
-  font-weight: 700;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: all 0.3s;
-}
-
-.initial-request-btn:hover {
-  background: var(--primary-orange);
-  transform: scale(1.02);
-}
-/* src/styles/marketplace.css */
-
-/* ... (keep previous styles above) ... */
-
-/* Request Form Area - REFINED */
-.request-action-area {
-  background: var(--background-section);
   padding: 1.9rem;
-  border-radius: 16px; /* Increased radius */
+  border-radius: 16px;
   border: 1px solid var(--border-color);
   margin-top: 1.5rem;
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.02); /* Subtle inset */
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
 }
 
 .request-form h3 {
@@ -513,43 +430,40 @@ input:checked + .toggle-slider::before {
 }
 
 .request-form textarea {
-  justify-content: center;
-  align-items: center;
   width: 100%;
-  padding: 9px;
+  padding: 1rem;
   border-radius: 12px;
   border: 1px solid var(--border-color);
-  background: var(--input-background); /* Ensures light background in light mode */
+  background: var(--input-background);
   color: var(--text-dark);
-  font-family: 'Inter', sans-serif; /* Cleaner font */
+  font-family: inherit;
   font-size: 0.95rem;
   resize: vertical;
   min-height: 120px;
   margin-bottom: 1.2rem;
   transition: all 0.3s ease;
+  box-sizing: border-box; /* Fix for padding causing overflow */
 }
 
 .request-form textarea:focus {
   border-color: var(--primary-orange);
   outline: none;
-  background: var(--card-background); /* Slightly brighter on focus */
+  background: var(--card-background);
   box-shadow: 0 0 0 4px rgba(227, 139, 64, 0.1);
-  justify-content: center;
-  align-items: center;
 }
 
 .remote-toggle {
   display: flex;
   align-items: center;
-  gap: 12px; /* More spacing */
+  gap: 12px;
   margin-bottom: 1.5rem;
   cursor: pointer;
   user-select: none;
-  background: var(--card-background); /* Boxed toggle */
+  background: var(--card-background);
   padding: 10px 14px;
   border-radius: 10px;
   border: 1px solid var(--border-color);
-  width: fit-content; /* Hug content */
+  width: fit-content;
 }
 
 .toggle-slider {
@@ -575,7 +489,7 @@ input:checked + .toggle-slider::before {
 }
 
 input:checked + .toggle-slider {
-  background-color: var(--success-color); /* Green for active */
+  background-color: var(--success-color);
 }
 
 input:checked + .toggle-slider::before {
@@ -594,7 +508,7 @@ input:checked + .toggle-slider::before {
   background: linear-gradient(135deg, var(--primary-orange), #d9752b);
   color: white;
   border: none;
-  border-radius: 12px; /* Softer corners */
+  border-radius: 12px;
   font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
@@ -620,4 +534,44 @@ input:checked + .toggle-slider::before {
   opacity: 0.7;
 }
 
-/* ... (keep rest of styles) ... */
+.initial-request-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--text-dark);
+  color: var(--card-background);
+  font-size: 1.2rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s;
+}
+
+.initial-request-btn:hover {
+  background: var(--primary-orange);
+  transform: scale(1.02);
+}
+
+.no-skills-message {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-medium);
+    margin-top: 50px;
+    background: var(--card-background);
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px dashed var(--border-color);
+}
+
+.error-message {
+    text-align: center;
+    color: var(--error-color);
+    background: var(--error-light-bg);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+}

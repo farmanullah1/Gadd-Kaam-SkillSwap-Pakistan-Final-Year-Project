@@ -156,3 +156,68 @@
   padding: 10px 24px;
   min-width: 120px;
 }
+/* Add to src/styles/popup.css */
+
+.report-modal {
+    max-width: 500px;
+    text-align: left;
+}
+
+.report-modal .popup-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.icon-circle.red {
+    background-color: #fee2e2;
+    color: #dc2626;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.report-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.radio-option:hover {
+    background-color: var(--background-section);
+}
+
+.radio-option input:checked + span {
+    font-weight: 600;
+    color: var(--error-red);
+}
+
+.btn-danger {
+    background-color: var(--error-red);
+    color: white;
+    border: none;
+}
+.btn-danger:hover {
+    background-color: #b91c1c;
+}
+.btn-danger:disabled {
+    background-color: #fca5a5;
+    cursor: not-allowed;
+}

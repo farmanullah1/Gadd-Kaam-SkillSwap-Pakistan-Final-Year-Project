@@ -30,6 +30,12 @@ const UserSchema = new mongoose.Schema({
     type: Boolean, 
     default: false 
   },
+
+  // ✅ Badges Earned (New Feature)
+  badges: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Badge'
+  }]
 });
 
 // Hash password before saving

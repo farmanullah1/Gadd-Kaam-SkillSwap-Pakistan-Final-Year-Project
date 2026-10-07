@@ -5,7 +5,8 @@ const auth = require('../middleware/auth');
 const Review = require('../models/Review');
 const Request = require('../models/Request');
 const User = require('../models/User');
-const Notification = require('../models/Notification'); // ✅ Import Notification
+const Notification = require('../models/Notification');
+const { awardBadge } = require('../utils/badgeUtils'); // ✅ Import Badge Utils
 
 // ✅ Helper
 const createNotification = async (recipientId, senderId, type, referenceId, text) => {
@@ -69,6 +70,20 @@ router.post(
           `${reviewerUser.username} left you a ${rating}-star review!`
       );
 
+      // ✅ CHECK & AWARD "TOP RATED" BADGE
+      // Calculate new average rating for the user
+      const allReviews = await Review.find({ reviewedFor: reviewedForId });
+      const avgRating = allReviews.reduce((acc, r) => acc + r.rating, 0) / allReviews.length;
+
+      // Criteria: At least 5 reviews and > 4.5 average
+      if (allReviews.length >= 5 && avgRating >= 4.5) {
+          try {
+             await awardBadge(reviewedForId, 'Top Rated');
+          } catch (bErr) {
+             console.error("Badge Award Error (Top Rated):", bErr);
+          }
+      }
+
       res.status(201).json({ msg: 'Review submitted successfully!', review: newReview });
     } catch (err) {
       console.error(err.message);
@@ -77,7 +92,7 @@ router.post(
   }
 );
 
-// ... (GET routes remain the same, just keeping them for completeness)
+// ... (GET routes remain the same)
 router.get('/received', auth, async (req, res) => {
   try {
     const reviews = await Review.find({ reviewedFor: req.user.id })
@@ -104,7 +119,6 @@ router.get('/pending', auth, async (req, res) => {
 
     const pendingReviews = [];
     for (const req of completedRequests) {
-      const otherParticipantId = req.sender.toString() === userId ? req.receiver._id : req.sender._id;
       const existingReview = await Review.findOne({ reviewer: userId, requestId: req._id });
 
       if (!existingReview) {
