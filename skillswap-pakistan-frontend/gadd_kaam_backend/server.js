@@ -29,6 +29,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/profile', require('./routes/profileRoutes'));
 app.use('/api/skill-offers', require('./routes/skillOfferRoutes'));
 app.use('/api/skill-suggestions', require('./routes/skillSuggestionRoutes'));
+app.use('/api/requests', require('./routes/requestRoutes')); // New requests route
 
 app.get('/', (req, res) => res.send('API Running'));
 

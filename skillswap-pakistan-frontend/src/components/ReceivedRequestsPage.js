@@ -4,30 +4,153 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import HelplinePopup from './HelplinePopup';
-import '../styles/dashboard.css'; // Reusing dashboard styles for consistency
+import LoadingSpinner from './LoadingSpinner';
+import '../styles/dashboard.css';
+import '../styles/requests.css'; // You'll need to create this CSS file
+import axios from 'axios';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+
+const RequestCard = ({ request, onAccept, onCancel }) => {
+  const placeholderProfilePic = 'https://placehold.co/50x50/e0e0e0/666666?text=User';
+  const profilePicUrl = request.sender.profilePicture
+    ? `${process.env.REACT_APP_API_URL}${request.sender.profilePicture}`
+    : placeholderProfilePic;
+
+  return (
+    <div className="request-card">
+      <div className="request-card-header">
+        <img
+          src={profilePicUrl}
+          alt={request.sender.username}
+          className="request-profile-pic"
+          onError={(e) => { e.target.onerror = null; e.target.src = placeholderProfilePic; }}
+        />
+        <div className="request-info">
+          <h3>{request.sender.username}</h3>
+          <p>Requested your skill: **{request.skillOffer.skills.join(', ')}**</p>
+          <p>Sender offers in return: **{request.skillRequested}**</p>
+        </div>
+      </div>
+      <div className="request-card-actions">
+        <button className="btn btn-accept" onClick={() => onAccept(request._id)}>
+          <FaCheckCircle /> Accept
+        </button>
+        <button className="btn btn-cancel" onClick={() => onCancel(request._id)}>
+          <FaTimesCircle /> Cancel
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const AcceptedRequestNotification = ({ request }) => {
+  const placeholderProfilePic = 'https://placehold.co/50x50/e0e0e0/666666?text=User';
+  const profilePicUrl = request.receiver.profilePicture
+    ? `${process.env.REACT_APP_API_URL}${request.receiver.profilePicture}`
+    : placeholderProfilePic;
+
+  return (
+    <div className="accepted-request-card">
+      <div className="accepted-request-header">
+        <div className="accepted-request-info">
+          <h3>Request Accepted by {request.receiver.username}! 🎉</h3>
+          <p>You can now contact them to coordinate your skill swap.</p>
+        </div>
+      </div>
+      <div className="accepted-request-details">
+        <div className="user-details-section">
+          <img
+            src={profilePicUrl}
+            alt={request.receiver.username}
+            className="user-profile-pic"
+            onError={(e) => { e.target.onerror = null; e.target.src = placeholderProfilePic; }}
+          />
+          <div className="contact-info">
+            <h4>Contact Details:</h4>
+            <p><strong>Name:</strong> {request.receiver.username}</p>
+            <p><strong>Phone:</strong> {request.receiver.phoneNumber || 'Not provided'}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function ReceivedRequestsPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [showHelplinePopup, setShowHelplinePopup] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [requests, setRequests] = useState([]);
+  const [acceptedRequests, setAcceptedRequests] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      fetchRequests();
     } else {
       navigate('/login');
     }
   }, [navigate]);
 
-  const openHelplinePopup = () => {
-    setShowHelplinePopup(true);
+  const fetchRequests = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('token');
+      // Fetch received requests
+      const receivedResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/requests/received`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setRequests(receivedResponse.data.filter(req => req.status === 'pending'));
+
+      // Fetch accepted requests where I am the sender
+      const acceptedResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/requests/sent`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setAcceptedRequests(acceptedResponse.data.filter(req => req.status === 'accepted'));
+    } catch (err) {
+      console.error('Failed to fetch requests:', err);
+      setError('Failed to load requests. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const closeHelplinePopup = () => {
-    setShowHelplinePopup(false);
+  const handleAcceptRequest = async (requestId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/requests/${requestId}/accept`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Request accepted! The user has been notified.');
+      fetchRequests(); // Refresh requests after action
+    } catch (err) {
+      console.error('Failed to accept request:', err);
+      alert('Failed to accept request. Please try again.');
+    }
   };
+
+  const handleCancelRequest = async (requestId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/requests/${requestId}/cancel`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Request cancelled.');
+      fetchRequests(); // Refresh requests after action
+    } catch (err) {
+      console.error('Failed to cancel request:', err);
+      alert('Failed to cancel request. Please try again.');
+    }
+  };
+
+  const openHelplinePopup = () => setShowHelplinePopup(true);
+  const closeHelplinePopup = () => setShowHelplinePopup(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -81,11 +204,47 @@ function ReceivedRequestsPage() {
         <section className="dashboard-content-area">
           <h1 className="dashboard-welcome-heading">Received Requests</h1>
           <p className="dashboard-sub-heading">Manage the requests you have received for your skill offers here.</p>
-          {/* Placeholder content for received requests */}
-          <div style={{ padding: '20px', textAlign: 'center', fontSize: '1.1em', color: '#555' }}>
-            <p>You currently have no new skill requests.</p>
-            <p>When someone requests one of your skills, it will appear here.</p>
-          </div>
+
+          {loading ? (
+            <LoadingSpinner />
+          ) : error ? (
+            <p className="error-message">{error}</p>
+          ) : (
+            <div className="requests-container">
+              {requests.length > 0 && (
+                <>
+                  <h2 className="section-title">Pending Requests</h2>
+                  {requests.map((request) => (
+                    <RequestCard
+                      key={request._id}
+                      request={request}
+                      onAccept={handleAcceptRequest}
+                      onCancel={handleCancelRequest}
+                    />
+                  ))}
+                </>
+              )}
+
+              {acceptedRequests.length > 0 && (
+                <>
+                  <h2 className="section-title">Accepted Requests</h2>
+                  {acceptedRequests.map((request) => (
+                    <AcceptedRequestNotification
+                      key={request._id}
+                      request={request}
+                    />
+                  ))}
+                </>
+              )}
+
+              {requests.length === 0 && acceptedRequests.length === 0 && (
+                <div style={{ padding: '20px', textAlign: 'center', fontSize: '1.1em', color: '#555' }}>
+                  <p>You currently have no new skill requests or accepted swaps.</p>
+                  <p>When someone requests one of your skills, it will appear here.</p>
+                </div>
+              )}
+            </div>
+          )}
         </section>
       </div>
 

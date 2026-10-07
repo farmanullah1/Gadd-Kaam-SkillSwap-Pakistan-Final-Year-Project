@@ -1,3 +1,4 @@
+// routes/skillOfferRoutes.js
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
@@ -93,7 +94,7 @@ router.post(
         skills: parsedSkills,
         description,
         username: anonymous === 'true' ? 'Anonymous' : user.username,
-        phoneNumber: anonymous === 'true' ? 'Hidden' : user.phoneNumber,
+        phoneNumber: anonymous === 'true' ? 'Hidden' : user.phoneNumber, // Phone number handling on backend
         location,
         remotely: remotely === 'true',
         anonymous: anonymous === 'true',
@@ -116,12 +117,13 @@ router.post(
   }
 );
 
-// @route   GET /api/skill-offers
-// @desc    Get all skill offers
-// @access  Public
-router.get('/', async (req, res) => {
+// @route   GET /api/skill-offers/marketplace
+// @desc    Get all public skill offers for the marketplace (not anonymous and NOT exclusively for women's zone)
+// @access  Private (or Public, as per your app design)
+router.get('/marketplace', auth, async (req, res) => {
   try {
-    const skillOffers = await SkillOffer.find().sort({ date: -1 });
+    // Fetch offers that are NOT anonymous and NOT shared exclusively with Women's Zone
+    const skillOffers = await SkillOffer.find({ anonymous: false, shareWithWomenZone: false }).sort({ date: -1 });
     res.json(skillOffers);
   } catch (err) {
     console.error(err.message);
@@ -143,7 +145,7 @@ router.get('/my-skills', auth, async (req, res) => {
 });
 
 // @route   GET /api/skill-offers/women-only
-// @desc    Get skill offers for the women-only zone
+// @desc    Get skill offers for the women-only zone (must be shared with women's zone)
 // @access  Private (only for authenticated female users)
 router.get('/women-only', auth, async (req, res) => {
   try {
@@ -151,7 +153,9 @@ router.get('/women-only', auth, async (req, res) => {
     if (!user || user.gender !== 'Female') {
       return res.status(403).json({ msg: 'Access denied. This zone is for female users only.' });
     }
-
+    // Only show offers that are explicitly shared with the women's zone
+    // If you want anonymous offers in Women's Zone: { shareWithWomenZone: true }
+    // If you want non-anonymous offers only: { shareWithWomenZone: true, anonymous: false }
     const skillOffers = await SkillOffer.find({ shareWithWomenZone: true }).sort({ date: -1 });
     res.json(skillOffers);
   } catch (err) {
@@ -171,10 +175,12 @@ router.delete('/:offer_id', auth, async (req, res) => {
       return res.status(404).json({ msg: 'Skill offer not found' });
     }
 
+    // Check user authorization
     if (skillOffer.user.toString() !== req.user.id) {
       return res.status(401).json({ msg: 'User not authorized' });
     }
 
+    // Delete associated photo if it exists
     if (skillOffer.photo) {
       const filePath = path.join(__dirname, '..', skillOffer.photo);
       fs.unlink(filePath, (err) => {

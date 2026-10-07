@@ -1,6 +1,6 @@
 // src/components/MarketplacePage.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom'; // Added useLocation
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import HelplinePopup from './HelplinePopup';
@@ -49,10 +49,32 @@ const SkillCard = ({ skill, onViewDetails }) => {
 };
 
 // FullDetailsModal component
-const FullDetailsModal = ({ skill, onClose, onRequest }) => {
+const FullDetailsModal = ({ skill, onClose }) => {
   const { t } = useTranslation();
+  const [showRequestForm, setShowRequestForm] = useState(false);
+  const [requestSkill, setRequestSkill] = useState('');
+
   const placeholderImage = 'https://placehold.co/800x480/e0e0e0/666666?text=No+Image';
   const imageUrl = skill.photo ? `${process.env.REACT_APP_API_URL}${skill.photo}` : placeholderImage;
+
+  const handleSendRequest = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      // API call to send the request
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/requests/send`, {
+        receiverId: skill.user, // ID of the user offering the skill
+        skillOfferId: skill._id, // ID of the specific skill offer
+        skillRequested: requestSkill
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Request sent successfully!');
+      onClose(); // Close modal after sending
+    } catch (err) {
+      console.error('Failed to send request:', err);
+      alert('Failed to send request. Please try again.');
+    }
+  };
 
   if (!skill) return null;
 
@@ -94,24 +116,35 @@ const FullDetailsModal = ({ skill, onClose, onRequest }) => {
           {skill.shareWithWomenZone && (
             <div className="full-details-info-box">
               <h3 className="full-details-info-label">{t('step2_women_zone_switch')}</h3>
-              <p className="full-details-info-value">{skill.shareWithWomenZone ? t('yes') : t('no')}</p>
+              <p className="full-details-info-value">{t('yes')}</p>
             </div>
           )}
           <div className="full-details-info-box">
             <h3 className="full-details-info-label">{t('swap_skill_label')}</h3>
             <p className="full-details-info-value">{skill.skillsToSwap.join(', ') || t('skill_not_specified')}</p>
           </div>
-          {!skill.anonymous && (
-            <div className="full-details-info-box">
-              <h3 className="full-details-info-label">{t('phone_label')}</h3>
-              <p className="full-details-info-value">{skill.phoneNumber || t('not_specified')}</p>
-            </div>
-          )}
+          {/* Phone number removed from here as per request */}
         </div>
         <div className="full-details-actions">
-          <button className="btn-request-offer" onClick={() => onRequest(skill)}>
-            <FaPaperPlane style={{ marginRight: '8px' }} />{t('request_btn')}
-          </button>
+          {!showRequestForm ? (
+            <button className="btn-request-offer" onClick={() => setShowRequestForm(true)}>
+              <FaPaperPlane style={{ marginRight: '8px' }} /> {t('request_btn')}
+            </button>
+          ) : (
+            <div className="request-form-section"> {/* New class for styling */}
+              <label htmlFor="requestSkillInput">Specify the skill you want from them:</label>
+              <textarea
+                id="requestSkillInput"
+                placeholder="e.g., I need help with React.js tutoring in exchange for web design."
+                value={requestSkill}
+                onChange={(e) => setRequestSkill(e.target.value)}
+                rows="4"
+              />
+              <button className="btn-send-request" onClick={handleSendRequest}>
+                Send Request
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -134,10 +167,10 @@ function MarketplacePage() {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
+      fetchAllSkills();
     } else {
       navigate('/login');
     }
-    fetchAllSkills();
   }, [navigate]);
 
   const fetchAllSkills = async () => {
@@ -145,7 +178,8 @@ function MarketplacePage() {
     setError(null);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/skill-offers`, {
+      // Updated endpoint to a more specific marketplace endpoint
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/skill-offers/marketplace`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSkills(response.data);
@@ -155,10 +189,6 @@ function MarketplacePage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleRequestOffer = (skill) => {
-    alert(`You are requesting the skill: "${skill.skills.join(', ')}" from "${skill.username}".`);
   };
 
   const openHelplinePopup = () => setShowHelplinePopup(true);
@@ -212,14 +242,13 @@ function MarketplacePage() {
             </Link>
           </nav>
         </aside>
-
+        
         <section className="dashboard-content-area">
           <div className="marketplace-page">
             <div className="marketplace-header">
               <h1>{t('marketplace_page_title')}</h1>
               <p>{t('marketplace_page_subtitle')}</p>
             </div>
-
             {loading ? (
               <LoadingSpinner />
             ) : error ? (
@@ -227,7 +256,7 @@ function MarketplacePage() {
             ) : skills.length === 0 ? (
               <p className="no-skills-message">{t('no_skills_available')}</p>
             ) : (
-              <div className="marketplace-skill-card-container">
+              <div className="skill-card-container">
                 {skills.map((skill) => (
                   <SkillCard
                     key={skill._id}
@@ -251,7 +280,6 @@ function MarketplacePage() {
         <FullDetailsModal
           skill={selectedSkill}
           onClose={() => setSelectedSkill(null)}
-          onRequest={handleRequestOffer}
         />
       )}
     </div>

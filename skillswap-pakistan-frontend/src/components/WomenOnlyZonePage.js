@@ -5,13 +5,13 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import HelplinePopup from './HelplinePopup';
 import LoadingSpinner from './LoadingSpinner';
-import '../styles/marketplace.css';
-import '../styles/my-skills.css';
+import '../styles/marketplace.css'; // Reusing marketplace styles for cards
+import '../styles/my-skills.css'; // Reusing my-skills styles for general layout
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { FaPaperPlane, FaTimes } from 'react-icons/fa';
 
-// SkillCard component
+// SkillCard component (kept consistent with MarketplacePage for shared styling)
 const SkillCard = ({ skill, onViewDetails }) => {
   const { t } = useTranslation();
   const placeholderImage = 'https://placehold.co/400x240/e0e0e0/666666?text=No+Image';
@@ -36,7 +36,7 @@ const SkillCard = ({ skill, onViewDetails }) => {
         <div className="skill-card-tags">
           {skill.remotely && <span className="skill-card-tag">{t('remotely_label')}</span>}
           {skill.anonymous && <span className="skill-card-tag">{t('anonymous_label')}</span>}
-          <span className="skill-card-tag">{t('step2_women_zone_switch')}</span>
+          <span className="skill-card-tag">{t('step2_women_zone_switch')}</span> {/* Always true for Women's Zone */}
         </div>
         <div className="skill-card-actions">
           <button className="btn-view-details" onClick={() => onViewDetails(skill)}>
@@ -49,10 +49,32 @@ const SkillCard = ({ skill, onViewDetails }) => {
 };
 
 // FullDetailsModal component
-const FullDetailsModal = ({ skill, onClose, onRequest }) => {
+const FullDetailsModal = ({ skill, onClose }) => {
   const { t } = useTranslation();
+  const [showRequestForm, setShowRequestForm] = useState(false);
+  const [requestSkill, setRequestSkill] = useState('');
+
   const placeholderImage = 'https://placehold.co/800x480/e0e0e0/666666?text=No+Image';
   const imageUrl = skill.photo ? `${process.env.REACT_APP_API_URL}${skill.photo}` : placeholderImage;
+
+  const handleSendRequest = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      // API call to send the request
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/requests/send`, {
+        receiverId: skill.user, // ID of the user offering the skill
+        skillOfferId: skill._id, // ID of the specific skill offer
+        skillRequested: requestSkill
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Request sent successfully!');
+      onClose(); // Close modal after sending
+    } catch (err) {
+      console.error('Failed to send request:', err);
+      alert('Failed to send request. Please try again.');
+    }
+  };
 
   if (!skill) return null;
 
@@ -99,28 +121,38 @@ const FullDetailsModal = ({ skill, onClose, onRequest }) => {
             <h3 className="full-details-info-label">{t('swap_skill_label')}</h3>
             <p className="full-details-info-value">{skill.skillsToSwap.join(', ') || t('skill_not_specified')}</p>
           </div>
-          {!skill.anonymous && (
-            <div className="full-details-info-box">
-              <h3 className="full-details-info-label">{t('phone_label')}</h3>
-              <p className="full-details-info-value">{skill.phoneNumber || t('not_specified')}</p>
-            </div>
-          )}
+          {/* Phone number removed from here as per request */}
         </div>
         <div className="full-details-actions">
-          <button className="btn-request-offer" onClick={() => onRequest(skill)}>
-            <FaPaperPlane style={{ marginRight: '8px' }} /> {t('request_btn')}
-          </button>
+          {!showRequestForm ? (
+            <button className="btn-request-offer" onClick={() => setShowRequestForm(true)}>
+              <FaPaperPlane style={{ marginRight: '8px' }} /> {t('request_btn')}
+            </button>
+          ) : (
+            <div className="request-form-section"> {/* New class for styling */}
+              <label htmlFor="requestSkillInput">Specify the skill you want from them:</label>
+              <textarea
+                id="requestSkillInput"
+                placeholder="e.g., I need help with React.js tutoring in exchange for web development."
+                value={requestSkill}
+                onChange={(e) => setRequestSkill(e.target.value)}
+                rows="4"
+              />
+              <button className="btn-send-request" onClick={handleSendRequest}>
+                Send Request
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-// ... (The rest of the WomenOnlyZonePage.js component remains the same)
 function WomenOnlyZonePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation(); // Added useLocation hook
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [showHelplinePopup, setShowHelplinePopup] = useState(false);
   const [skills, setSkills] = useState([]);
@@ -149,6 +181,7 @@ function WomenOnlyZonePage() {
     setError(null);
     try {
       const token = localStorage.getItem('token');
+      // Updated endpoint to fetch women-only skills
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/skill-offers/women-only`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -159,10 +192,6 @@ function WomenOnlyZonePage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleRequestOffer = (skill) => {
-    alert(`You are requesting the skill: "${skill.skills.join(', ')}" from "${skill.username}".`);
   };
 
   const openHelplinePopup = () => setShowHelplinePopup(true);
@@ -179,7 +208,7 @@ function WomenOnlyZonePage() {
     return null;
   }
 
-  const currentPath = location.pathname; // Get current path
+  const currentPath = location.pathname;
 
   return (
     <div className="dashboard-page-container">
@@ -255,7 +284,6 @@ function WomenOnlyZonePage() {
         <FullDetailsModal
           skill={selectedSkill}
           onClose={() => setSelectedSkill(null)}
-          onRequest={handleRequestOffer}
         />
       )}
     </div>

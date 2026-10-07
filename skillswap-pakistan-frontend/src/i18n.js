@@ -137,10 +137,10 @@ i18n
           "step2_description_label": "Description",
           "step2_description_placeholder": "Describe what you’re offering in more detail...",
           "step2_location_label": "Location",
-          "step2_location_placeholder": "e.g., Lahore, Pakistan",
+          "step2_location_placeholder": "e.g., Jamshoro, Pakistan",
           "step2_go_anonymous_switch": "Go Anonymous",
           "step2_remotely_switch": "Available Remotely",
-          "step2_women_zone_switch": "Share in Women-Only Zone",
+          "step2_women_zone_switch": "Share in Women-Only Zone Only",
           "step3_offer_skill": "Step 3: What do you want in return?",
           "step3_offer_skill_desc": "Tell us what skills you’d like to swap for and discover new opportunities! Pick up to 3 skills you want to learn or improve from the list.",
           "step3_offer_skill_label": "What new skills are you excited to swap for?",
@@ -599,7 +599,22 @@ i18n
           "signup_create_account_btn": "اڪائونٽ ٺاهيو",
           "signup_already_have_account": "اڳ ۾ ئي اڪائونٽ آهي؟",
           "signup_login_link": "لاگ ان ٿيو",
+          // Add these inside the 'translation' object for 'en', 'ur', and 'sd' respectively
 
+          // For English:
+          "chatbot_welcome_message": "Welcome to Gadd Kaam – SkillSwap Pakistan! 🤝\nEmpowering communities by connecting skills and opportunities.\nHow can I assist you today in Sindhi or Urdu? Ask me anything about our Marketplace, Women-Only Zone, posting skills, or support like FAQs and dispute resolution.",
+          "chatbot_dummy_response": "I'm a simple AI assistant for now. How else can I help with information about Gadd Kaam?",
+          "chatbot_input_placeholder": "Type your message here...",
+
+          // For Urdu:
+          "chatbot_welcome_message": "گڈ کام – اسکل سویپ پاکستان میں خوش آمدید! 🤝\nمہارتوں اور مواقع کو جوڑ کر کمیونٹیز کو بااختیار بنانا۔\nمیں آج آپ کی سندھی یا اردو میں کیسے مدد کر سکتا ہوں؟ ہمارے مارکیٹ پلیس، خواتین کے زون، مہارتیں پوسٹ کرنے، یا سپورٹ جیسے سوالات اور تنازعات کے حل کے بارے میں کچھ بھی پوچھیں۔",
+          "chatbot_dummy_response": "میں فی الحال ایک سادہ AI اسسٹنٹ ہوں۔ گڈ کام کے بارے میں مزید معلومات کے ساتھ میں آپ کی اور کیسے مدد کر سکتا ہوں؟",
+          "chatbot_input_placeholder": "یہاں اپنا پیغام لکھیں...",
+
+          // For Sindhi:
+          "chatbot_welcome_message": "گڊ ڪام – اسڪل سوائيپ پاڪستان ۾ ڀليڪار! 🤝\nصلاحيتن ۽ موقعن کي ڳنڍي ڪميونٽيز کي بااختيار بڻائڻ.\nمان اڄ توهان جي سنڌي يا اردو ۾ ڪيئن مدد ڪري سگهان ٿو؟ اسان جي مارڪيٽ پليس، عورتن لاءِ مخصوص زون، مهارتون پوسٽ ڪرڻ، يا FAQs ۽ تڪراري حل جهڙين مدد بابت ڪجهه به پڇو.",
+          "chatbot_dummy_response": "مان هن وقت هڪ سادو AI اسسٽنٽ آهيان. گڊ ڪام بابت وڌيڪ معلومات سان مان توهان جي وڌيڪ ڪيئن مدد ڪري سگهان ٿو؟",
+          "chatbot_input_placeholder": "هتي پنهنجو پيغام لکو...",
           // Signup Form Errors (Sindhi)
           "signup_error_firstName_required": "پهريون نالو لازمي آهي.",
           "signup_error_lastName_required": "آخري نالو لازمي آهي.",
