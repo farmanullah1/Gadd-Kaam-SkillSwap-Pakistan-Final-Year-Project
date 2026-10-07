@@ -34,7 +34,10 @@ i18n
           "failed_to_load_marketplace_skills_error": "Failed to load marketplace skills. Please try again.",
           "ok": "Ok",
           "all_rights_reserved": "All rights reserved.",
-          "confirm": "Confirm", // New generic confirm button text
+          "confirm": "Confirm",
+          "request_sent_success_title": "Request Sent!",
+          "request_sent_error_title": "Request Failed",
+
 
           // Received Requests Page
           "offered_by": "Offered by",
@@ -77,8 +80,9 @@ i18n
           "navbar_dashboard": "Dashboard",
           "navbar_my_profile": "My Profile",
           "navbar_my_skills": "My Skills",
-          "navbar_messages": "Messages",
+          "navbar_messages": "Messages", // New
           "navbar_marketplace": "Marketplace",
+          "navbar_reviews": "Reviews", // New
 
           // Hero Section
           "hero_headline": "Trade Skills, Build Futures.",
@@ -229,6 +233,16 @@ i18n
           "women_only_zone_page_subtitle": "A dedicated space for women to safely share and swap skills.",
           "no_women_zone_skills_available": "No skills available in the Women-Only Zone right now. Check back later!",
 
+          // --- Messages Page Translations (New) ---
+          "messages_page_title": "My Messages",
+          "messages_page_subtitle": "View and manage your conversations with other users.",
+          "no_messages_yet": "You don't have any messages yet.",
+
+          // --- Reviews Page Translations (New) ---
+          "reviews_page_title": "My Reviews",
+          "reviews_page_subtitle": "See what others are saying about your skills.",
+          "no_reviews_yet": "You haven't received any reviews yet.",
+
 
           // --- Login Page Translations ---
           "login_welcome_back": "Welcome Back!",
@@ -248,7 +262,7 @@ i18n
           "signup_start_offering_finding": "Create an account to start offering and finding skills in your community.",
           "signup_firstName_label": "First Name",
           "signup_firstName_placeholder": "Your first name",
-          "signup_lastName_label": "Last Name",
+          "signup_lastName_label": "LastName",
           "signup_lastName_placeholder": "Your last name",
           "signup_profilePicture_label": "Profile Picture",
           "signup_no_file_chosen": "No file selected.",
@@ -314,6 +328,8 @@ i18n
           "ok": "ٹھیک ہے",
           "all_rights_reserved": "تمام حقوق محفوظ ہیں۔",
           "confirm": "تصدیق کریں",
+          "request_sent_success_title": "درخواست بھیجی گئی!",
+          "request_sent_error_title": "درخواست ناکام!",
 
           // Received Requests Page (Urdu)
           "offered_by": "پیش کردہ از",
@@ -355,8 +371,9 @@ i18n
           "navbar_dashboard": "ڈیش بورڈ",
           "navbar_my_profile": "میرا پروفائل",
           "navbar_my_skills": "میری مہارتیں",
-          "navbar_messages": "پیغامات",
+          "navbar_messages": "پیغامات", // New
           "navbar_marketplace": "مارکیٹ پلیس",
+          "navbar_reviews": "جائزے", // New
 
           // Hero Section (Urdu)
           "hero_headline": "مہارتوں کا تبادلہ، مستقبل کی تعمیر۔",
@@ -506,6 +523,16 @@ i18n
           "women_only_zone_page_subtitle": "خواتین کے لیے مہارتیں محفوظ طریقے سے شیئر کرنے اور تبادلہ کرنے کے لیے ایک مخصوص جگہ۔",
           "no_women_zone_skills_available": "اس وقت خواتین کے لیے مخصوص زون میں کوئی مہارت دستیاب نہیں ہے۔ بعد میں دوبارہ چیک کریں!",
 
+          // --- Messages Page Translations (Urdu) ---
+          "messages_page_title": "میرے پیغامات",
+          "messages_page_subtitle": "دوسرے صارفین کے ساتھ اپنی بات چیت دیکھیں اور ان کا انتظام کریں۔",
+          "no_messages_yet": "آپ کے پاس ابھی کوئی پیغام نہیں ہے۔",
+
+          // --- Reviews Page Translations (Urdu) ---
+          "reviews_page_title": "میرے جائزے",
+          "reviews_page_subtitle": "دیکھیں کہ دوسرے آپ کی مہارتوں کے بارے میں کیا کہہ رہے ہیں۔",
+          "no_reviews_yet": "آپ کو ابھی تک کوئی جائزہ موصول نہیں ہوا ہے۔",
+
           // --- Login Page Translations (Urdu) ---
           "login_welcome_back": "خوش آمدید!",
           "login_access_account": "اپنے اکاؤنٹ تک رسائی حاصل کرنے اور مہارتوں کا تبادلہ شروع کرنے کے لیے لاگ ان کریں۔",
@@ -552,7 +579,7 @@ i18n
 
           // Chatbot Translations (Urdu)
           "chatbot_welcome_message": "گڈ کام – اسکل سویپ پاکستان میں خوش آمدید! 🤝\nمہارتوں اور مواقع کو جوڑ کر کمیونٹیز کو بااختیار بنانا۔\nمیں آج آپ کی سندھی یا اردو میں کیسے مدد کر سکتا ہوں؟ ہمارے مارکیٹ پلیس، خواتین کے زون، مہارتیں پوسٹ کرنے، یا سپورٹ جیسے سوالات اور تنازعات کے حل کے بارے میں کچھ بھی پوچھیں۔",
-          "chatbot_dummy_response": "میں فی الحال ایک سادہ AI اسسٹنٹ ہوں۔ گڈ کام کے بارے میں مزید معلومات کے ساتھ میں آپ کی اور کیسے مدد کر سکتا ہوں؟",
+          "chatbot_dummy_response": "میں فی الحال ایک سادہ AI اسسٹنٹ ہوں۔ گڈ کام کے بارے میں مزید معلومات کے ساتھ میں میں آپ کی اور کیسے مدد کر سکتا ہوں؟",
           "chatbot_input_placeholder": "یہاں اپنا پیغام لکھیں...",
 
           // Helpline Popup (Urdu)
@@ -589,6 +616,8 @@ i18n
           "ok": "ٺيڪ آهي",
           "all_rights_reserved": "سڀ حق محفوظ.",
           "confirm": "تصديق ڪريو",
+          "request_sent_success_title": "درخواست موڪلي وئي!",
+          "request_sent_error_title": "درخواست ناڪام!",
 
           // Received Requests Page (Sindhi)
           "offered_by": "پيش ڪيل پاران",
@@ -630,8 +659,9 @@ i18n
           "navbar_dashboard": "ڊيش بورڊ",
           "navbar_my_profile": "منهنجو پروفائل",
           "navbar_my_skills": "منهنجيون صلاحيتون",
-          "navbar_messages": "پيغام",
+          "navbar_messages": "پيغام", // New
           "navbar_marketplace": "مارڪيٽ پليس",
+          "navbar_reviews": "جائزه", // New
 
           // Hero Section (Sindhi)
           "hero_headline": "مهارتن جو تبادلو، مستقبل جي تعمير.",
@@ -650,7 +680,7 @@ i18n
 
           // How It Works Section (Sindhi)
           "how_it_works_title": "اهو ڪيئن ڪم ڪري ٿو",
-          "how_it_works_subtitle": "اسان جي ڪميونٽي ۾ شامل ٿيڻ آسان آهي. مهارتن جو تبادلو شروع ڪرڻ لاءِ هيٺين سادي قدمن تي عمل ڪريو.",
+          "how_it_works_subtitle": "اسان جي ڪميونٽي ۾ شامل ٿيڻ آسان آهي. مهارتن جو تبادلو شروع ڪرڻ لاءِ ان سادي قدمن تي عمل ڪريو.",
           "step1_title": "1. پروفائل ٺاهيو",
           "step1_description": "سائن اپ ڪريو ۽ پنهنجي پيش ڪيل مهارتن جي لسٽ ٺاهيو. اعتماد پيدا ڪرڻ لاءِ تصديق ڪرايو.",
           "step2_title": "2. ڳوليو ۽ تبادلو ڪريو",
@@ -732,7 +762,7 @@ i18n
           "step1_offer_skill_placeholder": "پيش ڪرڻ لاءِ صلاحيتون ڳوليو...",
           "step2_offer_skill": "قدم 2: وڌيڪ تفصيل شامل ڪريو",
           "step2_offer_skill_desc": "پنهنجي لسٽ کي نمايان ڪرڻ لاءِ هڪ اختياري تصوير ۽ تفصيل شامل ڪريو. ماڻهن کي توهان سان ڳنڍڻ ۾ مدد لاءِ پنهنجو مقام ۽ رابطي جي تفصيل فراهم ڪريو.",
-          "step2_photo_label": "هڪ تصوير اپلوڊ ڪريو (اختياري)",
+          "step2_photo_label": "هڪ تصوير اپلوڊ ڪريو (اختیاری)",
           "step2_description_label": "تفصيل",
           "step2_description_placeholder": "توهان جيڪو پيش ڪري رهيا آهيو ان جي وڌيڪ تفصيل سان وضاحت ڪريو...",
           "step2_location_label": "جڳھ",
@@ -780,6 +810,16 @@ i18n
           "women_only_zone_page_title": "خاتونن لاءِ مخصوص اسڪل زون",
           "women_only_zone_page_subtitle": "عورتن لاءِ هڪ وقف ٿيل جاءِ جتي هو محفوظ طور تي صلاحيتون شيئر ۽ تبادلو ڪري سگهن ٿيون.",
           "no_women_zone_skills_available": "هن وقت خاتونن لاءِ مخصوص زون ۾ ڪا به مهارت دستياب ناهي. بعد ۾ ٻيهر چيڪ ڪريو!",
+
+          // --- Messages Page Translations (Sindhi) ---
+          "messages_page_title": "منهنجا پيغام",
+          "messages_page_subtitle": "ٻين استعمال ڪندڙن سان پنهنجي گفتگو ڏسو ۽ انتظام ڪريو.",
+          "no_messages_yet": "توهان وٽ اڃا تائين ڪو به پيغام ناهي.",
+
+          // --- Reviews Page Translations (Sindhi) ---
+          "reviews_page_title": "منهنجا جائزا",
+          "reviews_page_subtitle": "ڏسو ته ٻيا توهان جي صلاحيتن بابت ڇا چئي رهيا آهن.",
+          "no_reviews_yet": "توهان کي اڃا تائين ڪو به جائزو موصول نه ٿيو آهي.",
 
           // --- Login Page Translations (Sindhi) ---
           "login_welcome_back": "ڀليڪار!",

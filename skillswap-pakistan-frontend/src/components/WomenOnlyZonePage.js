@@ -1,19 +1,24 @@
-// src/components/WomenOnlyZonePage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import HelplinePopup from './HelplinePopup';
 import LoadingSpinner from './LoadingSpinner';
-import '../styles/marketplace.css'; // Reusing marketplace styles for cards
-import '../styles/my-skills.css'; // Reusing my-skills styles for general layout
+import SuccessMessageModal from './SuccessMessageModal'; // Import SuccessMessageModal
+import '../styles/marketplace.css'; // Reusing marketplace styles for cards and modal
+import '../styles/my-skills.css'; // Import my-skills styles for dashboard layout and sidebar
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
-import { FaPaperPlane, FaTimes } from 'react-icons/fa';
+import { FaPaperPlane, FaTimes } from 'react-icons/fa'; // Only FaPaperPlane and FaTimes are needed now
+
+// Import icons from lucide-react for consistent styling
+import {
+  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star
+} from 'lucide-react';
 
 // SkillCard component (kept consistent with MarketplacePage for shared styling)
 const SkillCard = ({ skill, onViewDetails }) => {
-  const { t } = useTranslation(); // Initialize useTranslation here
+  const { t } = useTranslation();
   const placeholderImage = 'https://placehold.co/400x240/e0e0e0/666666?text=No+Image';
   const imageUrl = skill.photo ? `${process.env.REACT_APP_API_URL}${skill.photo}` : placeholderImage;
 
@@ -50,9 +55,13 @@ const SkillCard = ({ skill, onViewDetails }) => {
 
 // FullDetailsModal component
 const FullDetailsModal = ({ skill, onClose }) => {
-  const { t } = useTranslation(); // Initialize useTranslation here
+  const { t } = useTranslation();
   const [showRequestForm, setShowRequestForm] = useState(false);
   const [requestSkill, setRequestSkill] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const placeholderImage = 'https://placehold.co/800x480/e0e0e0/666666?text=No+Image';
   const imageUrl = skill.photo ? `${process.env.REACT_APP_API_URL}${skill.photo}` : placeholderImage;
@@ -60,7 +69,6 @@ const FullDetailsModal = ({ skill, onClose }) => {
   const handleSendRequest = async () => {
     try {
       const token = localStorage.getItem('token');
-      // API call to send the request
       await axios.post(`${process.env.REACT_APP_API_URL}/api/requests/send`, {
         receiverId: skill.user, // ID of the user offering the skill
         skillOfferId: skill._id, // ID of the specific skill offer
@@ -68,12 +76,22 @@ const FullDetailsModal = ({ skill, onClose }) => {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log(t('request_sent_success_message'));
-      onClose(); // Close modal after sending
+      setSuccessMessage(t('request_sent_success_message'));
+      setShowSuccessModal(true);
     } catch (err) {
       console.error('Failed to send request:', err);
-      console.error(t('request_sent_error_message'));
+      setErrorMessage(t('request_sent_error_message'));
+      setShowErrorModal(true);
     }
+  };
+
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    onClose(); // Close the FullDetailsModal after success modal
+  };
+
+  const handleErrorModalClose = () => {
+    setShowErrorModal(false);
   };
 
   if (!skill) return null;
@@ -121,7 +139,6 @@ const FullDetailsModal = ({ skill, onClose }) => {
             <h3 className="full-details-info-label">{t('swap_skill_label')}</h3>
             <p className="full-details-info-value">{skill.skillsToSwap.join(', ') || t('skill_not_specified')}</p>
           </div>
-          {/* Phone number removed from here as per request */}
         </div>
         <div className="full-details-actions">
           {!showRequestForm ? (
@@ -145,6 +162,25 @@ const FullDetailsModal = ({ skill, onClose }) => {
           )}
         </div>
       </div>
+
+      {showSuccessModal && (
+        <SuccessMessageModal
+          isOpen={showSuccessModal}
+          title={t("request_sent_success_title")}
+          message={successMessage}
+          onClose={handleSuccessModalClose}
+        />
+      )}
+
+      {showErrorModal && (
+        <SuccessMessageModal
+          isOpen={showErrorModal}
+          title={t("request_sent_error_title")}
+          message={errorMessage}
+          onClose={handleErrorModalClose}
+          type="error"
+        />
+      )}
     </div>
   );
 };
@@ -182,7 +218,6 @@ function WomenOnlyZonePage({ onChatbotToggle }) {
     setError(null);
     try {
       const token = localStorage.getItem('token');
-      // Updated endpoint to fetch women-only skills
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/skill-offers/women-only`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -197,7 +232,7 @@ function WomenOnlyZonePage({ onChatbotToggle }) {
 
   const openHelplinePopup = () => setShowHelplinePopup(true);
   const closeHelplinePopup = () => setShowHelplinePopup(false);
-  
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -219,30 +254,39 @@ function WomenOnlyZonePage({ onChatbotToggle }) {
         <aside className="dashboard-sidebar">
           <nav className="dashboard-nav">
             <Link to="/dashboard" className={`dashboard-nav-item ${currentPath === '/dashboard' ? 'active' : ''}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              <Home size={20} />
               {t('navbar_dashboard')}
             </Link>
             <Link to="/dashboard/profile" className={`dashboard-nav-item ${currentPath === '/dashboard/profile' ? 'active' : ''}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <User size={20} />
               {t('navbar_my_profile')}
             </Link>
             <Link to="/dashboard/my-skills" className={`dashboard-nav-item ${currentPath === '/dashboard/my-skills' ? 'active' : ''}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-tool"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z"></path></svg>
+              <Settings size={20} />
               {t('navbar_my_skills')}
             </Link>
             <Link to="/marketplace" className={`dashboard-nav-item ${currentPath === '/marketplace' ? 'active' : ''}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+              <ShoppingCart size={20} />
               {t('navbar_marketplace')}
             </Link>
             {user.gender === 'Female' && (
               <Link to="/women-zone" className={`dashboard-nav-item ${currentPath === '/women-zone' ? 'active' : ''}`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <Shield size={20} />
                 {t('navbar_women_zone')}
               </Link>
             )}
             <Link to="/dashboard/received-requests" className={`dashboard-nav-item ${currentPath === '/dashboard/received-requests' ? 'active' : ''}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              <Mail size={20} />
               {t('received_requests_page_title')}
+            </Link>
+            {/* New Links for Messages and Reviews */}
+            <Link to="/dashboard/messages" className={`dashboard-nav-item ${currentPath === '/dashboard/messages' ? 'active' : ''}`}>
+              <MessageSquare size={20} />
+              {t('navbar_messages')}
+            </Link>
+            <Link to="/dashboard/reviews" className={`dashboard-nav-item ${currentPath === '/dashboard/reviews' ? 'active' : ''}`}>
+              <Star size={20} />
+              {t('navbar_reviews')}
             </Link>
           </nav>
         </aside>
@@ -275,9 +319,8 @@ function WomenOnlyZonePage({ onChatbotToggle }) {
         </section>
       </div>
 
-      {/* Pass onChatbotToggle to the Footer component */}
-      <Footer onChatbotToggle={onChatbotToggle} />
-      
+      <Footer onChatbotToggle={onChatbotToggle} user={user} />
+
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />
       )}

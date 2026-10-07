@@ -29,6 +29,9 @@ import MySkillPage from './components/MySkillPage';
 import MarketplacePage from './components/MarketplacePage';
 import WomenOnlyZonePage from './components/WomenOnlyZonePage';
 import ReceivedRequestsPage from './components/ReceivedRequestsPage';
+// Import the new Messages and Reviews pages
+import MessagesPage from './components/MessagesPage';
+import ReviewsPage from './components/ReviewsPage';
 
 // Import the ChatbotModal from its new, dedicated file
 import ChatbotModal from './components/ChatbotModal'; // CORRECTED IMPORT PATH
@@ -59,6 +62,9 @@ const RootApp = () => {
           <Route path="/marketplace" element={<MarketplacePage onChatbotToggle={toggleChatbot} />} />
           <Route path="/women-zone" element={<WomenOnlyZonePage onChatbotToggle={toggleChatbot} />} />
           <Route path="/dashboard/received-requests" element={<ReceivedRequestsPage onChatbotToggle={toggleChatbot} />} />
+          {/* New Routes for Messages and Reviews */}
+          <Route path="/dashboard/messages" element={<MessagesPage onChatbotToggle={toggleChatbot} />} />
+          <Route path="/dashboard/reviews" element={<ReviewsPage onChatbotToggle={toggleChatbot} />} />
           {/* Add more routes here as needed, remembering to pass the prop if they have the button */}
           <Route path="/about" element={<HomePage onChatbotToggle={toggleChatbot} />} />
           <Route path="/contact" element={<HomePage onChatbotToggle={toggleChatbot} />} />

@@ -1,5 +1,3 @@
-// src/components/ProfilePage.js
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
@@ -8,6 +6,11 @@ import HelplinePopup from './HelplinePopup';
 import '../styles/profile.css';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
+
+// Import icons from lucide-react for consistent styling
+import {
+  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star
+} from 'lucide-react';
 
 // Accept onChatbotToggle as a prop
 function ProfilePage({ onChatbotToggle }) {
@@ -36,22 +39,20 @@ function ProfilePage({ onChatbotToggle }) {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-      
-      console.log('User data from localStorage:', parsedUser);
 
       const userLocation = parsedUser.location || '';
       const userAboutMe = parsedUser.aboutMe || '';
       const userPhoneNumber = parsedUser.phoneNumber || '';
       const userProfilePicture = parsedUser.profilePicture || null;
 
+      setUser(parsedUser);
       setFullName(`${parsedUser.firstName} ${parsedUser.lastName}`);
       setEmail(parsedUser.email);
       setPhoneNumber(userPhoneNumber);
       setLocationValue(userLocation);
       setAboutMe(userAboutMe);
       setProfilePicture(userProfilePicture);
-      
+
       setInitialState({
           location: userLocation,
           aboutMe: userAboutMe,
@@ -61,7 +62,7 @@ function ProfilePage({ onChatbotToggle }) {
       navigate('/login');
     }
   }, [navigate]);
-  
+
   useEffect(() => {
       const hasChanged = locationValue !== initialState.location ||
                          aboutMe !== initialState.aboutMe ||
@@ -83,7 +84,7 @@ function ProfilePage({ onChatbotToggle }) {
     setUser(null);
     navigate('/login');
   };
-  
+
   const handleDiscardChanges = () => {
     if (user) {
         setLocationValue(initialState.location);
@@ -101,39 +102,23 @@ function ProfilePage({ onChatbotToggle }) {
           if (profilePicture instanceof File) {
               formData.append('profilePicture', profilePicture);
           }
-          
-          // --- BEGIN DEBUGGING LOGS ---
-          console.log("Saving changes...");
-          console.log("Location value being sent:", locationValue);
-          console.log("About Me value being sent:", aboutMe);
-          console.log("Profile picture is a new file:", profilePicture instanceof File);
-          // You can also loop through the FormData to see what's inside
-          for (let pair of formData.entries()) {
-              console.log(pair[0] + ': ' + pair[1]);
-          }
-          // --- END DEBUGGING LOGS ---
 
-          const response = await axios.put('http://localhost:5000/api/profile/update', formData, {
+          const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/profile/update`, formData, {
               headers: {
                   'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                  // Axios automatically sets 'Content-Type' to 'multipart/form-data'
-                  // with the correct boundary when you pass a FormData object.
-                  // Manually setting it can sometimes cause issues.
               }
           });
-          
-          console.log("Profile updated successfully:", response.data);
-          
-          const updatedUser = { 
-              ...user, 
-              location: response.data.location, 
-              aboutMe: response.data.aboutMe, 
-              profilePicture: response.data.profilePicture 
+
+          const updatedUser = {
+              ...user,
+              location: response.data.location,
+              aboutMe: response.data.aboutMe,
+              profilePicture: response.data.profilePicture
           };
-          
+
           setUser(updatedUser);
           localStorage.setItem('user', JSON.stringify(updatedUser));
-          
+
           setInitialState({
               location: updatedUser.location,
               aboutMe: updatedUser.aboutMe,
@@ -146,7 +131,6 @@ function ProfilePage({ onChatbotToggle }) {
           if (error.response) {
               console.error("Error response data:", error.response.data);
               console.error("Error response status:", error.response.status);
-              console.error("Error response headers:", error.response.headers);
           }
       }
   };
@@ -161,7 +145,7 @@ function ProfilePage({ onChatbotToggle }) {
   if (!user) {
     return null;
   }
-  
+
   const currentPath = location.pathname;
 
   const getProfilePictureUrl = (user, profilePictureState) => {
@@ -169,7 +153,8 @@ function ProfilePage({ onChatbotToggle }) {
           return URL.createObjectURL(profilePictureState);
       }
       if (user && user.profilePicture) {
-          return `http://localhost:5000/${user.profilePicture.replace(/\\/g, '/')}`;
+          // Ensure this path correctly reflects your backend serving static files
+          return `${process.env.REACT_APP_API_URL}/${user.profilePicture.replace(/\\/g, '/')}`;
       }
       return defaultProfilePicture;
   };
@@ -182,30 +167,39 @@ function ProfilePage({ onChatbotToggle }) {
         <aside className="dashboard-sidebar">
           <nav className="dashboard-nav">
             <Link to="/dashboard" className={`dashboard-nav-item ${currentPath === '/dashboard' ? 'active' : ''}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              <Home size={20} /> {/* Replaced SVG with Lucide React Home icon */}
               {t('navbar_dashboard')}
             </Link>
             <Link to="/dashboard/profile" className={`dashboard-nav-item ${currentPath === '/dashboard/profile' ? 'active' : ''}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <User size={20} /> {/* Replaced SVG with Lucide React User icon */}
               {t('navbar_my_profile')}
             </Link>
             <Link to="/dashboard/my-skills" className={`dashboard-nav-item ${currentPath === '/dashboard/my-skills' ? 'active' : ''}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-tool"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z"></path></svg>
+              <Settings size={20} /> {/* Replaced SVG with Lucide React Settings icon (wrench) */}
               {t('navbar_my_skills')}
             </Link>
             <Link to="/marketplace" className={`dashboard-nav-item ${currentPath === '/marketplace' ? 'active' : ''}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+              <ShoppingCart size={20} /> {/* Replaced SVG with Lucide React ShoppingCart icon */}
               {t('navbar_marketplace')}
             </Link>
             {user.gender === 'Female' && (
-              <Link to="/women-only-zone" className={`dashboard-nav-item ${currentPath === '/women-only-zone' ? 'active' : ''}`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <Link to="/women-zone" className={`dashboard-nav-item ${currentPath === '/women-zone' ? 'active' : ''}`}>
+                <Shield size={20} /> {/* Replaced SVG with Lucide React Shield icon */}
                 {t('navbar_women_zone')}
               </Link>
             )}
             <Link to="/dashboard/received-requests" className={`dashboard-nav-item ${currentPath === '/dashboard/received-requests' ? 'active' : ''}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              <Mail size={20} /> {/* Replaced SVG with Lucide React Mail icon */}
               {t('received_requests_page_title')}
+            </Link>
+            {/* New Links for Messages and Reviews */}
+            <Link to="/dashboard/messages" className={`dashboard-nav-item ${currentPath === '/dashboard/messages' ? 'active' : ''}`}>
+              <MessageSquare size={20} /> {/* Lucide React MessageSquare icon */}
+              {t('Messages')}
+            </Link>
+            <Link to="/dashboard/reviews" className={`dashboard-nav-item ${currentPath === '/dashboard/reviews' ? 'active' : ''}`}>
+              <Star size={20} /> {/* Lucide React Star icon */}
+              {t('Reviews')}
             </Link>
           </nav>
         </aside>
