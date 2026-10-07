@@ -1,4 +1,4 @@
-// models/SkillOffer.js
+// gadd_kaam_backend/models/SkillOffer.js
 const mongoose = require('mongoose');
 
 const SkillOfferSchema = new mongoose.Schema({
@@ -20,14 +20,7 @@ const SkillOfferSchema = new mongoose.Schema({
     required: true,
     maxlength: 1000,
   },
-  username: { // Added username to the schema
-    type: String,
-    required: true,
-  },
-  phoneNumber: { // Added phoneNumber to the schema
-    type: String,
-    required: true,
-  },
+  // REMOVED: username, phoneNumber - These will be populated from the User model
   location: {
     type: String,
     required: true,
@@ -36,11 +29,11 @@ const SkillOfferSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  anonymous: {
+  anonymous: { // This flag controls frontend display of username/phone
     type: Boolean,
     default: false,
   },
-  shareWithWomenZone: { // New field for women-only zone
+  shareWithWomenZone: { // For filtering skills in the women-only zone
     type: Boolean,
     default: false,
   },
@@ -48,7 +41,7 @@ const SkillOfferSchema = new mongoose.Schema({
     type: [String], // Array of strings for skills user wants to learn
     required: false, // Optional
   },
-  date: {
+  date: { // Timestamp for the offer creation
     type: Date,
     default: Date.now,
   },

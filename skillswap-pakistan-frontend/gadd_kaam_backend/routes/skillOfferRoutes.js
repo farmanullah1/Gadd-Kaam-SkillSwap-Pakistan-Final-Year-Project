@@ -3,13 +3,13 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const SkillOffer = require('../models/SkillOffer');
-const User = require('../models/User');
+const User = require('../models/User'); // Import User model
 const { check, validationResult } = require('express-validator');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 
-// Configure multer storage
+// Configure multer storage for skill photos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, '..', 'uploads', 'skill_photos');
@@ -76,6 +76,7 @@ router.post(
       skillsToSwap,
     } = req.body;
 
+    // Parse stringified arrays if necessary (common with FormData from frontend)
     const parsedSkills = typeof skills === 'string' ? JSON.parse(skills) : skills;
     const parsedSkillsToSwap = skillsToSwap && typeof skillsToSwap === 'string' ? JSON.parse(skillsToSwap) : skillsToSwap;
 
@@ -84,26 +85,25 @@ router.post(
     }
 
     try {
-      const user = await User.findById(req.user.id).select('-password');
-      if (!user) {
-        return res.status(404).json({ msg: 'User not found' });
-      }
+      // User is already authenticated via auth middleware (req.user.id)
+      // We don't need to fetch the user here to get username/phoneNumber
+      // because we're no longer storing them directly on SkillOffer.
 
       const newSkillOffer = new SkillOffer({
-        user: req.user.id,
+        user: req.user.id, // Store only the user ID, will populate later
         skills: parsedSkills,
         description,
-        username: anonymous === 'true' ? 'Anonymous' : user.username,
-        phoneNumber: anonymous === 'true' ? 'Hidden' : user.phoneNumber, // Phone number handling on backend
         location,
         remotely: remotely === 'true',
-        anonymous: anonymous === 'true',
+        anonymous: anonymous === 'true', // Store the anonymous flag
         shareWithWomenZone: shareWithWomenZone === 'true',
         skillsToSwap: parsedSkillsToSwap,
         photo: req.file ? `/uploads/skill_photos/${req.file.filename}` : null,
       });
 
       const skillOffer = await newSkillOffer.save();
+      // Populate the user field for the response
+      await skillOffer.populate('user', 'username phoneNumber');
       res.json(skillOffer);
     } catch (err) {
       console.error(err.message);
@@ -118,12 +118,15 @@ router.post(
 );
 
 // @route   GET /api/skill-offers/marketplace
-// @desc    Get all public skill offers for the marketplace (not anonymous and NOT exclusively for women's zone)
+// @desc    Get all public skill offers for the marketplace (skills not exclusively for women's zone)
 // @access  Private (or Public, as per your app design)
 router.get('/marketplace', auth, async (req, res) => {
   try {
-    // Fetch offers that are NOT anonymous and NOT shared exclusively with Women's Zone
-    const skillOffers = await SkillOffer.find({ anonymous: false, shareWithWomenZone: false }).sort({ date: -1 });
+    // Fetch offers that are NOT exclusively for women's zone.
+    // We explicitly populate 'user' to get username and phoneNumber.
+    const skillOffers = await SkillOffer.find({ shareWithWomenZone: false })
+                                        .populate('user', 'username phoneNumber') // Populate username and phoneNumber
+                                        .sort({ date: -1 });
     res.json(skillOffers);
   } catch (err) {
     console.error(err.message);
@@ -136,7 +139,11 @@ router.get('/marketplace', auth, async (req, res) => {
 // @access  Private
 router.get('/my-skills', auth, async (req, res) => {
   try {
-    const skillOffers = await SkillOffer.find({ user: req.user.id }).sort({ date: -1 });
+    // Populate 'user' for my-skills as well, even if not strictly needed for display
+    // in this specific page, it maintains consistency and can be useful for other logic.
+    const skillOffers = await SkillOffer.find({ user: req.user.id })
+                                        .populate('user', 'username phoneNumber')
+                                        .sort({ date: -1 });
     res.json(skillOffers);
   } catch (err) {
     console.error(err.message);
@@ -153,10 +160,11 @@ router.get('/women-only', auth, async (req, res) => {
     if (!user || user.gender !== 'Female') {
       return res.status(403).json({ msg: 'Access denied. This zone is for female users only.' });
     }
-    // Only show offers that are explicitly shared with the women's zone
-    // If you want anonymous offers in Women's Zone: { shareWithWomenZone: true }
-    // If you want non-anonymous offers only: { shareWithWomenZone: true, anonymous: false }
-    const skillOffers = await SkillOffer.find({ shareWithWomenZone: true }).sort({ date: -1 });
+    // Only show offers that are explicitly shared with the women's zone.
+    // Populate 'user' to get username and phoneNumber.
+    const skillOffers = await SkillOffer.find({ shareWithWomenZone: true })
+                                        .populate('user', 'username phoneNumber')
+                                        .sort({ date: -1 });
     res.json(skillOffers);
   } catch (err) {
     console.error(err.message);

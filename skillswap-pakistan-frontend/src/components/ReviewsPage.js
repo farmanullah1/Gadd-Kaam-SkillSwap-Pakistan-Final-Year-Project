@@ -1,4 +1,3 @@
-// src/components/ReviewsPage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
@@ -37,7 +36,7 @@ const StarRatingDisplay = ({ rating }) => {
 const ReceivedReviewCard = ({ review }) => {
   const { t } = useTranslation();
   const reviewerProfilePicUrl = review.reviewer.profilePicture
-    ? `${process.env.REACT_APP_API_URL}${review.reviewer.profilePicture}`
+    ? `${process.env.REACT_APP_API_URL}${review.reviewer.profilePicture.replace(/\\/g, '/')}`
     : getPlaceholderImage();
 
   return (
@@ -73,7 +72,7 @@ const PendingReviewCard = ({ pendingReview, onWriteReview }) => {
   const { t } = useTranslation();
   const otherUser = pendingReview.otherParticipant;
   const otherUserProfilePicUrl = otherUser.profilePicture
-    ? `${process.env.REACT_APP_API_URL}${otherUser.profilePicture}`
+    ? `${process.env.REACT_APP_API_URL}${otherUser.profilePicture.replace(/\\/g, '/')}`
     : getPlaceholderImage();
 
   return (

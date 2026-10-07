@@ -858,6 +858,7 @@ i18n
           "about_me_label": "منهنجي باري ۾",
           "discard_changes_btn": "تبديليون رد ڪريو",
           "save_changes_btn": "تبديليون محفوظ ڪريو",
+          "my_badges_title": "منهنجا بيجز",
 
           // --- Offer Skill Page Translations (Sindhi) ---
           "offer_skill_title": "هڪ نئين مهارت پيش ڪريو",
@@ -1036,6 +1037,7 @@ i18n
           "logout_confirm_message": "ڇا توهان پڪ آهيو ته توهان لاگ آئوٽ ڪرڻ چاهيو ٿا؟",
           "logout_cancel_btn": "نه، رد ڪريو",
           "logout_confirm_btn": "ها، لاگ آئوٽ ڪريو",
+          
         },
       },
     },
