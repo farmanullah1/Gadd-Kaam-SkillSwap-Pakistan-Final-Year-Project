@@ -1,10 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// This is where you will put your translations.
-// Each key (e.g., "en", "ur", "sd") represents a language.
-// Inside each language, "translation" object holds key-value pairs
-// where the key is what you'll use in your code, and the value is the translated text.
 const resources = {
   en: {
     translation: {
@@ -68,7 +64,46 @@ const resources = {
       // Language names for display
       "lang_en": "English",
       "lang_ur": "Urdu",
-      "lang_sd": "Sindhi"
+      "lang_sd": "Sindhi",
+
+      // --- New Signup Page Translations ---
+      "signup_join_gadd_kaam": "Join Gadd Kaam",
+      "signup_start_offering_finding": "Create an account to start offering and finding skills in your community.",
+      "signup_firstName_label": "First Name",
+      "signup_firstName_placeholder": "Your first name",
+      "signup_lastName_label": "Last Name",
+      "signup_lastName_placeholder": "Your last name",
+      "signup_profilePicture_label": "Profile Picture",
+      "signup_no_file_chosen": "No file selected.",
+      "signup_username_label": "Username",
+      "signup_username_placeholder": "Choose a username",
+      "signup_phoneNumber_label": "Phone Number",
+      "signup_email_label": "Email",
+      "signup_dateOfBirth_label": "Date of Birth",
+      "signup_cnicNumber_label": "CNIC Number",
+      "signup_cnicFrontPic_label": "CNIC Front Picture",
+      "signup_cnicBackPic_label": "CNIC Back Picture",
+      "signup_password_label": "Password",
+      "signup_confirmPassword_label": "Confirm Password",
+      "signup_create_account_btn": "Create Account",
+      "signup_already_have_account": "Already have an account?",
+      "signup_login_link": "Log in",
+
+      // Signup Form Errors
+      "signup_error_firstName_required": "First Name is required.",
+      "signup_error_lastName_required": "Last Name is required.",
+      "signup_error_profilePic_required": "Profile Picture is required.",
+      "signup_error_username_required": "Username is required.",
+      "signup_error_phoneNumber_required": "Phone Number is required.",
+      "signup_error_email_required": "Email is required.",
+      "signup_error_dob_required": "Date of Birth is required.",
+      "signup_error_cnic_invalid": "CNIC Number must be 13 digits.",
+      "signup_error_cnicFrontPic_required": "CNIC Front Picture is required.",
+      "signup_error_cnicBackPic_required": "CNIC Back Picture is required.",
+      "signup_error_password_required": "Password is required.",
+      "signup_error_confirmPassword_required": "Confirm Password is required.",
+      "signup_error_passwords_mismatch": "Passwords do not match.",
+      "signup_success_message": "Account created successfully!"
     }
   },
   ur: { // Urdu translations - Placeholder. You will fill these later.
@@ -124,7 +159,46 @@ const resources = {
 
       "lang_en": "انگریزی",
       "lang_ur": "اردو",
-      "lang_sd": "سندھی"
+      "lang_sd": "سنڌي",
+
+      // --- New Signup Page Translations ---
+      "signup_join_gadd_kaam": "گڈ کام میں شامل ہوں",
+      "signup_start_offering_finding": "اپنی کمیونٹی میں ہنر پیش کرنے اور تلاش کرنے کے لیے ایک اکاؤنٹ بنائیں۔",
+      "signup_firstName_label": "پہلا نام",
+      "signup_firstName_placeholder": "آپ کا پہلا نام",
+      "signup_lastName_label": "آخری نام",
+      "signup_lastName_placeholder": "آپ کا آخری نام",
+      "signup_profilePicture_label": "پروفائل تصویر",
+      "signup_no_file_chosen": "کوئی فائل منتخب نہیں کی گئی۔",
+      "signup_username_label": "صارف نام",
+      "signup_username_placeholder": "صارف نام منتخب کریں",
+      "signup_phoneNumber_label": "فون نمبر",
+      "signup_email_label": "ای میل",
+      "signup_dateOfBirth_label": "تاریخ پیدائش",
+      "signup_cnicNumber_label": "شناختی کارڈ نمبر",
+      "signup_cnicFrontPic_label": "شناختی کارڈ سامنے کی تصویر",
+      "signup_cnicBackPic_label": "شناختی کارڈ پیچھے کی تصویر",
+      "signup_password_label": "پاس ورڈ",
+      "signup_confirmPassword_label": "پاس ورڈ کی تصدیق کریں",
+      "signup_create_account_btn": "اکاؤنٹ بنائیں",
+      "signup_already_have_account": "پہلے سے ہی اکاؤنٹ ہے؟",
+      "signup_login_link": "لاگ ان کریں",
+
+      // Signup Form Errors
+      "signup_error_firstName_required": "پہلا نام درکار ہے۔",
+      "signup_error_lastName_required": "آخری نام درکار ہے۔",
+      "signup_error_profilePic_required": "پروفائل تصویر درکار ہے۔",
+      "signup_error_username_required": "صارف نام درکار ہے۔",
+      "signup_error_phoneNumber_required": "فون نمبر درکار ہے۔",
+      "signup_error_email_required": "ای میل درکار ہے۔",
+      "signup_error_dob_required": "تاریخ پیدائش درکار ہے۔",
+      "signup_error_cnic_invalid": "شناختی کارڈ نمبر 13 ہندسوں کا ہونا چاہیے۔",
+      "signup_error_cnicFrontPic_required": "شناختی کارڈ سامنے کی تصویر درکار ہے۔",
+      "signup_error_cnicBackPic_required": "شناختی کارڈ پیچھے کی تصویر درکار ہے۔",
+      "signup_error_password_required": "پاس ورڈ درکار ہے۔",
+      "signup_error_confirmPassword_required": "پاس ورڈ کی تصدیق درکار ہے۔",
+      "signup_error_passwords_mismatch": "پاس ورڈ میل نہیں کھاتے۔",
+      "signup_success_message": "اکاؤنٹ کامیابی سے بن گیا!"
     }
   },
   sd: { // Sindhi translations - Placeholder. You will fill these later.
@@ -180,19 +254,58 @@ const resources = {
 
       "lang_en": "انگريزي",
       "lang_ur": "اردو",
-      "lang_sd": "سنڌي"
+      "lang_sd": "سنڌي",
+
+      // --- New Signup Page Translations ---
+      "signup_join_gadd_kaam": "گڊ ڪام ۾ شامل ٿيو",
+      "signup_start_offering_finding": "توهان جي ڪميونٽي ۾ مهارتون پيش ڪرڻ ۽ ڳولڻ شروع ڪرڻ لاءِ هڪ اڪائونٽ ٺاهيو.",
+      "signup_firstName_label": "پهريون نالو",
+      "signup_firstName_placeholder": "توهان جو پهريون نالو",
+      "signup_lastName_label": "آخري نالو",
+      "signup_lastName_placeholder": "توهان جو آخري نالو",
+      "signup_profilePicture_label": "پروفائل تصوير",
+      "signup_no_file_chosen": "ڪابه فائل چونڊيل ناهي.",
+      "signup_username_label": "يوزر نالو",
+      "signup_username_placeholder": "هڪ يوزر نالو چونڊيو",
+      "signup_phoneNumber_label": "فون نمبر",
+      "signup_email_label": "اي ميل",
+      "signup_dateOfBirth_label": "ڄمڻ جي تاريخ",
+      "signup_cnicNumber_label": "سي اين آءِ سي نمبر",
+      "signup_cnicFrontPic_label": "سي اين آءِ سي سامهون جي تصوير",
+      "signup_cnicBackPic_label": "سي اين آءِ سي پٺيان جي تصوير",
+      "signup_password_label": "پاسورڊ",
+      "signup_confirmPassword_label": "پاسورڊ جي تصديق ڪريو",
+      "signup_create_account_btn": "اڪائونٽ ٺاهيو",
+      "signup_already_have_account": "اڳ ۾ ئي اڪائونٽ آهي؟",
+      "signup_login_link": "لاگ ان ٿيو",
+
+      // Signup Form Errors
+      "signup_error_firstName_required": "پهريون نالو لازمي آهي.",
+      "signup_error_lastName_required": "آخري نالو لازمي آهي.",
+      "signup_error_profilePic_required": "پروفائل تصوير لازمي آهي.",
+      "signup_error_username_required": "يوزر نالو لازمي آهي.",
+      "signup_error_phoneNumber_required": "فون نمبر لازمي آهي.",
+      "signup_error_email_required": "اي ميل لازمي آهي.",
+      "signup_error_dob_required": "ڄمڻ جي تاريخ لازمي آهي.",
+      "signup_error_cnic_invalid": "سي اين آءِ سي نمبر 13 عددن جو هجڻ گهرجي.",
+      "signup_error_cnicFrontPic_required": "سي اين آءِ سي سامهون جي تصوير لازمي آهي.",
+      "signup_error_cnicBackPic_required": "سي اين آءِ سي پٺيان جي تصوير لازمي آهي.",
+      "signup_error_password_required": "پاسورڊ لازمي آهي.",
+      "signup_error_confirmPassword_required": "پاسورڊ جي تصديق لازمي آهي.",
+      "signup_error_passwords_mismatch": "پاسورڊ هڪجهڙا ناهن.",
+      "signup_success_message": "اڪائونٽ ڪاميابي سان ٺاهيو ويو!"
     }
   }
 };
 
 i18n
-  .use(initReactI18next) // passes i18n instance to react-i18next
+  .use(initReactI18next)
   .init({
     resources,
-    lng: "en", // default language
-    fallbackLng: "en", // use en if detected lng is not available
+    lng: "en",
+    fallbackLng: "en",
     interpolation: {
-      escapeValue: false // react already safes from xss
+      escapeValue: false
     }
   });
 
