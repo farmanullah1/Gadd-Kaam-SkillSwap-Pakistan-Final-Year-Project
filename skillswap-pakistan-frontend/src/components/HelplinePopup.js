@@ -1,9 +1,9 @@
 // src/components/HelplinePopup.js
 import React from 'react';
-import { useTranslation } from 'react-i18next'; // Assuming you might translate popup content later
+import { useTranslation } from 'react-i18next';
 
 function HelplinePopup({ onClose }) {
-  const { t } = useTranslation(); // For future translation of popup text
+  const { t } = useTranslation();
 
   return (
     <div className="helpline-popup-overlay" onClick={onClose}>

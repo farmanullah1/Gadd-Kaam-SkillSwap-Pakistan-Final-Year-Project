@@ -1,12 +1,26 @@
+// src/components/SignupPage.js
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import HelplinePopup from '../components/HelplinePopup';
+import axios from 'axios'; // Import axios
 
 function SignupPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate(); // Initialize useNavigate hook
   const [showHelplinePopup, setShowHelplinePopup] = useState(false);
+  const [loading, setLoading] = useState(false); // New state for loading indicator
+  const [error, setError] = useState(null); // New state for error messages
+
+  const openHelplinePopup = () => {
+    setShowHelplinePopup(true);
+  };
+
+  const closeHelplinePopup = () => {
+    setShowHelplinePopup(false);
+  };
 
   // State variables for form fields
   const [firstName, setFirstName] = useState('');
@@ -16,23 +30,82 @@ function SignupPage() {
   const [email, setEmail] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [cnicNumber, setCnicNumber] = useState('');
+  const [gender, setGender] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const openHelplinePopup = () => setShowHelplinePopup(true);
-  const closeHelplinePopup = () => setShowHelplinePopup(false);
+  // States for file inputs
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [cnicFrontPicture, setCnicFrontPicture] = useState(null);
+  const [cnicBackPicture, setCnicBackPicture] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null); // Clear previous errors
+    setLoading(true); // Set loading to true
+
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      setError("Passwords do not match!");
+      setLoading(false);
       return;
     }
-    // Handle form submission logic here
-    console.log('Signup form submitted:', {
-      firstName, lastName, username, phoneNumber, email, dateOfBirth, cnicNumber, password
-    });
-    alert('Signup form submitted! (Check console for data)');
+
+    // Create a FormData object to send text data and files
+    const formData = new FormData();
+    formData.append('firstName', firstName);
+    formData.append('lastName', lastName);
+    formData.append('username', username);
+    formData.append('phoneNumber', phoneNumber);
+    formData.append('email', email);
+    formData.append('dateOfBirth', dateOfBirth);
+    formData.append('cnicNumber', cnicNumber);
+    formData.append('gender', gender);
+    formData.append('password', password);
+    formData.append('confirmPassword', confirmPassword);
+
+    // Append file objects if they exist
+    if (profilePicture) {
+      formData.append('profilePicture', profilePicture);
+    }
+    if (cnicFrontPicture) {
+      formData.append('cnicFrontPicture', cnicFrontPicture);
+    }
+    if (cnicBackPicture) {
+      formData.append('cnicBackPicture', cnicBackPicture);
+    }
+
+    try {
+      // Send the formData to your backend API
+      const response = await axios.post('http://localhost:5000/api/auth/register', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // This header is crucial for file uploads
+        },
+      });
+
+      console.log('Signup successful:', response.data);
+      alert('Account created successfully! Please log in.'); // Show a success alert
+
+      // Optionally, store the JWT token if you need it immediately for authenticated requests
+      // localStorage.setItem('token', response.data.token);
+
+      // Redirect to login page or dashboard
+      navigate('/login');
+
+    } catch (err) {
+      console.error('Signup error:', err.response ? err.response.data : err.message);
+      // Display error messages from the backend
+      if (err.response && err.response.data && err.response.data.errors) {
+        // If backend sends an array of errors (from express-validator)
+        setError(err.response.data.errors.map(e => e.msg).join(', '));
+      } else if (err.response && err.response.data && err.response.data.msg) {
+        // If backend sends a single message
+        setError(err.response.data.msg);
+      } else {
+        setError('An unexpected error occurred during signup.');
+      }
+    } finally {
+      setLoading(false); // End loading
+    }
   };
 
   return (
@@ -45,6 +118,8 @@ function SignupPage() {
           <p className="signup-subtitle">Create an account to start offering and finding skills in your community.</p>
 
           <form className="signup-form" onSubmit={handleSubmit}>
+            {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>} {/* Display error message */}
+
             <div className="form-group-row">
               <div className="form-group">
                 <label htmlFor="firstName">First Name</label>
@@ -72,7 +147,8 @@ function SignupPage() {
 
             <div className="form-group">
               <label htmlFor="profilePicture">Profile Picture</label>
-              <input type="file" id="profilePicture" accept="image/*" />
+              {/* Capture the file object directly */}
+              <input type="file" id="profilePicture" accept="image/*" onChange={(e) => setProfilePicture(e.target.files[0])} />
             </div>
 
             <div className="form-group-row">
@@ -136,14 +212,45 @@ function SignupPage() {
               />
             </div>
 
+            {/* Gender Selection Field */}
+            <div className="form-group">
+              <label>Choose Male or Female</label>
+              <div className="radio-group">
+                <label className="radio-label">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="Male"
+                    checked={gender === 'Male'}
+                    onChange={(e) => setGender(e.target.value)}
+                    required
+                  />
+                  Male
+                </label>
+                <label className="radio-label">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="Female"
+                    checked={gender === 'Female'}
+                    onChange={(e) => setGender(e.target.value)}
+                    required
+                  />
+                  Female
+                </label>
+              </div>
+            </div>
+
             <div className="form-group-row">
               <div className="form-group">
                 <label htmlFor="cnicFrontPicture">CNIC Front Picture</label>
-                <input type="file" id="cnicFrontPicture" accept="image/*" />
+                {/* Capture the file object directly */}
+                <input type="file" id="cnicFrontPicture" accept="image/*" onChange={(e) => setCnicFrontPicture(e.target.files[0])} />
               </div>
               <div className="form-group">
                 <label htmlFor="cnicBackPicture">CNIC Back Picture</label>
-                <input type="file" id="cnicBackPicture" accept="image/*" />
+                {/* Capture the file object directly */}
+                <input type="file" id="cnicBackPicture" accept="image/*" onChange={(e) => setCnicBackPicture(e.target.files[0])} />
               </div>
             </div>
 
@@ -170,8 +277,8 @@ function SignupPage() {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary-orange create-account-btn">
-              Create Account
+            <button type="submit" className="btn btn-primary-orange create-account-btn" disabled={loading}>
+              {loading ? 'Creating Account...' : 'Create Account'}
             </button>
           </form>
 
@@ -190,16 +297,7 @@ function SignupPage() {
 
       {/* Helpline Popup Modal */}
       {showHelplinePopup && (
-        <div className="helpline-popup-overlay" onClick={closeHelplinePopup}>
-          <div className="helpline-popup-content" onClick={e => e.stopPropagation()}>
-            <button className="helpline-popup-close-btn" onClick={closeHelplinePopup} aria-label="Close popup">
-              &times;
-            </button>
-            <h3 className="helpline-popup-title">Helpline Number</h3>
-            <p className="helpline-number">+923113147029</p>
-            <p className="helpline-note">Please call us for immediate assistance.</p>
-          </div>
-        </div>
+        <HelplinePopup onClose={closeHelplinePopup} />
       )}
     </div>
   );

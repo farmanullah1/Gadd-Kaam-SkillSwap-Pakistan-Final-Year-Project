@@ -1,17 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-// No need for './index.css' if all styles are moved to './styles/'
+// Import modular CSS files
 import './styles/global.css';
 import './styles/navbar.css';
 import './styles/homepage.css';
-import './styles/forms.css'; // <--- UPDATED: Import forms.css instead of signup.css
+import './styles/forms.css'; // Renamed from signup.css
 import './styles/footer.css';
 import './styles/popup.css';
+
 import HomePage from './components/HomePage';
-import SignupPage from './components/SignupPage'; // Import the SignupPage
-import LoginPage from './components/LoginPage';   // Import the LoginPage
+import SignupPage from './components/SignupPage';
+import LoginPage from './components/LoginPage'; // Import the new LoginPage
+
 import './i18n'; // Import your i18n configuration
-import { BrowserRouter, Routes, Route } from 'react-router-dom'; // Import Router components
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -21,7 +23,7 @@ root.render(
         <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
-        {/* Add more routes here as needed, e.g., for login, about, contact */}
+        {/* Add more routes here as needed */}
         <Route path="/about" element={<HomePage />} />
         <Route path="/women-zone" element={<HomePage />} />
         <Route path="/contact" element={<HomePage />} />

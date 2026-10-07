@@ -1,10 +1,12 @@
 // src/App.js
 import React from 'react';
-import HomePage from './components/HomePage';
+// HomePage is no longer directly rendered here, routing handles it
+// import HomePage from './components/HomePage';
+
 function App() {
   return (
     <div className="app-container"> {/* Using a generic class name */}
-      <HomePage />
+      {/* Content will be rendered by react-router-dom based on the route */}
     </div>
   );
 }
