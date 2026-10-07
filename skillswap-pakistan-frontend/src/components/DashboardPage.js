@@ -137,7 +137,6 @@ function DashboardPage() {
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />
       )}
-
     </div>
   );
 }

@@ -1,19 +1,17 @@
-// skillswap-pakistan-frontend/src/components/Footer.js
-
+// src/components/Footer.js
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
-// Ensure user and onChatbotToggle are destructured from props
-function Footer({ user, onChatbotToggle }) {
+function Footer(props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   // New handler for the Marketplace link
   const handleMarketplaceClick = (e) => {
-    // If no user is logged in (user is null),
+    // If no user is logged in (props.user is null),
     // prevent the default link behavior and navigate to login.
-    if (!user) { // Corrected: Using 'user' directly
+    if (!props.user) {
       e.preventDefault();
       navigate('/login');
     }
@@ -45,7 +43,7 @@ function Footer({ user, onChatbotToggle }) {
               <h4 className="footer-heading">{t("Quick Links")}</h4>
               <ul>
                 {/* UPDATED: Add the onClick handler to the Marketplace link */}
-                <li><Link to="/marketplace" className="nav-link-mobile" onClick={handleMarketplaceClick}>{t("navbar_marketplace")}</Link></li> {/* <-- ADDED onClick HERE */}
+                <li><Link to="/marketplace" className="nav-link-mobile">{t("navbar_marketplace")}</Link></li>
                 <li><Link to="/about" className="footer-link">{t("About Us")}</Link></li>
                 <li><Link to="/offer-skill" className="footer-link">{t("Post a Skill")}</Link></li>
               </ul>
@@ -97,8 +95,7 @@ function Footer({ user, onChatbotToggle }) {
             </p>
           </div>
         </div>
-        {/* ADD the onClick handler here */}
-        <div className="chatbot-icon-container" onClick={onChatbotToggle}>
+        <div className="chatbot-icon-container">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
