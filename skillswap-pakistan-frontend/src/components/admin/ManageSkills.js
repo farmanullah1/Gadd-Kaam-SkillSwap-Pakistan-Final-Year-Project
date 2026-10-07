@@ -1,185 +1,146 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import "../../styles/ManageSkills.css";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import '../../styles/admin.css';
 
-function ManageSkills() {
-  const [skills, setSkills] = useState([]);
-  const [selectedSkill, setSelectedSkill] = useState(null);
-  const [toast, setToast] = useState(null);
+const ManageReports = () => {
+  const [reports, setReports] = useState([]);
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [conversation, setConversation] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [chatLoading, setChatLoading] = useState(false);
 
-  // ✅ Fetch all skills
+  const token = localStorage.getItem('token');
+  const base = process.env.REACT_APP_API_URL || '';
+
   useEffect(() => {
-    const fetchSkills = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/admin/skills", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setSkills(res.data);
-      } catch (err) {
-        console.error("Error fetching skills", err);
-      }
-    };
-    fetchSkills();
+    fetchReports();
   }, []);
 
-  // ✅ Delete skill
-  const deleteSkill = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this skill?")) return;
+  const fetchReports = async () => {
+    setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.delete(`http://localhost:5000/api/admin/skills/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setSkills(skills.filter((skill) => skill._id !== id));
-      showToast(res.data.msg || "Skill deleted");
+      const res = await axios.get(`${base}/api/admin/reports`, { headers: { Authorization: `Bearer ${token}` } });
+      setReports(res.data || []);
     } catch (err) {
-      console.error("Error deleting skill", err);
-      showToast("Error deleting skill");
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ✅ Snackbar Toast
-  const showToast = (message) => {
-    setToast(message);
-    setTimeout(() => setToast(null), 3000);
+  const updateStatus = async (id, status) => {
+    if (!window.confirm(`Change status to "${status}"?`)) return;
+    try {
+      await axios.put(`${base}/api/admin/reports/${id}`, { status }, { headers: { Authorization: `Bearer ${token}` } });
+      setReports(reports.map(r => r._id === id ? { ...r, status } : r));
+      if (selectedReport && selectedReport._id === id) {
+        setSelectedReport({ ...selectedReport, status });
+      }
+    } catch (err) {
+      alert('Failed to update report status');
+    }
+  };
+
+  // ✅ New: Fetch conversation for the reported request
+  const viewConversation = async (report) => {
+    setSelectedReport(report);
+    setChatLoading(true);
+    setConversation([]);
+    
+    // Only attempt fetch if there is a request ID linked (which you will add in next steps of your project)
+    if (!report.requestId) {
+        setChatLoading(false);
+        return;
+    }
+
+    try {
+      const res = await axios.get(`${base}/api/admin/reports/${report._id}/conversation`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setConversation(res.data.messages || []);
+    } catch (err) {
+      console.error("Could not load chat", err);
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
+  const banUser = async (userId) => {
+    if (!window.confirm("🚨 Are you sure you want to BAN this user? They will lose access.")) return;
+    try {
+      await axios.put(`${base}/api/admin/users/${userId}/ban`, {}, { headers: { Authorization: `Bearer ${token}` }});
+      alert("User has been BANNED.");
+      updateStatus(selectedReport._id, 'resolved'); // Auto resolve report
+    } catch (err) {
+      alert("Failed to ban user.");
+    }
   };
 
   return (
-    <div className="manage-skills-container">
-      <h2 className="page-title">Manage Skills</h2>
-
-      <div className="skills-grid">
-        {skills.length > 0 ? (
-          skills.map((skill) => (
-            <div key={skill._id} className="skill-card">
-              <div className="skill-card-image-wrapper">
-                <img
-                  src={
-                    skill.photo
-                      ? `http://localhost:5000/${skill.photo}`
-                      : "http://localhost:5000/default-skill.png"
-                  }
-                  alt={skill.title || "Untitled Skill"}
-                  className="skill-card-image"
-                />
+    <div className="manage-reports">
+      <h2>Manage Reports</h2>
+      {loading ? <div>Loading reports...</div> : (
+        <div className="report-list">
+          {reports.length === 0 && <p>No reports found.</p>}
+          {reports.map(r => (
+            <div key={r._id} className="report-card">
+              <div className="report-body">
+                <div className="report-header-row">
+                    <span className={`status-badge status-${r.status}`}>{r.status}</span>
+                    <span className="report-date">{new Date(r.createdAt).toLocaleDateString()}</span>
+                </div>
+                <h4>Report Against: <strong>{r.reportedUser?.username || 'Unknown'}</strong></h4>
+                <p><strong>Reason:</strong> {r.description}</p>
+                <p className="muted">Reported by: {r.reporter?.username}</p>
               </div>
-              <h3 className="skill-card-title">
-                {skill.title || skill.skills?.join(", ") || "Untitled Skill"}
-              </h3>
-               <p><strong>Offered By:</strong> {skill.user?.username || "N/A"}</p>
-              <p>
-                <strong>Source:</strong> {skill.source}
-              </p>
-              <div className="skill-card-actions">
-                <button
-                  className="view-btn"
-                  onClick={() => setSelectedSkill(skill)}
-                >
-                  View
-                </button>
-                <button
-                  className="delete-btn"
-                  onClick={() => deleteSkill(skill._id)}
-                >
-                  Delete
-                </button>
+              <div className="report-actions">
+                <button className="btn btn-primary" onClick={() => viewConversation(r)}>Review Case</button>
               </div>
             </div>
-          ))
-        ) : (
-          <p>No skills available</p>
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
-      {/* ✅ Modal for full details */}
-      {selectedSkill && (
-        <div className="modal-overlay" onClick={() => setSelectedSkill(null)}>
-          <div className="modal-content fullscreen" onClick={(e) => e.stopPropagation()}>
-            <h3 className="modal-title">Skill Details</h3>
-            <img
-              src={
-                selectedSkill.photo
-                  ? `http://localhost:5000/${selectedSkill.photo}`
-                  : "http://localhost:5000/default-skill.png"
-              }
-              alt={selectedSkill.title}
-              className="modal-skill-image"
-            />
-            <div className="modal-details">
-              <p>
-                <strong>First Name:</strong>{" "}
-                {selectedSkill.user?.firstName || "N/A"}
-              </p>
-              <p>
-                <strong>Last Name:</strong>{" "}
-                {selectedSkill.user?.lastName || "N/A"}
-              </p>
-              <p>
-                <strong>Username:</strong>{" "}
-                {selectedSkill.user?.username || "N/A"}
-              </p>
-              <p>
-                <strong>Skill Name:</strong>{" "}
-                {selectedSkill.title || selectedSkill.skills?.join(", ")}
-              </p>
-              <p>
-                <strong>Description:</strong>{" "}
-                {selectedSkill.description || "N/A"}
-              </p>
-              <p>
-                <strong>Location:</strong>{" "}
-                {selectedSkill.location || "N/A"}
-              </p>
-              <p>
-                <strong>Anonymous:</strong>{" "}
-                {selectedSkill.anonymous ? "Yes" : "No"}
-              </p>
-              <p>
-                <strong>Source:</strong> {selectedSkill.source}
-              </p>
-
-              {/* ✅ Show CNIC & Profile Pictures if available */}
-              <div className="cnic-images">
-                {selectedSkill.user?.profilePicture && (
-                  <img
-                    src={`http://localhost:5000/${selectedSkill.user.profilePicture}`}
-                    alt="Profile"
-                    className="cnic-thumbnail"
-                  />
-                )}
-                {selectedSkill.user?.cnicFrontPicture && (
-                  <img
-                    src={`http://localhost:5000/${selectedSkill.user.cnicFrontPicture}`}
-                    alt="CNIC Front"
-                    className="cnic-thumbnail"
-                  />
-                )}
-                {selectedSkill.user?.cnicBackPicture && (
-                  <img
-                    src={`http://localhost:5000/${selectedSkill.user.cnicBackPicture}`}
-                    alt="CNIC Back"
-                    className="cnic-thumbnail"
-                  />
-                )}
-              </div>
+      {/* ✅ Conversation Review Modal */}
+      {selectedReport && (
+        <div className="modal-backdrop" onClick={() => setSelectedReport(null)}>
+          <div className="modal-card wide-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+                <h3>Case Review: {selectedReport.reportedUser?.username}</h3>
+                <button className="close-btn" onClick={() => setSelectedReport(null)}>×</button>
             </div>
-            <div className="modal-actions">
-              <button
-                className="close-btn"
-                onClick={() => setSelectedSkill(null)}
-              >
-                Cancel
-              </button>
+            
+            <div className="case-details">
+                <p><strong>Accusation:</strong> {selectedReport.description}</p>
+                <div className="admin-chat-viewer">
+                    <h4>Conversation Evidence</h4>
+                    {chatLoading ? <div className="spinner"></div> : (
+                        <div className="chat-logs">
+                            {conversation.length === 0 ? (
+                                <p className="no-data">No conversation log available for this report.</p>
+                            ) : (
+                                conversation.map((msg, idx) => (
+                                    <div key={idx} className={`chat-log-msg ${msg.sender._id === selectedReport.reportedUser._id ? 'reported-user' : 'other-user'}`}>
+                                        <strong>{msg.sender.username}:</strong> {msg.text}
+                                        <span className="time">{new Date(msg.timestamp).toLocaleTimeString()}</span>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <div className="modal-actions-bar">
+              <button className="btn btn-secondary" onClick={() => updateStatus(selectedReport._id, 'dismissed')}>Dismiss Report</button>
+              <button className="btn btn-danger" onClick={() => banUser(selectedReport.reportedUser._id)}>🚨 Ban User</button>
+              <button className="btn btn-success" onClick={() => updateStatus(selectedReport._id, 'resolved')}>Mark Resolved</button>
             </div>
           </div>
         </div>
       )}
-
-      {/* ✅ Snackbar */}
-      {toast && <div className="snackbar">{toast}</div>}
     </div>
   );
-}
+};
 
-export default ManageSkills;
+export default ManageReports;

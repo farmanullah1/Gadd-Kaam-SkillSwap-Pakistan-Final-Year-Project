@@ -1,38 +1,47 @@
-// server.js
 const express = require('express');
 const connectDB = require('./config/db');
+const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
 
 const app = express();
+
+// Load env vars
+dotenv.config({ path: './config/.env' });
 
 // Connect to Database
 connectDB();
 
 // Init Middleware
 const corsOptions = {
-    origin: 'http://localhost:3000', // Allow requests from your frontend
-    optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200 
 };
 app.use(cors(corsOptions));
-
-// Handle preflight OPTIONS requests for all routes
-app.options('*', cors(corsOptions));
-
 app.use(express.json({ extended: false }));
 
-// Mount static directory for user and skill photos
+// Mount static directory for images
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Define Routes
+app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/profile', require('./routes/profileRoutes'));
 app.use('/api/skill-offers', require('./routes/skillOfferRoutes'));
 app.use('/api/skill-suggestions', require('./routes/skillSuggestionRoutes'));
-app.use('/api/requests', require('./routes/requestRoutes')); // New requests route
-app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/requests', require('./routes/requestRoutes'));
+app.use('/api/reviews', require('./routes/reviewRoutes')); 
+app.use('/api/badges', require('./routes/badgeRoutes')); 
+app.use('/api/notifications', require('./routes/notificationRoutes')); // ✅ Fixes 404
+app.use('/api/chat', require('./routes/chatRoutes'));
 
 app.get('/', (req, res) => res.send('API Running'));
+
+// Error Handling Middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
 
 const PORT = process.env.PORT || 5000;
 

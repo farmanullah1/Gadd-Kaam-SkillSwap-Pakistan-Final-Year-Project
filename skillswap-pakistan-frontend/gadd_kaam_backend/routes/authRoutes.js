@@ -13,7 +13,6 @@ const generateToken = (id) => {
   return jwt.sign({ user: { id: id } }, keys.jwtSecret, { expiresIn: '1d' });
 };
 
-// ========================= REGISTER =========================
 router.post(
   '/register',
   upload,
@@ -57,20 +56,47 @@ router.post(
       gender,
       password,
       confirmPassword,
-      role // ✅ allow role on registration (optional)
     } = req.body;
 
     if (password !== confirmPassword) {
+      if (req.files) {
+        Object.values(req.files).forEach(fileArray => {
+          fileArray.forEach(file => {
+            fs.unlink(file.path, (err) => {
+              if (err) console.error('Error deleting temp file:', err);
+            });
+          });
+        });
+      }
       return res.status(400).json({ errors: [{ msg: 'Passwords do not match' }] });
     }
 
-    let profilePicturePath, cnicFrontPicturePath, cnicBackPicturePath;
+    let profilePicturePath = undefined;
+    let cnicFrontPicturePath = undefined;
+    let cnicBackPicturePath = undefined;
 
     try {
       let user = await User.findOne({ $or: [{ username }, { email }, { cnicNumber }] });
 
       if (user) {
-        return res.status(400).json({ errors: [{ msg: 'User already exists with given username/email/cnic' }] });
+        if (req.files) {
+          Object.values(req.files).forEach(fileArray => {
+            fileArray.forEach(file => {
+              fs.unlink(file.path, (err) => {
+                if (err) console.error('Error deleting temp file:', err);
+              });
+            });
+          });
+        }
+        if (user.username === username) {
+          return res.status(400).json({ errors: [{ msg: 'Username already exists' }] });
+        }
+        if (user.email === email) {
+          return res.status(400).json({ errors: [{ msg: 'Email already registered' }] });
+        }
+        if (user.cnicNumber === cnicNumber) {
+          return res.status(400).json({ errors: [{ msg: 'CNIC number already registered' }] });
+        }
       }
 
       const uploadsDir = path.join(__dirname, '..', 'uploads');
@@ -112,7 +138,6 @@ router.post(
         cnicNumber,
         gender,
         password,
-        role: role || 'user', // ✅ default role = user
         profilePicture: profilePicturePath,
         cnicFrontPicture: cnicFrontPicturePath,
         cnicBackPicture: cnicBackPicturePath,
@@ -131,18 +156,31 @@ router.post(
           firstName: user.firstName,
           lastName: user.lastName,
           phoneNumber: user.phoneNumber,
-          role: user.role,
           profilePicture: user.profilePicture
         }
       });
     } catch (err) {
       console.error(err.message);
+      if (profilePicturePath && fs.existsSync(profilePicturePath)) fs.unlinkSync(profilePicturePath);
+      if (cnicFrontPicturePath && fs.existsSync(cnicFrontPicturePath)) fs.unlinkSync(cnicFrontPicturePath);
+      if (cnicBackPicturePath && fs.existsSync(cnicBackPicturePath)) fs.unlinkSync(cnicBackPicturePath);
+
+      if (req.files) {
+        Object.values(req.files).forEach(fileArray => {
+          fileArray.forEach(file => {
+            if (fs.existsSync(file.path)) {
+              fs.unlink(file.path, (err) => {
+                if (err) console.error('Error deleting temp/old file on error:', err);
+              });
+            }
+          });
+        });
+      }
       res.status(500).send('Server Error');
     }
   }
 );
 
-// ========================= LOGIN =========================
 router.post(
   '/login',
   [
@@ -159,11 +197,7 @@ router.post(
 
     try {
       const user = await User.findOne({
-        $or: [
-          { username: credential.toLowerCase() },
-          { email: credential.toLowerCase() },
-          { cnicNumber: credential }
-        ],
+        $or: [{ username: credential.toLowerCase() }, { email: credential.toLowerCase() }, { cnicNumber: credential }],
       });
 
       if (!user) {
@@ -171,6 +205,7 @@ router.post(
       }
 
       const isMatch = await user.comparePassword(password);
+
       if (!isMatch) {
         return res.status(400).json({ msg: 'Invalid Credentials' });
       }
@@ -188,7 +223,6 @@ router.post(
           lastName: user.lastName,
           gender: user.gender,
           phoneNumber: user.phoneNumber,
-          role: user.role,
           profilePicture: user.profilePicture
         }
       });

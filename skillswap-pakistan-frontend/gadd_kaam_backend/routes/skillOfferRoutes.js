@@ -1,9 +1,9 @@
-// routes/skillOfferRoutes.js
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const SkillOffer = require('../models/SkillOffer');
-const User = require('../models/User'); // Import User model
+const User = require('../models/User'); 
+const Review = require('../models/Review'); // ✅ IMPORT REVIEW MODEL
 const { check, validationResult } = require('express-validator');
 const fs = require('fs');
 const path = require('path');
@@ -21,10 +21,9 @@ const storage = multer.diskStorage({
   },
 });
 
-// Create the multer upload middleware
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 1000000 }, // 1MB file size limit
+  limits: { fileSize: 1000000 }, 
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
@@ -35,8 +34,6 @@ const upload = multer({
 }).single('photo');
 
 // @route   POST /api/skill-offers
-// @desc    Create a new skill offer
-// @access  Private
 router.post(
   '/',
   auth,
@@ -76,7 +73,6 @@ router.post(
       skillsToSwap,
     } = req.body;
 
-    // Parse stringified arrays if necessary (common with FormData from frontend)
     const parsedSkills = typeof skills === 'string' ? JSON.parse(skills) : skills;
     const parsedSkillsToSwap = skillsToSwap && typeof skillsToSwap === 'string' ? JSON.parse(skillsToSwap) : skillsToSwap;
 
@@ -85,24 +81,19 @@ router.post(
     }
 
     try {
-      // User is already authenticated via auth middleware (req.user.id)
-      // We don't need to fetch the user here to get username/phoneNumber
-      // because we're no longer storing them directly on SkillOffer.
-
       const newSkillOffer = new SkillOffer({
-        user: req.user.id, // Store only the user ID, will populate later
+        user: req.user.id,
         skills: parsedSkills,
         description,
         location,
         remotely: remotely === 'true',
-        anonymous: anonymous === 'true', // Store the anonymous flag
+        anonymous: anonymous === 'true',
         shareWithWomenZone: shareWithWomenZone === 'true',
         skillsToSwap: parsedSkillsToSwap,
         photo: req.file ? `/uploads/skill_photos/${req.file.filename}` : null,
       });
 
       const skillOffer = await newSkillOffer.save();
-      // Populate the user field for the response
       await skillOffer.populate('user', 'username phoneNumber');
       res.json(skillOffer);
     } catch (err) {
@@ -118,15 +109,31 @@ router.post(
 );
 
 // @route   GET /api/skill-offers/marketplace
-// @desc    Get all public skill offers for the marketplace (skills not exclusively for women's zone)
-// @access  Private (or Public, as per your app design)
+// ✅ UPDATED: Fetches latest review for each card
 router.get('/marketplace', auth, async (req, res) => {
   try {
-    // Fetch offers that are NOT exclusively for women's zone.
-    // We explicitly populate 'user' to get username and phoneNumber.
     const skillOffers = await SkillOffer.find({ shareWithWomenZone: false })
-                                        .populate('user', 'username phoneNumber') // Populate username and phoneNumber
-                                        .sort({ date: -1 });
+      .populate('user', 'username phoneNumber profilePicture')
+      .sort({ date: -1 })
+      .lean();
+
+    // Attach latest review to each offer
+    for (let offer of skillOffers) {
+      const latestReview = await Review.findOne({ reviewedFor: offer.user._id })
+        .populate('reviewer', 'username')
+        .sort({ createdAt: -1 });
+
+      if (latestReview) {
+        offer.latestReview = {
+          reviewerName: latestReview.reviewer.username,
+          comment: latestReview.comment,
+          rating: latestReview.rating
+        };
+      } else {
+        offer.latestReview = null;
+      }
+    }
+
     res.json(skillOffers);
   } catch (err) {
     console.error(err.message);
@@ -135,15 +142,11 @@ router.get('/marketplace', auth, async (req, res) => {
 });
 
 // @route   GET /api/skill-offers/my-skills
-// @desc    Get skill offers for the authenticated user
-// @access  Private
 router.get('/my-skills', auth, async (req, res) => {
   try {
-    // Populate 'user' for my-skills as well, even if not strictly needed for display
-    // in this specific page, it maintains consistency and can be useful for other logic.
     const skillOffers = await SkillOffer.find({ user: req.user.id })
-                                        .populate('user', 'username phoneNumber')
-                                        .sort({ date: -1 });
+      .populate('user', 'username phoneNumber')
+      .sort({ date: -1 });
     res.json(skillOffers);
   } catch (err) {
     console.error(err.message);
@@ -152,19 +155,36 @@ router.get('/my-skills', auth, async (req, res) => {
 });
 
 // @route   GET /api/skill-offers/women-only
-// @desc    Get skill offers for the women-only zone (must be shared with women's zone)
-// @access  Private (only for authenticated female users)
+// ✅ UPDATED: Fetches latest review for each card
 router.get('/women-only', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user || user.gender !== 'Female') {
       return res.status(403).json({ msg: 'Access denied. This zone is for female users only.' });
     }
-    // Only show offers that are explicitly shared with the women's zone.
-    // Populate 'user' to get username and phoneNumber.
+    
     const skillOffers = await SkillOffer.find({ shareWithWomenZone: true })
-                                        .populate('user', 'username phoneNumber')
-                                        .sort({ date: -1 });
+      .populate('user', 'username phoneNumber profilePicture')
+      .sort({ date: -1 })
+      .lean();
+
+    // Attach latest review
+    for (let offer of skillOffers) {
+        const latestReview = await Review.findOne({ reviewedFor: offer.user._id })
+          .populate('reviewer', 'username')
+          .sort({ createdAt: -1 });
+  
+        if (latestReview) {
+          offer.latestReview = {
+            reviewerName: latestReview.reviewer.username,
+            comment: latestReview.comment,
+            rating: latestReview.rating
+          };
+        } else {
+          offer.latestReview = null;
+        }
+      }
+
     res.json(skillOffers);
   } catch (err) {
     console.error(err.message);
@@ -173,31 +193,22 @@ router.get('/women-only', auth, async (req, res) => {
 });
 
 // @route   DELETE /api/skill-offers/:offer_id
-// @desc    Delete a skill offer
-// @access  Private
 router.delete('/:offer_id', auth, async (req, res) => {
   try {
     const skillOffer = await SkillOffer.findById(req.params.offer_id);
-
     if (!skillOffer) {
       return res.status(404).json({ msg: 'Skill offer not found' });
     }
-
-    // Check user authorization
     if (skillOffer.user.toString() !== req.user.id) {
       return res.status(401).json({ msg: 'User not authorized' });
     }
-
-    // Delete associated photo if it exists
     if (skillOffer.photo) {
       const filePath = path.join(__dirname, '..', skillOffer.photo);
       fs.unlink(filePath, (err) => {
         if (err) console.error('Error deleting file:', err);
       });
     }
-
     await skillOffer.deleteOne();
-
     res.json({ msg: 'Skill offer removed' });
   } catch (err) {
     console.error(err.message);

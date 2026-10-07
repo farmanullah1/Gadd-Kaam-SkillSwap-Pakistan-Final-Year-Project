@@ -7,70 +7,100 @@ import LoadingSpinner from './LoadingSpinner';
 import '../styles/dashboard.css';
 import '../styles/requests.css';
 import axios from 'axios';
-import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaCheck, FaTimes, FaMapMarkerAlt, FaGlobeAmericas, FaPhone, FaEnvelope, FaExchangeAlt } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+
+// Import icons from lucide-react
 import {
   Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star
 } from 'lucide-react';
 
-const getPlaceholderImage = (size = 50) =>
-  `https://placehold.co/${size}x${size}/e0e0e0/666666?text=User`;
+const getPlaceholderImage = (size = 50) => `https://placehold.co/${size}x${size}/e0e0e0/666666?text=User`;
 
+// ✅ FIX: Robust Image URL Helper
+const getProfileImageUrl = (path) => {
+  if (!path) return getPlaceholderImage(80);
+  
+  // 1. Clean backslashes
+  const cleanPath = path.replace(/\\/g, '/');
+  
+  // 2. Ensure path starts with / if not present (assuming relative path)
+  const formattedPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
+  
+  // 3. Return full URL
+  return `${process.env.REACT_APP_API_URL}${formattedPath}`;
+};
+
+// Component to render Request Card
 const RequestCard = ({ request, onAccept, onCancel }) => {
   const { t } = useTranslation();
-  const sender = request.sender || {};
-  const profilePicUrl = sender.profilePicture
-    ? `${process.env.REACT_APP_API_URL}${sender.profilePicture.replace(/\\/g, '/')}`
-    : getPlaceholderImage(50);
-
-  const displayName = sender.firstName || sender.lastName
-    ? `${sender.firstName || ''} ${sender.lastName || ''} (${sender.username || t('anonymous_label')})`
-    : sender.username || t('anonymous_label');
-
+  
   return (
     <div className="request-card">
-      <div className="request-card-header">
-        <img
-          src={profilePicUrl}
-          alt={displayName}
-          className="request-profile-pic"
-          onError={(e) => { e.target.onerror = null; e.target.src = getPlaceholderImage(50); }}
-        />
-        <div className="request-info">
-          <h3>{displayName}</h3>
-          <p>{t("requested_your_skill")}: <strong>{request.skillOffer.skills.join(', ')}</strong></p>
-          <p>{t("sender_offers_in_return")}: <strong>{request.skillRequested}</strong></p>
+      <div className="request-card-top">
+        <div className="sender-profile">
+          <img
+            src={getProfileImageUrl(request.sender.profilePicture)}
+            alt={request.sender.username}
+            className="request-profile-pic"
+            onError={(e) => { e.target.onerror = null; e.target.src = getPlaceholderImage(80); }}
+          />
+          <div className="sender-details">
+            <h3>{request.sender.username || t('anonymous_label')}</h3>
+            <span className="request-date">
+              {new Date(request.createdAt).toLocaleDateString()} at {new Date(request.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+            </span>
+          </div>
+        </div>
+        
+        {/* Location Badge */}
+        <div className="request-badge">
           {request.isRemote ? (
-            <p><strong>{t('remotely_label')}:</strong> {t('yes')}</p>
+            <span className="badge remote"><FaGlobeAmericas /> {t('remotely_label')}</span>
           ) : (
-            <p><strong>{t('location_label')}:</strong> {request.location || t('not_specified')}</p>
+            <span className="badge location"><FaMapMarkerAlt /> {request.location || t('not_specified')}</span>
           )}
         </div>
       </div>
+
+      <div className="request-exchange-visual">
+        <div className="exchange-side my-side">
+          <span className="label-sm">{t('requested_your_skill')}</span>
+          <p className="skill-highlight">{request.skillOffer.skills.join(', ')}</p>
+        </div>
+        
+        <div className="exchange-icon">
+          <FaExchangeAlt />
+        </div>
+
+        <div className="exchange-side their-side">
+          <span className="label-sm">{t('sender_offers_in_return')}</span>
+          <p className="skill-highlight">{request.skillRequested}</p>
+        </div>
+      </div>
+
+      <div className="request-message-box">
+        <p>"{request.message}"</p>
+      </div>
+
       <div className="request-card-actions">
-        <button className="btn btn-accept" onClick={() => onAccept(request._id)}>
-          <FaCheckCircle /> {t("accept_btn")}
-        </button>
         <button className="btn btn-cancel" onClick={() => onCancel(request._id)}>
-          <FaTimesCircle /> {t("cancel_btn")}
+          <FaTimes /> {t("decline_btn")}
+        </button>
+        <button className="btn btn-accept" onClick={() => onAccept(request._id)}>
+          <FaCheck /> {t("accept_btn")}
         </button>
       </div>
     </div>
   );
 };
 
+// Component for Accepted Requests (Contact Card Style)
 const AcceptedRequestNotification = ({ request, currentUserId }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
   const otherParticipant = request.sender._id === currentUserId ? request.receiver : request.sender;
-
-  const profilePicUrl = otherParticipant.profilePicture
-    ? `${process.env.REACT_APP_API_URL}${otherParticipant.profilePicture.replace(/\\/g, '/')}`
-    : getPlaceholderImage(70);
-
-  const displayName = otherParticipant.firstName || otherParticipant.lastName
-    ? `${otherParticipant.firstName || ''} ${otherParticipant.lastName || ''} (${otherParticipant.username || t('anonymous_label')})`
-    : otherParticipant.username || t('anonymous_label');
 
   const handleMessageClick = () => {
     navigate('/dashboard/messages', { state: { activeConversationRequestId: request._id } });
@@ -78,34 +108,35 @@ const AcceptedRequestNotification = ({ request, currentUserId }) => {
 
   return (
     <div className="accepted-request-card">
-      <div className="accepted-request-header">
-        <div className="accepted-request-info">
-          <h3>
-            {request.sender._id === currentUserId
-              ? t("your_request_accepted_by", { username: displayName })
-              : t("request_accepted_by", { username: displayName })
-            } 🎉
-          </h3>
-          <p>{t("contact_them_to_coordinate")}</p>
-        </div>
+      <div className="accepted-status-line">
+        <div className="status-dot"></div>
+        <span>{t('request_accepted_notification')}</span>
       </div>
-      <div className="accepted-request-details">
-        <div className="user-details-section">
-          <img
-            src={profilePicUrl}
-            alt={displayName}
-            className="user-profile-pic"
-            onError={(e) => { e.target.onerror = null; e.target.src = getPlaceholderImage(70); }}
-          />
-          <div className="contact-info">
-            <h4>{t("contact_details_heading")}</h4>
-            <p><strong>{t("name_label")}:</strong> {displayName}</p>
-            <p><strong>{t("phone_label")}:</strong> {otherParticipant.phoneNumber || t('not_specified')}</p>
-            <p><strong>{t("location_label")}:</strong> {otherParticipant.location || t('not_specified')}</p>
+      
+      <div className="accepted-card-content">
+        <img
+          src={getProfileImageUrl(otherParticipant.profilePicture)}
+          alt={otherParticipant.username}
+          className="user-profile-pic"
+          onError={(e) => { e.target.onerror = null; e.target.src = getPlaceholderImage(70); }}
+        />
+        
+        <div className="contact-details">
+          <h4>{otherParticipant.firstName} {otherParticipant.lastName}</h4>
+          <p className="username">@{otherParticipant.username}</p>
+          
+          <div className="contact-row">
+            <FaPhone className="icon" />
+            <span>{otherParticipant.phoneNumber || t('not_specified')}</span>
+          </div>
+          <div className="contact-row">
+            <FaEnvelope className="icon" />
+            <span>{otherParticipant.email || t('not_specified')}</span>
           </div>
         </div>
-        <button className="btn btn-primary-orange message-user-btn" onClick={handleMessageClick}>
-          <MessageSquare size={16} /> {t('message_btn')}
+
+        <button className="btn btn-primary-orange message-btn" onClick={handleMessageClick}>
+          <MessageSquare size={18} /> {t('message_btn')}
         </button>
       </div>
     </div>
@@ -139,60 +170,83 @@ function ReceivedRequestsPage({ onChatbotToggle }) {
     setError(null);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/requests/`, {
+      const allRequestsResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/requests/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      const allRequests = allRequestsResponse.data;
 
       const pending = [];
       const active = [];
-      res.data.forEach(req => {
-        const isSender = req.sender._id === currentUserId;
-        const isReceiver = req.receiver._id === currentUserId;
-        if (req.status === 'pending' && isReceiver) pending.push(req);
-        if ((req.status === 'accepted' || req.status === 'completed') && (isSender || isReceiver))
-          active.push({ ...req, isCurrentUserSender: isSender });
+
+      allRequests.forEach(req => {
+        const isCurrentUserSender = req.sender._id === currentUserId;
+        const isCurrentUserReceiver = req.receiver._id === currentUserId;
+
+        // Pending requests received by me
+        if (req.status === 'pending' && isCurrentUserReceiver) {
+          pending.push(req);
+        }
+        // Active/Completed requests involved in
+        else if ((req.status === 'accepted' || req.status === 'completed') && (isCurrentUserSender || isCurrentUserReceiver)) {
+          active.push({ ...req, isCurrentUserSender: isCurrentUserSender });
+        }
       });
+
       setPendingRequests(pending);
       setActiveRequests(active);
+
     } catch (err) {
+      console.error('Failed to fetch requests:', err);
       setError(t('failed_to_load_requests_error'));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAcceptRequest = async (id) => {
+  const handleAcceptRequest = async (requestId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${process.env.REACT_APP_API_URL}/api/requests/${id}/accept`, {}, {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/requests/${requestId}/accept`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchRequests(user.id);
     } catch (err) {
+      console.error('Failed to accept request:', err);
       setError(err.response?.data?.msg || t('failed_to_accept_request_error'));
     }
   };
 
-  const handleCancelRequest = async (id) => {
+  const handleCancelRequest = async (requestId) => {
+    if(!window.confirm("Are you sure you want to decline this request?")) return;
+    
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${process.env.REACT_APP_API_URL}/api/requests/${id}/cancel`, {}, {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/requests/${requestId}/cancel`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchRequests(user.id);
     } catch (err) {
+      console.error('Failed to cancel request:', err);
       setError(err.response?.data?.msg || t('failed_to_cancel_request_error'));
     }
   };
 
+  const openHelplinePopup = () => setShowHelplinePopup(true);
+  const closeHelplinePopup = () => setShowHelplinePopup(false);
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    navigate('/login');
+  };
+
   const currentPath = location.pathname;
+
   if (!user) return null;
 
   return (
     <div className="dashboard-page-container">
-      <Navbar onHelplineClick={() => setShowHelplinePopup(true)} onLogout={() => {
-        localStorage.clear(); setUser(null); navigate('/login');
-      }} user={user} />
+      <Navbar onHelplineClick={openHelplinePopup} onLogout={handleLogout} user={user} />
 
       <div className="dashboard-main-content">
         <aside className="dashboard-sidebar">
@@ -227,34 +281,73 @@ function ReceivedRequestsPage({ onChatbotToggle }) {
         </aside>
 
         <section className="dashboard-content-area">
-          <h1>{t("received_requests_page_title")}</h1>
-          <p>{t("received_requests_page_subtitle")}</p>
-          {loading ? <LoadingSpinner /> : error ? <p className="error-message">{error}</p> : (
-            <div className="requests-container">
-              {pendingRequests.length > 0 && <>
-                <h2>{t("pending_requests_section_title")}</h2>
-                {pendingRequests.map(req =>
-                  <RequestCard key={req._id} request={req} onAccept={handleAcceptRequest} onCancel={handleCancelRequest} />
+          <h1 className="dashboard-welcome-heading">{t("received_requests_page_title")}</h1>
+          <p className="dashboard-sub-heading">{t("received_requests_page_subtitle")}</p>
+
+          {loading ? (
+            <LoadingSpinner />
+          ) : error ? (
+            <p className="error-message">{error}</p>
+          ) : (
+            <div className="requests-page-layout">
+              {/* PENDING REQUESTS SECTION */}
+              <div className="requests-section">
+                <h2 className="section-title">
+                  {t("pending_requests_section_title")} 
+                  <span className="count-badge">{pendingRequests.length}</span>
+                </h2>
+                
+                {pendingRequests.length === 0 ? (
+                   <div className="empty-state">
+                     <Mail size={40} className="empty-icon" />
+                     <p>{t("no_requests_received")}</p>
+                   </div>
+                ) : (
+                  <div className="request-cards-grid">
+                    {pendingRequests.map((request) => (
+                      <RequestCard
+                        key={request._id}
+                        request={request}
+                        onAccept={handleAcceptRequest}
+                        onCancel={handleCancelRequest}
+                      />
+                    ))}
+                  </div>
                 )}
-              </>}
-              {activeRequests.length > 0 && <>
-                <h2>{t("accepted_requests_section_title")}</h2>
-                {activeRequests.map(req =>
-                  <AcceptedRequestNotification key={req._id} request={req} currentUserId={user.id} />
+              </div>
+
+              {/* ACCEPTED REQUESTS SECTION */}
+              <div className="requests-section">
+                <h2 className="section-title">
+                  {t("accepted_requests_section_title")}
+                  <span className="count-badge">{activeRequests.length}</span>
+                </h2>
+                
+                {activeRequests.length === 0 ? (
+                   <div className="empty-state">
+                     <p className="muted-text">No active exchanges at the moment.</p>
+                   </div>
+                ) : (
+                  <div className="accepted-list">
+                    {activeRequests.map((request) => (
+                      <AcceptedRequestNotification
+                        key={request._id}
+                        request={request}
+                        currentUserId={user.id}
+                      />
+                    ))}
+                  </div>
                 )}
-              </>}
-              {pendingRequests.length === 0 && activeRequests.length === 0 &&
-                <div style={{ textAlign: 'center', padding: '20px' }}>
-                  <p>{t("no_new_requests_message_p1")}</p>
-                  <p>{t("no_new_requests_message_p2")}</p>
-                </div>}
+              </div>
             </div>
           )}
         </section>
       </div>
+
       <Footer onChatbotToggle={onChatbotToggle} user={user} />
-      {showHelplinePopup && <HelplinePopup onClose={() => setShowHelplinePopup(false)} />}
+      {showHelplinePopup && <HelplinePopup onClose={closeHelplinePopup} />}
     </div>
   );
 }
+
 export default ReceivedRequestsPage;

@@ -1,371 +1,315 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
+const auth = require('../middleware/auth'); 
 const Request = require('../models/Request');
-const SkillOffer = require('../models/SkillOffer');
+const User = require('../models/User'); 
+const SkillOffer = require('../models/SkillOffer'); 
+const Notification = require('../models/Notification'); // ✅ Import Notification Model
 const { check, validationResult } = require('express-validator');
 
-// ✅ Utility function to normalize profile picture paths
-const normalizePhotoPath = (photo) => {
-  if (!photo) return null;
-  return `/uploads/${photo.replace(/^\/+|uploads\//g, "").replace(/\\/g, "/")}`;
+// ✅ Helper function to create notifications safely
+const createNotification = async (recipientId, senderId, type, referenceId, text) => {
+    try {
+        // Don't notify if user is interacting with themselves
+        if (recipientId.toString() === senderId.toString()) return; 
+        
+        const newNotification = new Notification({
+            recipient: recipientId,
+            sender: senderId,
+            type,
+            referenceId,
+            text
+        });
+        await newNotification.save();
+    } catch (err) {
+        console.error('Notification creation failed:', err.message);
+    }
 };
 
-// =======================
-// Create a new request
-// =======================
-router.post(
-  '/',
-  auth,
-  [
+// @route   POST api/requests
+// @desc    Send a skill swap request
+router.post('/', auth, [
     check('receiverId', 'Receiver ID is required').not().isEmpty(),
     check('skillOfferId', 'Skill Offer ID is required').not().isEmpty(),
     check('skillRequested', 'Skill you are offering in return is required').not().isEmpty(),
     check('message', 'Initial message is required').not().isEmpty(),
     check('isRemote', 'Remote status is required').isBoolean(),
-    check('location', 'Location must be a string if provided')
-      .optional({ nullable: true })
-      .isString(),
-  ],
-  async (req, res) => {
+    check('location', 'Location must be a string if provided').optional({ nullable: true }).isString(),
+], async (req, res) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty())
-      return res.status(400).json({ errors: errors.array() });
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const { receiverId, skillOfferId, skillRequested, message, isRemote, location } = req.body;
     const senderId = req.user.id;
 
     if (!isRemote && (!location || location.trim() === '')) {
-      return res.status(400).json({ msg: 'Location is required for non-remote requests.' });
+        return res.status(400).json({ msg: 'Location is required for non-remote requests.' });
     }
 
     try {
-      if (senderId === receiverId) {
-        return res.status(400).json({ msg: 'You cannot send a request to yourself.' });
-      }
+        if (senderId === receiverId) return res.status(400).json({ msg: 'Cannot send a request to yourself' });
 
-      const skillOffer = await SkillOffer.findById(skillOfferId);
-      if (!skillOffer)
-        return res.status(404).json({ msg: 'Skill offer not found.' });
+        const skillOffer = await SkillOffer.findById(skillOfferId);
+        if (!skillOffer) return res.status(404).json({ msg: 'Skill offer not found' });
+        if (skillOffer.user.toString() !== receiverId) return res.status(400).json({ msg: 'Invalid receiver for this skill offer' });
 
-      if (skillOffer.user.toString() !== receiverId) {
-        return res.status(400).json({ msg: 'Invalid receiver for this skill offer.' });
-      }
-
-      const existingRequest = await Request.findOne({
-        sender: senderId,
-        receiver: receiverId,
-        skillOffer: skillOfferId,
-        status: 'pending',
-      });
-
-      if (existingRequest) {
-        return res.status(400).json({
-          msg: 'You already have a pending request for this skill offer.',
+        const existingRequest = await Request.findOne({
+            sender: senderId, receiver: receiverId, skillOffer: skillOfferId, status: 'pending',
         });
-      }
+        if (existingRequest) return res.status(400).json({ msg: 'You have already sent a pending request.' });
 
-      const newRequest = new Request({
-        sender: senderId,
-        receiver: receiverId,
-        skillOffer: skillOfferId,
-        skillRequested,
-        message,
-        isRemote,
-        location: isRemote ? '' : location,
-      });
+        const newRequest = new Request({
+            sender: senderId, receiver: receiverId, skillOffer: skillOfferId, skillRequested, message, isRemote,
+            location: isRemote ? '' : location
+        });
 
-      const request = await newRequest.save();
+        const request = await newRequest.save();
 
-      const populatedRequest = await Request.findById(request._id)
-        .populate('sender', 'username firstName lastName profilePicture location phoneNumber')
-        .populate('receiver', 'username firstName lastName profilePicture location phoneNumber')
-        .populate('skillOffer', 'skills')
-        .lean();
+        // ✅ TRIGGER NOTIFICATION: Request Received
+        const senderUser = await User.findById(senderId);
+        await createNotification(
+            receiverId, 
+            senderId, 
+            'request_received', 
+            request._id, 
+            `${senderUser.username} requested your skill: ${skillOffer.skills[0]}`
+        );
 
-      // Normalize photos
-      populatedRequest.sender.profilePicture = normalizePhotoPath(populatedRequest.sender.profilePicture);
-      populatedRequest.receiver.profilePicture = normalizePhotoPath(populatedRequest.receiver.profilePicture);
+        const populatedRequest = await Request.findById(request._id)
+            .populate('sender', 'username profilePicture')
+            .populate('receiver', 'username profilePicture')
+            .populate('skillOffer', 'skills');
 
-      res.status(201).json(populatedRequest);
+        res.status(201).json(populatedRequest);
     } catch (err) {
-      console.error('Error creating request:', err.message);
-      res.status(500).send('Server Error');
+        console.error(err.message);
+        res.status(500).send('Server Error');
     }
-  }
-);
+});
 
-// =======================
-// Get received requests
-// =======================
+// @route   GET api/requests/received
 router.get('/received', auth, async (req, res) => {
-  try {
-    const requests = await Request.find({ receiver: req.user.id })
-      .populate('sender', 'username firstName lastName profilePicture location phoneNumber')
-      .populate('skillOffer', 'skills')
-      .sort({ createdAt: -1 })
-      .lean();
-
-    const requestsWithPhotos = requests.map((req) => ({
-      ...req,
-      sender: {
-        ...req.sender,
-        profilePicture: normalizePhotoPath(req.sender?.profilePicture),
-      },
-    }));
-
-    res.json(requestsWithPhotos);
-  } catch (err) {
-    console.error('Error fetching received requests:', err.message);
-    res.status(500).send('Server Error');
-  }
+    try {
+        const requests = await Request.find({ receiver: req.user.id })
+            .populate('sender', 'username profilePicture location phoneNumber')
+            .populate('skillOffer', 'skills')
+            .sort({ createdAt: -1 });
+        res.json(requests);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
 });
 
-// =======================
-// Get sent requests
-// =======================
+// @route   GET api/requests/sent
 router.get('/sent', auth, async (req, res) => {
-  try {
-    const requests = await Request.find({ sender: req.user.id })
-      .populate('receiver', 'username firstName lastName profilePicture location phoneNumber')
-      .populate('skillOffer', 'skills')
-      .sort({ createdAt: -1 })
-      .lean();
-
-    const requestsWithPhotos = requests.map((req) => ({
-      ...req,
-      receiver: {
-        ...req.receiver,
-        profilePicture: normalizePhotoPath(req.receiver?.profilePicture),
-      },
-    }));
-
-    res.json(requestsWithPhotos);
-  } catch (err) {
-    console.error('Error fetching sent requests:', err.message);
-    res.status(500).send('Server Error');
-  }
+    try {
+        const requests = await Request.find({ sender: req.user.id })
+            .populate('receiver', 'username profilePicture location phoneNumber')
+            .populate('skillOffer', 'skills')
+            .sort({ createdAt: -1 });
+        res.json(requests);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
 });
 
-// =======================
-// Get all requests (sent + received)
-// =======================
+// @route   GET api/requests/
 router.get('/', auth, async (req, res) => {
-  try {
-    const requests = await Request.find({
-      $or: [{ sender: req.user.id }, { receiver: req.user.id }],
-    })
-      .populate('sender', 'username firstName lastName profilePicture location phoneNumber')
-      .populate('receiver', 'username firstName lastName profilePicture location phoneNumber')
-      .populate('skillOffer', 'skills')
-      .sort({ updatedAt: -1 })
-      .lean();
+    try {
+        const requests = await Request.find({
+            $or: [{ sender: req.user.id }, { receiver: req.user.id }]
+        })
+        .populate('sender', 'username profilePicture location phoneNumber')
+        .populate('receiver', 'username profilePicture location phoneNumber')
+        .populate('skillOffer', 'skills')
+        .sort({ updatedAt: -1 });
 
-    const requestsWithPhotos = requests.map((req) => ({
-      ...req,
-      sender: {
-        ...req.sender,
-        profilePicture: normalizePhotoPath(req.sender?.profilePicture),
-      },
-      receiver: {
-        ...req.receiver,
-        profilePicture: normalizePhotoPath(req.receiver?.profilePicture),
-      },
-    }));
-
-    res.json(requestsWithPhotos);
-  } catch (err) {
-    console.error('Error fetching all requests:', err.message);
-    res.status(500).send('Server Error');
-  }
+        res.json(requests);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
 });
 
-// =======================
-// Accept a request
-// =======================
+// @route   POST api/requests/:id/accept
 router.post('/:id/accept', auth, async (req, res) => {
-  try {
-    let request = await Request.findById(req.params.id);
-    if (!request) return res.status(404).json({ msg: 'Request not found' });
+    try {
+        let request = await Request.findById(req.params.id);
+        if (!request) return res.status(404).json({ msg: 'Request not found' });
+        if (request.receiver.toString() !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
+        if (request.status !== 'pending') return res.status(400).json({ msg: 'Request is not pending' });
 
-    if (request.receiver.toString() !== req.user.id) {
-      return res.status(401).json({ msg: 'Not authorized to accept this request.' });
+        request.status = 'accepted';
+        await request.save();
+
+        // ✅ TRIGGER NOTIFICATION: Request Accepted
+        const accepter = await User.findById(req.user.id);
+        await createNotification(
+            request.sender, // Notify the sender that their request was accepted
+            req.user.id,
+            'request_accepted',
+            request._id,
+            `${accepter.username} accepted your skill swap request!`
+        );
+
+        const populatedRequest = await Request.findById(request._id)
+            .populate('sender', 'username profilePicture location phoneNumber')
+            .populate('receiver', 'username profilePicture location phoneNumber')
+            .populate('skillOffer', 'skills');
+
+        res.json(populatedRequest);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
     }
-
-    if (request.status !== 'pending') {
-      return res.status(400).json({ msg: 'Request is not pending and cannot be accepted.' });
-    }
-
-    request.status = 'accepted';
-    await request.save();
-
-    const populatedRequest = await Request.findById(request._id)
-      .populate('sender', 'username firstName lastName profilePicture location phoneNumber')
-      .populate('receiver', 'username firstName lastName profilePicture location phoneNumber')
-      .populate('skillOffer', 'skills')
-      .lean();
-
-    populatedRequest.sender.profilePicture = normalizePhotoPath(populatedRequest.sender?.profilePicture);
-    populatedRequest.receiver.profilePicture = normalizePhotoPath(populatedRequest.receiver?.profilePicture);
-
-    res.json(populatedRequest);
-  } catch (err) {
-    console.error('Error accepting request:', err.message);
-    res.status(500).send('Server Error');
-  }
 });
 
-// =======================
-// Cancel a request
-// =======================
+// @route   POST api/requests/:id/cancel
 router.post('/:id/cancel', auth, async (req, res) => {
-  try {
-    let request = await Request.findById(req.params.id);
-    if (!request) return res.status(404).json({ msg: 'Request not found' });
+    try {
+        let request = await Request.findById(req.params.id);
+        if (!request) return res.status(404).json({ msg: 'Request not found' });
+        if (request.sender.toString() !== req.user.id && request.receiver.toString() !== req.user.id) {
+            return res.status(401).json({ msg: 'Not authorized' });
+        }
 
-    if (
-      request.sender.toString() !== req.user.id &&
-      request.receiver.toString() !== req.user.id
-    ) {
-      return res.status(401).json({ msg: 'Not authorized to cancel this request.' });
+        request.status = 'cancelled';
+        await request.save();
+
+        // ✅ TRIGGER NOTIFICATION: Request Cancelled
+        // Notify the OTHER person (not the one who cancelled)
+        const recipient = request.sender.toString() === req.user.id ? request.receiver : request.sender;
+        const canceller = await User.findById(req.user.id);
+        
+        await createNotification(
+            recipient,
+            req.user.id,
+            'request_cancelled',
+            request._id,
+            `${canceller.username} cancelled the skill request.`
+        );
+
+        res.json({ msg: 'Request cancelled successfully', request });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
     }
-
-    if (!['pending', 'accepted'].includes(request.status)) {
-      return res.status(400).json({ msg: 'Request cannot be cancelled in its current state.' });
-    }
-
-    request.status = 'cancelled';
-    await request.save();
-
-    res.json({ msg: 'Request cancelled successfully', request });
-  } catch (err) {
-    console.error('Error cancelling request:', err.message);
-    res.status(500).send('Server Error');
-  }
 });
 
-// =======================
-// Confirm skill received
-// =======================
+// @route   POST api/requests/:id/confirm-skill-received
 router.post('/:id/confirm-skill-received', auth, async (req, res) => {
-  try {
-    let request = await Request.findById(req.params.id);
-    if (!request) return res.status(404).json({ msg: 'Request not found' });
+    try {
+        let request = await Request.findById(req.params.id);
+        if (!request) return res.status(404).json({ msg: 'Request not found' });
 
-    if (request.status !== 'accepted') {
-      return res.status(400).json({ msg: 'Can only confirm skills for accepted requests.' });
+        const userId = req.user.id;
+        if (request.status !== 'accepted') return res.status(400).json({ msg: 'Skill can only be confirmed for accepted requests.' });
+
+        let updated = false;
+        if (request.sender.toString() === userId) {
+            if (request.senderConfirmedReceived) return res.status(400).json({ msg: 'Already confirmed.' });
+            request.senderConfirmedReceived = true;
+            updated = true;
+        } else if (request.receiver.toString() === userId) {
+            if (request.receiverConfirmedReceived) return res.status(400).json({ msg: 'Already confirmed.' });
+            request.receiverConfirmedReceived = true;
+            updated = true;
+        } else {
+            return res.status(401).json({ msg: 'Not authorized.' });
+        }
+
+        if (updated) {
+            if (request.senderConfirmedReceived && request.receiverConfirmedReceived) {
+                request.status = 'completed';
+            }
+            await request.save();
+
+            // ✅ TRIGGER NOTIFICATION: Skill Confirmed
+            const otherPersonId = request.sender.toString() === userId ? request.receiver : request.sender;
+            const confirmer = await User.findById(userId);
+            
+            await createNotification(
+                otherPersonId,
+                userId,
+                'skill_confirmed',
+                request._id,
+                `${confirmer.username} confirmed they received the skill.`
+            );
+        }
+
+        const populatedRequest = await Request.findById(request._id)
+            .populate('sender', 'username profilePicture location phoneNumber')
+            .populate('receiver', 'username profilePicture location phoneNumber')
+            .populate('skillOffer', 'skills');
+
+        res.json({ msg: 'Skill received confirmed!', request: populatedRequest });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
     }
-
-    const userId = req.user.id;
-    let updated = false;
-
-    if (request.sender.toString() === userId) {
-      if (request.senderConfirmedReceived) {
-        return res.status(400).json({ msg: 'You already confirmed this skill exchange.' });
-      }
-      request.senderConfirmedReceived = true;
-      updated = true;
-    } else if (request.receiver.toString() === userId) {
-      if (request.receiverConfirmedReceived) {
-        return res.status(400).json({ msg: 'You already confirmed this skill exchange.' });
-      }
-      request.receiverConfirmedReceived = true;
-      updated = true;
-    } else {
-      return res.status(401).json({ msg: 'Not authorized to confirm this request.' });
-    }
-
-    if (updated && request.senderConfirmedReceived && request.receiverConfirmedReceived) {
-      request.status = 'completed';
-    }
-
-    await request.save();
-
-    const populatedRequest = await Request.findById(request._id)
-      .populate('sender', 'username firstName lastName profilePicture location phoneNumber')
-      .populate('receiver', 'username firstName lastName profilePicture location phoneNumber')
-      .populate('skillOffer', 'skills')
-      .lean();
-
-    populatedRequest.sender.profilePicture = normalizePhotoPath(populatedRequest.sender?.profilePicture);
-    populatedRequest.receiver.profilePicture = normalizePhotoPath(populatedRequest.receiver?.profilePicture);
-
-    res.json({ msg: 'Skill exchange confirmed!', request: populatedRequest });
-  } catch (err) {
-    console.error('Error confirming skill received:', err.message);
-    res.status(500).send('Server Error');
-  }
 });
 
-// =======================
-// Add message to request chat
-// =======================
+// @route   POST api/requests/:id/messages
 router.post('/:id/messages', auth, async (req, res) => {
-  const { text } = req.body;
-  if (!text) return res.status(400).json({ msg: 'Message text is required' });
+    const { text } = req.body;
+    if (!text) return res.status(400).json({ msg: 'Message text is required.' });
 
-  try {
-    let request = await Request.findById(req.params.id);
-    if (!request) return res.status(404).json({ msg: 'Request not found' });
+    try {
+        let request = await Request.findById(req.params.id);
+        if (!request) return res.status(404).json({ msg: 'Request not found.' });
 
-    const isParticipant =
-      request.sender.toString() === req.user.id ||
-      request.receiver.toString() === req.user.id;
-    if (!isParticipant)
-      return res.status(401).json({ msg: 'Not authorized to send messages.' });
+        const isParticipant = request.sender.toString() === req.user.id || request.receiver.toString() === req.user.id;
+        if (!isParticipant) return res.status(401).json({ msg: 'Not authorized.' });
 
-    if (request.status === 'completed') {
-      return res.status(400).json({ msg: 'Exchange completed. No more messages allowed.' });
+        if (request.status === 'completed') return res.status(400).json({ msg: 'Exchange completed. Messages closed.' });
+
+        const newMessage = { sender: req.user.id, text: text, timestamp: new Date() };
+        request.messages.push(newMessage);
+        await request.save();
+
+        // ✅ TRIGGER NOTIFICATION: New Message
+        const recipientId = request.sender.toString() === req.user.id ? request.receiver : request.sender;
+        const senderUser = await User.findById(req.user.id);
+        
+        await createNotification(
+            recipientId,
+            req.user.id,
+            'message',
+            request._id,
+            `New message from ${senderUser.username}`
+        );
+
+        const updatedRequest = await Request.findById(request._id)
+            .populate('messages.sender', 'username profilePicture')
+            .select('messages');
+        const latestMessage = updatedRequest.messages[updatedRequest.messages.length - 1];
+
+        res.status(201).json(latestMessage);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
     }
-
-    const newMessage = { sender: req.user.id, text, timestamp: new Date() };
-    request.messages.push(newMessage);
-    await request.save();
-
-    const updatedRequest = await Request.findById(req.params.id)
-      .populate('messages.sender', 'username firstName lastName profilePicture')
-      .select('messages')
-      .lean();
-
-    updatedRequest.messages.forEach((m) => {
-      m.sender.profilePicture = normalizePhotoPath(m.sender?.profilePicture);
-    });
-
-    const latestMessage = updatedRequest.messages[updatedRequest.messages.length - 1];
-    res.status(201).json(latestMessage);
-  } catch (err) {
-    console.error('Error adding message:', err.message);
-    res.status(500).send('Server Error');
-  }
 });
 
-// =======================
-// Get messages for a request
-// =======================
+// @route   GET api/requests/:id/messages
 router.get('/:id/messages', auth, async (req, res) => {
-  try {
-    const request = await Request.findById(req.params.id)
-      .populate('messages.sender', 'username firstName lastName profilePicture')
-      .select('messages status sender receiver')
-      .lean();
+    try {
+        const request = await Request.findById(req.params.id)
+            .populate('messages.sender', 'username profilePicture')
+            .select('messages status sender receiver');
 
-    if (!request) return res.status(404).json({ msg: 'Request not found' });
+        if (!request) return res.status(404).json({ msg: 'Request not found.' });
 
-    const isParticipant =
-      request.sender.toString() === req.user.id ||
-      request.receiver.toString() === req.user.id;
-    if (!isParticipant)
-      return res.status(401).json({ msg: 'Not authorized to view messages.' });
+        const isParticipant = request.sender.toString() === req.user.id || request.receiver.toString() === req.user.id;
+        if (!isParticipant) return res.status(401).json({ msg: 'Not authorized.' });
 
-    request.messages.forEach((m) => {
-      m.sender.profilePicture = normalizePhotoPath(m.sender?.profilePicture);
-    });
-
-    res.json(request.messages);
-  } catch (err) {
-    console.error('Error fetching messages:', err.message);
-    res.status(500).send('Server Error');
-  }
+        res.json(request.messages);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
 });
 
 module.exports = router;

@@ -17,34 +17,98 @@ i18n
     resources: {
       en: {
         translation: {
-          // General Utility
-          "dark_mode_toggle": "Toggle dark mode",
-          "change_language": "Change language",
-          "call_helpline": "Call helpline",
+          // General
+          "app_name": "SkillSwap Pakistan",
+          "welcome_message": "Welcome to SkillSwap Pakistan",
+          "loading_text": "Loading...",
+          "server_error_generic": "Server Error. Please try again later.",
+          "anonymous_label": "Anonymous",
+          "ok": "Ok",
+          "all_rights_reserved": "All rights reserved.",
+          "confirm": "Confirm",
           "by_label": "by",
           "remotely_label": "Remotely",
-          "anonymous_label": "Anonymous",
-          "women_only_zone_tag": "Women's Zone",
-          "not_specified": "Not specified",
-          "specify_skill_wanted_label": "Specify the skill you want from them:",
-          "request_skill_placeholder": "e.g., I need help with React.js tutoring in exchange for web design.",
-          "send_request_btn": "Send Request",
-          "request_sent_success_message": "Request sent successfully!",
+
+          // Navbar
+          "navbar_dashboard": "Dashboard",
+          "navbar_my_profile": "My Profile",
+          "navbar_my_skills": "My Skills",
+          "navbar_marketplace": "Marketplace",
+          "navbar_women_zone": "Women Only Zone",
+          "navbar_messages": "Messages",
+          "navbar_reviews": "Reviews",
+          "navbar_notifications": "Notifications",
+          "navbar_helpline": "Helpline",
+          "navbar_logout": "Logout",
+          "navbar_login": "Login",
+          "navbar_signup": "Sign Up",
+          "navbar_home": "Home",
+          "navbar_about_us": "About Us",
+          "navbar_contact": "Contact",
+          "navbar_login_btn": "Log In",
+          "navbar_signup_btn": "Sign Up",
+
+
+          // --- NEW GENERIC KEYS from console logs ---
+          "Messages": "Messages", // For generic use like tab titles if needed
+          "Reviews": "Reviews",   // For generic use like tab titles if needed
+          // --- END NEW GENERIC KEYS ---
+
+          // Dashboard
+          "dashboard_page_title": "Your Dashboard",
+          "dashboard_sub_heading": "Manage your skills, requests, and profile.",
+          "dashboard_welcome_heading": "Welcome back, {{username}}!",
+          "skills_offered_title": "Skills Offered",
+          "skills_offered_detail": "Post a skill to get started!",
+          "skills_received_title": "Skills Received",
+          "skills_received_detail": "Start learning new things today!",
+          "unread_messages_title": "Unread Messages",
+          "unread_messages_detail": "No new messages yet.",
+          "find_skill_title": "Find a Skill",
+          "find_skill_description": "Explore the marketplace to discover new skills and connect with talented people in your community.",
+          "browse_marketplace_btn": "Browse Marketplace",
+          "offer_skill_title_card": "Offer a Skill",
+          "offer_skill_description_card": "Share your expertise with the community. Post a skill you can teach or a service you can provide.",
+          "post_new_skill_btn": "Post a New Skill",
+
+          // Marketplace & Women Only Zone
+          "request_button_text": "Request",
+          "specify_skill_label": "Specify the skill you want from them",
+          "remote_work_label": "Can be done remotely?",
+          "location_label": "Location",
+          "send_request_button": "Send Request",
+          "request_sent_success_message": "Your request has been sent successfully!",
           "request_sent_error_message": "Failed to send request. Please try again.",
           "access_denied_female_only": "Access Denied: This zone is for female users only.",
           "failed_to_load_women_only_skills_error": "Failed to load women-only skills. Please try again.",
           "failed_to_load_marketplace_skills_error": "Failed to load marketplace skills. Please try again.",
-          "ok": "Ok",
-          "all_rights_reserved": "All rights reserved.",
-          "confirm": "Confirm",
           "request_sent_success_title": "Request Sent!",
           "request_sent_error_title": "Request Failed",
+          "women_only_zone_tag": "Women's Zone", // Duplicated here for explicit availability
+          "not_specified": "Not specified", // Duplicated here for explicit availability
+          "specify_skill_wanted_label": "Specify the skill you want from them:", // Duplicated for clarity
+          "request_skill_placeholder": "e.g., I need help with React.js tutoring in exchange for web design.",
+          "location_required_error": "Location is required for non-remote requests.",
+          "invalid_receiver_error": "Invalid receiver for this skill offer.",
+          "already_sent_request_error": "You have already sent a pending request for this skill offer.",
+          "skill_offer_not_found": "Skill offer not found.",
+          "cannot_send_to_self": "Cannot send a request to yourself.",
+          "marketplace_page_title": "Skill Marketplace",
+          "marketplace_page_subtitle": "Explore skills offered by others in your community.",
+          "no_skills_available": "No skills available in the marketplace right now. Check back later!",
+          "request_btn": "Request",
+          "women_only_zone_page_title": "Women-Only Skill Zone",
+          "women_only_zone_page_subtitle": "A dedicated space for women to safely share and swap skills.",
+          "no_women_zone_skills_available": "No skills available in the Women-Only Zone right now. Check back later!",
+          "search_skills_placeholder": "Search skills...", // NEWLY ADDED
+          "no_categories_available": "No categories available.", // NEWLY ADDED
+          "no_skills_match_filters": "No skills match your filters.", // NEWLY ADDED
 
 
-          // Received Requests Page
+          // Received Requests
           "offered_by": "Offered by",
           "received_requests_page_title": "Received Requests",
-          "received_requests_page_subtitle": "Manage skill swap requests from other community members.",
+          "received_requests_page_subtitle": "Manage incoming skill swap requests.",
           "no_requests_received": "You haven't received any skill requests yet.",
           "requested_by": "Requested by",
           "offered_skill_label_in_request": "Offered Skill",
@@ -69,102 +133,87 @@ i18n
           "accepted_requests_section_title": "Accepted Requests",
           "no_new_requests_message_p1": "You currently have no new skill requests or accepted swaps.",
           "no_new_requests_message_p2": "When someone requests one of your skills, it will appear here.",
+          "your_request_accepted_by": "Your request accepted by", // NEWLY ADDED
+          "message_btn": "Message", // NEWLY ADDED
 
 
-          // Navbar
-          "navbar_home": "Home",
-          "navbar_about_us": "About Us",
-          "navbar_women_zone": "Women's Zone",
-          "navbar_contact": "Contact",
-          "navbar_login_btn": "Log In",
-          "navbar_signup_btn": "Sign Up",
-          "navbar_logout": "Logout",
-          "navbar_dashboard": "Dashboard",
-          "navbar_my_profile": "My Profile",
-          "navbar_my_skills": "My Skills",
-          "navbar_messages": "Messages",
-          "navbar_marketplace": "Marketplace",
-          "navbar_reviews": "Reviews",
-
-          // Hero Section
-          "hero_headline": "Trade Skills, Build Futures.",
-          "hero_subtext": "Gadd Kaam – SkillSwap Pakistan is a community where you can exchange your talents for the help you need, all without money.",
-          "hero_offer_skill_btn": "Offer a Skill",
-          "hero_find_skill_btn": "Find a Skill",
-          "hero_title": "Connect with Local Talent",
-          "hero_subtitle": "Your one-stop destination for finding and offering local services in Pakistan.",
-          "hero_join_now": "Join Now",
-          "hero_find_service": "Find a Service",
-          "hero_find_service_desc": "Browse a wide range of services offered by skilled professionals in your area.",
-          "hero_offer_skills": "Offer Your Skills",
-          "hero_offer_skills_desc": "Create a profile and start earning by offering your services to the community.",
-          "hero_secure_reliable": "Secure & Reliable",
-          "hero_secure_reliable_desc": "We provide a secure platform for all transactions and communications.",
-
-
-          // How It Works Section
-          "how_it_works_title": "How It Works",
-          "how_it_works_subtitle": "Joining our community is easy. Follow these simple steps to start swapping skills.",
-          "step1_title": "1. Create Profile",
-          "step1_description": "Sign up and list the skills you can offer. Get verified to build trust.",
-          "step2_title": "2. Find & Swap",
-          "step2_description": "Browse skills you need, or post a request. Connect with others to arrange a swap.",
-          "step3_title": "3. Rate & Earn",
-          "step3_description": "Complete the swap, leave feedback, and earn Skill Points for your contributions.",
-
-          // Featured Skills Section
-          "featured_skills_title": "Featured Skills",
-          "view_all_link": "View All →",
-          "view_details_link": "View Details →",
-
-          // Testimonials Section
-          "testimonials_title": "What Our Community Says",
-          "testimonial1_quote": "I fixed my neighbor's water pump, and in return, his wife taught my daughter how to embroider. Gadd Kaam – SkillSwap made it possible. This is a blessing for our village.",
-          "testimonial1_author_name": "Iqbal Hussain",
-          "testimonial1_author_details": "Mechanic, Punjab",
-          "testimonial2_quote": "As a woman, it's not always easy to find work. Through the women-only zone, I found a safe space to offer my sewing skills and learn accounting from another woman.",
-          "testimonial2_author_name": "Samina Akhtar",
-          "testimonial2_author_details": "Home Chef, Sindh",
-
-          // Women's Zone Section
-          "women_zone_title": "A Safe Space for Women",
-          "women_zone_description": "Our Women-Only Skill Zone provides a secure and supportive environment for women to connect, learn, and trade skills with confidence.",
-          "women_zone_button": "Explore the Women's Zone",
-
-          // Footer
-          "footer_tagline": "Empowering communities by connecting skills, cash-free.",
-          "footer_quick_links": "Quick Links",
-          "footer_support": "Support",
-          "footer_follow_us": "Follow Us",
-          "footer_copyright": "Gadd Kaam – SkillSwap Pakistan. All rights reserved.",
-          "footer_privacy_policy": "Privacy Policy",
-          "footer_terms_of_service": "Terms of Service",
-          "Empowering_communities_by_connecting_skills_cash_free": "Empowering communities by connecting skills, cash-free.",
-          "post_a_skill": "Post a Skill",
-          "faq_link": "FAQ",
-          "dispute_resolution_link": "Dispute Resolution",
+          // Messages Page (Chat)
+          "messages_page_title": "Your Conversations", // Consistent with Dashboard
+          "messages_page_subtitle": "Chat with other users about skill exchanges.",
+          "select_conversation_message": "Select a conversation to start chatting.",
+          "choose_chat_to_start": "Choose a chat from the left sidebar to view messages.",
+          "type_your_message_placeholder": "Type your message...",
+          "skill_received_btn": "Skill Received",
+          "report_btn": "Report",
+          "confirm_skill_received_title": "Confirm Skill Received?",
+          "confirm_skill_received_message": "Did you really receive the skill from the other user? This will mark the exchange as completed.",
+          "exchange_completed_chat_summary": "Exchange Completed. Review Pending.",
+          "exchange_completed_label": "Completed",
+          "pending_confirmation_badge": "Awaiting your confirmation",
+          "your_confirmation_pending": "Your confirmation pending",
+          "partner_confirmation_pending": "Partner's confirmation pending",
+          "failed_to_send_message_error": "Failed to send message.",
+          "error_no_request_id": "Error: No request ID found.",
+          "error_confirming_skill_received_generic": "Failed to confirm skill received.",
+          "exchange_completed_chat_view_only": "This exchange has been completed. You can no longer send new messages, but you can view the conversation history.",
+          "skill_exchange_completed": "Skill exchange completed!",
+          "user_not_authorized_chat": "You are not authorized to send messages in this conversation.",
+          "cannot_send_messages_completed": "This exchange has been completed. Messages cannot be sent.",
+          "search_messages_placeholder": "Search conversations...",
+          "no_messages_found": "No conversations found matching your search.",
+          "no_messages_yet": "You have no ongoing conversations yet. Start by sending or accepting a request!",
+          "chat_message_initial": "Start chatting!", // Initial message preview for new chats
+          "chat_initial_greeting": "Hello there! How can I assist you today?",
+          "chat_how_can_i_help": "I am ready when you are!",
+          "chat_user_response": "Great, I'm looking forward to it!",
+          "chat_message_ali": "Sure, let's meet tomorrow.",
+          "chat_message_fatima": "I received the skill!",
+          "chat_message_usman": "Initial message for a new request.",
+          "chat_message_ayesha": "Exchange completed. Please leave a review!",
+          "exchange_completed_no_chat": "This exchange is completed.", // Duplicated for clarity
 
 
-          // Language names for display
-          "lang_en": "English",
-          "lang_ur": "Urdu",
-          "lang_sd": "Sindhi",
+          // Reviews Page
+          "reviews_page_title": "Reviews & Feedback",
+          "reviews_page_subtitle": "Share your feedback on completed skill exchanges and view reviews you've received.",
+          "received_reviews_tab": "Received Reviews",
+          "write_a_review_tab": "Write a Review",
+          "no_received_reviews": "You haven't received any reviews yet.", // Used for 'Received Reviews' tab
+          "no_pending_reviews": "You have no pending reviews to write.", // Used for 'Write a Review' tab
+          "by_reviewer_name": "By {{username}}",
+          "review_for_exchange_with": "Review for exchange with {{username}}",
+          "skills_involved": "Skills Involved",
+          "not_specified": "Not specified",
+          "write_review_for_label": "Write a Review for {{username}}",
+          "rate_exchange_label": "Rate this exchange",
+          "your_comments_label": "Your comments",
+          "review_comment_placeholder": "Share your experience...",
+          "endorse_skills_optional": "Endorse skills (optional)",
+          "submit_review_btn": "Submit Review",
+          "review_submission_status": "Review Submission Status",
+          "review_submitted_success": "Your review has been submitted successfully!",
+          "failed_to_submit_review_error": "Failed to submit review. Please try again.",
+          "please_provide_rating": "Please provide a rating (1-5 stars).",
+          "please_provide_review_comment": "Please provide a comment for your review.",
+          "error_no_request_to_review": "Error: No request selected to review.",
+          "skill_offered_label": "Skill Offered",
+          "skill_requested_label": "Skill Requested",
+          "exchange_date_label": "Exchange Date", // Kept for consistency but noted as removed from UI
+          "review_submitted_title": "Review Submitted!",
+          "review_submitted_message": "Thank you for your feedback. Your review helps build trust in the community.",
+          "back_to_dashboard_btn": "Back to Dashboard",
+          "rate_skill_exchange_with": "Rate your skill exchange with {{username}}",
+          "your_review_label": "Your Review",
+          "endorse_skills_label": "Endorse skills for {{username}}", // Duplicated for consistency
+          "endorse_btn": "Endorse",
+          "reviews_received_tab": "Reviews Received", // Duplicated for consistency
+          "no_received_reviews_yet": "You haven't received any reviews yet.", // Duplicated for consistency
+          "skill_offered_by_them": "Skill offered by them:",
+          "skill_you_requested": "Skill you requested:",
+          "rating_label": "Rating:",
+          "failed_to_load_received_reviews": "Failed to load received reviews.",
+          "failed_to_load_pending_reviews": "Failed to load pending reviews.",
 
-          // --- Dashboard Translations ---
-          "dashboard_welcome_heading": "Welcome back, {{username}}!",
-          "dashboard_sub_heading": "Here's a quick overview of your SkillSwap activity.",
-          "skills_offered_title": "Skills Offered",
-          "skills_offered_detail": "Post a skill to get started!",
-          "skills_received_title": "Skills Received",
-          "skills_received_detail": "Start learning new things today!",
-          "unread_messages_title": "Unread Messages",
-          "unread_messages_detail": "No new messages yet.",
-          "find_skill_title": "Find a Skill",
-          "find_skill_description": "Explore the marketplace to discover new skills and connect with talented people in your community.",
-          "browse_marketplace_btn": "Browse Marketplace",
-          "offer_skill_title_card": "Offer a Skill",
-          "offer_skill_description_card": "Share your expertise with the community. Post a skill you can teach or a service you can provide.",
-          "post_new_skill_btn": "Post a New Skill",
 
           // --- Profile Page Translations ---
           "profile_page_title": "My Profile",
@@ -177,7 +226,8 @@ i18n
           "about_me_label": "About Me",
           "discard_changes_btn": "Discard Changes",
           "save_changes_btn": "Save Changes",
-          "my_badges_title": "My Badges", // New
+          "my_badges_title": "My Badges",
+
 
           // --- Offer Skill Page Translations ---
           "offer_skill_title": "Offer a New Skill",
@@ -216,7 +266,7 @@ i18n
           "offer_skill_label": "Offered Skill",
           "swap_skill_label": "Wanted Skill",
           "description_label": "Description",
-          "skill_not_specified": "Not specified",
+          "skill_not_specified": "Not specified", // Duplicated here for explicit availability
           "yes": "Yes",
           "no": "No",
           "failed_to_load_my_skills_error": "Failed to load your skills. Please try again.",
@@ -225,76 +275,63 @@ i18n
           "delete_confirm_title": "Confirm Deletion",
           "delete_confirm_message": "Are you sure you want to delete this skill offer? This action cannot be undone.",
 
-          // --- Marketplace Page Translations ---
-          "marketplace_page_title": "Skill Marketplace",
-          "marketplace_page_subtitle": "Explore skills offered by others in your community.",
-          "no_skills_available": "No skills available in the marketplace right now. Check back later!",
-          "request_btn": "Request",
+          // Testimonials Section
+          "testimonials_title": "What Our Community Says",
+          "testimonial1_quote": "I fixed my neighbor's water pump, and in return, his wife taught my daughter how to embroider. Gadd Kaam – SkillSwap made it possible. This is a blessing for our village.",
+          "testimonial1_author_name": "Iqbal Hussain",
+          "testimonial1_author_details": "Mechanic, Punjab",
+          "testimonial2_quote": "As a woman, it's not always easy to find work. Through the women-only zone, I found a safe space to offer my sewing skills and learn accounting from another woman.",
+          "testimonial2_author_name": "Samina Akhtar",
+          "testimonial2_author_details": "Home Chef, Sindh",
 
-          // --- Women Only Zone Page Translations ---
-          "women_only_zone_page_title": "Women-Only Skill Zone",
-          "women_only_zone_page_subtitle": "A dedicated space for women to safely share and swap skills.",
-          "no_women_zone_skills_available": "No skills available in the Women-Only Zone right now. Check back later!",
+          // How It Works Section
+          "how_it_works_title": "How It Works",
+          "how_it_works_subtitle": "Joining our community is easy. Follow these simple steps to start swapping skills.",
+          "step1_title": "1. Create Profile",
+          "step1_description": "Sign up and list the skills you can offer. Get verified to build trust.",
+          "step2_title": "2. Find & Swap",
+          "step2_description": "Browse skills you need, or post a request. Connect with others to arrange a swap.",
+          "step3_title": "3. Rate & Earn",
+          "step3_description": "Complete the swap, leave feedback, and earn Skill Points for your contributions.",
 
-          // --- Messages Page Translations (New) ---
-          "messages_page_title": "My Messages",
-          "messages_page_subtitle": "View and manage your conversations with other users.",
-          "no_messages_yet": "You don't have any messages yet.",
-          "search_messages_placeholder": "Search messages...",
-          "no_messages_found": "No conversations found.",
-          "select_conversation_message": "Select a conversation",
-          "choose_chat_to_start": "Choose a chat from the left to start messaging.",
-          "chat_with_user_placeholder": "Chat",
-          "skill_received_btn": "Skill Received",
-          "report_btn": "Report",
-          "type_your_message_placeholder": "Type your message...",
-          "chat_initial_greeting": "Hello there! How can I assist you today?",
-          "chat_how_can_i_help": "I am ready when you are!",
-          "chat_user_response": "Great, I'm looking forward to it!",
-          "chat_message_ali": "Sure, let's meet tomorrow.", // Dummy message content
-          "chat_message_fatima": "I received the skill!", // Dummy message content
-          "chat_message_usman": "Initial message for a new request.", // Dummy message content
-          "chat_message_ayesha": "Exchange completed. Please leave a review!", // Dummy message content
-          "exchange_completed_chat_view_only": "This exchange is completed. You can no longer send messages.",
-          "exchange_completed_no_chat": "This exchange is completed.",
-          "exchange_completed_chat_summary": "Exchange completed. Please leave a review!",
-          "confirm_skill_received_title": "Confirm Skill Received?",
-          "confirm_skill_received_message": "Did you really receive the skill? This action cannot be undone and will lead to the review process.",
-          "error_confirming_skill_received": "Failed to confirm skill received. Please try again.",
-          "error_confirming_skill_received_generic": "Failed to confirm skill received. An error occurred.",
-          "error_no_request_id": "Could not confirm skill. Request ID is missing.",
-          "error_title": "Error",
-          "your_confirmation_pending": "Your confirmation pending",
-          "partner_confirmation_pending": "Partner confirmation pending",
-          "exchange_completed_label": "Exchange Completed",
+          // Featured Skills Section
+          "featured_skills_title": "Featured Skills",
+          "view_all_link": "View All →",
+          "view_details_link": "View Details →",
+
+          // Hero Section
+          "hero_headline": "Trade Skills, Build Futures.",
+          "hero_subtext": "Gadd Kaam – SkillSwap Pakistan is a community where you can exchange your talents for the help you need, all without money.",
+          "hero_offer_skill_btn": "Offer a Skill",
+          "hero_find_skill_btn": "Find a Skill",
+          "hero_title": "Connect with Local Talent",
+          "hero_subtitle": "Your one-stop destination for finding and offering local services in Pakistan.",
+          "hero_join_now": "Join Now",
+          "hero_find_service": "Find a Service",
+          "hero_find_service_desc": "Browse a wide range of services offered by skilled professionals in your area.",
+          "hero_offer_skills": "Offer Your Skills",
+          "hero_offer_skills_desc": "Create a profile and start earning by offering your services to the community.",
+          "hero_secure_reliable": "Secure & Reliable",
+          "hero_secure_reliable_desc": "We provide a secure platform for all transactions and communications.",
 
 
-          // --- Reviews Page Translations (New) ---
-          "reviews_page_title": "Reviews",
-          "reviews_page_subtitle": "Share your feedback on completed skill exchanges and view reviews you've received.",
-          "no_reviews_yet": "You haven't received any reviews yet.", // Used for 'Reviews Received' tab
-          "review_submitted_title": "Review Submitted!",
-          "review_submitted_message": "Thank you for your feedback. Your review helps build trust in the community.",
-          "back_to_dashboard_btn": "Back to Dashboard",
-          "rate_skill_exchange_with": "Rate your skill exchange with {{username}}",
-          "your_review_label": "Your Review",
-          "review_placeholder": "Write your review here...",
-          "endorse_skills_label": "Endorse skills for {{username}}",
-          "endorse_btn": "Endorse",
-          "submit_review_btn": "Submit Review",
-          "reviews_received_tab": "Reviews Received",
-          "write_a_review_tab": "Write a Review",
-          "no_received_reviews_yet": "You haven't received any reviews yet.",
-          "no_pending_reviews": "No pending reviews. All completed exchanges have been reviewed by you!",
-          "review_for_exchange_with": "Review for exchange with {{username}}",
-          "skills_involved": "Skills involved:",
-          "skill_offered_by_them": "Skill offered by them:",
-          "skill_you_requested": "Skill you requested:",
-          "rating_label": "Rating:",
-          "by_reviewer_name": "by {{username}}",
-          "failed_to_submit_review": "Failed to submit review. Please try again.",
-          "failed_to_load_received_reviews": "Failed to load received reviews.",
-          "failed_to_load_pending_reviews": "Failed to load pending reviews.",
+          // Footer
+          "footer_tagline": "Empowering communities by connecting skills, cash-free.",
+          "footer_quick_links": "Quick Links",
+          "footer_support": "Support",
+          "footer_follow_us": "Follow Us",
+          "footer_copyright": "Gadd Kaam – SkillSwap Pakistan. All rights reserved.",
+          "footer_privacy_policy": "Privacy Policy",
+          "footer_terms_of_service": "Terms of Service",
+          "Empowering_communities_by_connecting_skills_cash_free": "Empowering communities by connecting skills, cash-free.",
+          "post_a_skill": "Post a Skill",
+          "faq_link": "FAQ",
+          "dispute_resolution_link": "Dispute Resolution",
+
+          // Language names for display
+          "lang_en": "English",
+          "lang_ur": "Urdu",
+          "lang_sd": "Sindhi",
 
           // --- Login Page Translations ---
           "login_welcome_back": "Welcome Back!",
@@ -324,7 +361,7 @@ i18n
           "signup_email_label": "Email",
           "signup_dateOfBirth_label": "Date of Birth",
           "signup_cnicNumber_label": "CNIC Number",
-          "signup_cnicNumber_placeholder": "e.g., 12345-1234567-1", // New
+          "signup_cnicNumber_placeholder": "e.g., 12345-1234567-1",
           "signup_cnicFrontPic_label": "CNIC Front Picture",
           "signup_cnicBackPic_label": "CNIC Back Picture",
           "signup_password_label": "Password",
@@ -384,6 +421,11 @@ i18n
           "request_sent_success_title": "درخواست بھیجی گئی!",
           "request_sent_error_title": "درخواست ناکام!",
 
+          // --- NEW GENERIC KEYS from console logs ---
+          "Messages": "پیغامات",
+          "Reviews": "جائزے",
+          // --- END NEW GENERIC KEYS ---
+
           // Received Requests Page (Urdu)
           "offered_by": "پیش کردہ از",
           "received_requests_page_title": "موصول شدہ درخواستیں",
@@ -412,6 +454,8 @@ i18n
           "accepted_requests_section_title": "منظور شدہ درخواستیں",
           "no_new_requests_message_p1": "آپ کے پاس فی الحال کوئی نئی مہارت کی درخواستیں یا منظور شدہ تبادلے نہیں ہیں۔",
           "no_new_requests_message_p2": "جب کوئی آپ کی مہارت میں سے کسی ایک کی درخواست کرے گا تو وہ یہاں ظاہر ہو گا۔",
+          "your_request_accepted_by": "آپ کی درخواست قبول کر لی گئی",
+          "message_btn": "پیغام",
 
           // Navbar (Urdu)
           "navbar_home": "ہوم",
@@ -592,10 +636,10 @@ i18n
           "chat_initial_greeting": "ہیلو! میں آج آپ کی کیسے مدد کر سکتا ہوں؟",
           "chat_how_can_i_help": "میں تیار ہوں جب آپ ہوں!",
           "chat_user_response": "بہت اچھا، میں اس کا انتظار کر رہا ہوں!",
-          "chat_message_ali": "ضرور، کل ملتے ہیں۔", // Dummy message content
-          "chat_message_fatima": "مجھے مہارت موصول ہو گئی!", // Dummy message content
-          "chat_message_usman": "نئی درخواست کے لیے ابتدائی پیغام۔", // Dummy message content
-          "chat_message_ayesha": "تبادلہ مکمل ہو گیا۔ براہ کرم ایک جائزہ چھوڑیں!", // Dummy message content
+          "chat_message_ali": "ضرور، کل ملتے ہیں۔",
+          "chat_message_fatima": "مجھے مہارت موصول ہو گئی!",
+          "chat_message_usman": "نئی درخواست کے لیے ابتدائی پیغام۔",
+          "chat_message_ayesha": "تبادلہ مکمل ہو گیا۔ براہ کرم ایک جائزہ چھوڑیں!",
           "exchange_completed_chat_view_only": "یہ تبادلہ مکمل ہو گیا ہے۔ اب آپ پیغامات نہیں بھیج سکتے۔",
           "exchange_completed_no_chat": "یہ تبادلہ مکمل ہو گیا ہے۔",
           "exchange_completed_chat_summary": "تبادلہ مکمل ہو گیا۔ براہ کرم ایک جائزہ چھوڑیں!",
@@ -636,6 +680,7 @@ i18n
           "failed_to_submit_review": "جائزہ جمع کرنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
           "failed_to_load_received_reviews": "موصول شدہ جائزے لوڈ کرنے میں ناکامی۔",
           "failed_to_load_pending_reviews": "زیر التوا جائزے لوڈ کرنے میں ناکامی۔",
+
 
           // --- Login Page Translations (Urdu) ---
           "login_welcome_back": "خوش آمدید!",
@@ -725,6 +770,11 @@ i18n
           "request_sent_success_title": "درخواست موڪلي وئي!",
           "request_sent_error_title": "درخواست ناڪام!",
 
+          // --- NEW GENERIC KEYS from console logs ---
+          "Messages": "پيغام",
+          "Reviews": "جائزا",
+          // --- END NEW GENERIC KEYS ---
+
           // Received Requests Page (Sindhi)
           "offered_by": "پيش ڪيل پاران",
           "received_requests_page_title": "موصول ٿيل درخواستون",
@@ -753,6 +803,9 @@ i18n
           "accepted_requests_section_title": "قبول ڪيل درخواستون",
           "no_new_requests_message_p1": "توهان وٽ هن وقت ڪا به نئين مهارت جي درخواست يا قبول ٿيل مٽاسٽا نه آهي.",
           "no_new_requests_message_p2": "جڏهن ڪو توهان جي مهارتن مان ڪنهن هڪ جي درخواست ڪندو ته اها هتي ظاهر ٿيندي.",
+          "your_request_accepted_by": "توهان جي درخواست قبول ڪئي وئي",
+          "message_btn": "پيغام",
+
 
           // Navbar (Sindhi)
           "navbar_home": "گھر",
@@ -821,7 +874,7 @@ i18n
           "footer_copyright": "گڊ ڪام – اسڪل سوائيپ پاڪستان. سڀ حق محفوظ.",
           "footer_privacy_policy": "پرائيويسي پاليسي",
           "footer_terms_of_service": "سروس جون شرطون",
-          "Empowering_communities_by_connecting_skills_cash_free": "مهارتن کي ڳنڍڻ، بغير نقد، جي ذريعي ڪميونٽين کي بااختيار بڻائڻ.",
+          "Empowering_communities_by_connecting_skills_cash_free": "مهارتن کي نقد جي بغير جوڙي ڪميونٽين کي بااختيار بڻائڻ.",
           "post_a_skill": "هڪ مهارت پوسٽ ڪريو",
           "faq_link": "اڪثر پڇيا ويندڙ سوال",
           "dispute_resolution_link": "تڪرار جو حل",
@@ -905,7 +958,6 @@ i18n
           "failed_to_delete_skill_offer_error": "مهارت جي پيشڪش حذف ڪرڻ ۾ ناڪامي. مهرباني ڪري ٻيهر ڪوشش ڪريو.",
           "delete_confirm_title": "حذف ڪرڻ جي تصديق ڪريو",
           "delete_confirm_message": "ڇا توهان پڪ آهيو ته توهان هن مهارت جي پيشڪش کي حذف ڪرڻ چاهيو ٿا؟ هي عمل واپس نٿو وٺي سگهجي.",
-
 
           // --- Marketplace Page Translations (Sindhi) ---
           "marketplace_page_title": "مهارت مارڪيٽ پليس",

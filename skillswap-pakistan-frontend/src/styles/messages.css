@@ -1,227 +1,169 @@
 /* src/styles/messages.css */
 
-/* Overall container for the messages page, enabling a flexbox layout for sidebar and chat area */
+/* Overall container */
 .messages-page-wrapper {
     display: flex;
-    /* Calculate full height minus navbar and footer heights */
-    height: calc(100vh - var(--navbar-height) - var(--footer-height, 100px) - 40px); /* Adjusted for some margin */
+    height: calc(100vh - var(--navbar-height) - 40px); /* Adjust based on navbar */
     margin: 20px;
-    overflow: hidden; /* Prevent scrolling on the main container */
-    background-color: var(--card-background); /* Uses global card background */
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Consistent with card-panel */
-    border: 1px solid var(--border-color); /* Added for consistency */
-    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    background-color: var(--card-background);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
 }
 
 body.dark-mode .messages-page-wrapper {
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3); /* Darker shadow in dark mode */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
-/* Left sidebar for conversation list */
+/* --- Sidebar --- */
 .messages-list-sidebar {
-    flex: 0 0 350px; /* Fixed width sidebar */
-    background-color: var(--card-background); /* Uses global card background */
-    border-right: 1px solid var(--border-color); /* Uses global border color */
+    flex: 0 0 320px;
+    background-color: var(--card-background);
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* Enable scrolling for conversation list */
-    transition: background-color 0.3s ease, border-right-color 0.3s ease;
 }
 
-/* Header for the messages sidebar */
 .messages-header {
     padding: 20px;
-    border-bottom: 1px solid var(--border-color); /* Uses global border color */
-    transition: border-bottom-color 0.3s ease;
+    border-bottom: 1px solid var(--border-color-light);
 }
 
 .messages-header h1 {
-    font-size: 1.8em;
-    color: var(--text-dark); /* Uses global dark text */
+    font-size: 1.5em;
+    font-weight: 700;
+    color: var(--text-dark);
     margin-bottom: 5px;
 }
 
-.messages-header p {
-    font-size: 0.9em;
-    color: var(--text-medium); /* Uses global medium text */
-}
-
-/* Search bar within the conversation list */
 .conversation-search {
-    padding: 15px 20px;
-    border-bottom: 1px solid var(--border-color); /* Uses global border color */
+    padding: 15px;
     position: relative;
-    transition: border-bottom-color 0.3s ease;
 }
 
 .conversation-search input {
-    width: calc(100% - 40px); /* Adjust width for icon */
-    padding: 10px 10px 10px 35px; /* Left padding for icon */
-    border: 1px solid var(--border-color); /* Uses global border color */
-    border-radius: 25px; /* Rounded search bar */
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     font-size: 0.95em;
-    background-color: var(--input-background); /* Uses global input background */
-    color: var(--text-dark); /* Uses global dark text */
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    background-color: var(--background-section);
+    color: var(--text-dark);
+    transition: all 0.2s ease;
 }
 
-.conversation-search input::placeholder {
-    color: var(--text-light); /* Uses global light text for placeholder */
+.conversation-search input:focus {
+    background-color: var(--card-background);
+    border-color: var(--logo-orange);
+    box-shadow: 0 0 0 3px rgba(227, 139, 64, 0.1);
 }
 
 .conversation-search .search-icon {
     position: absolute;
-    left: 30px;
+    left: 28px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-light); /* Uses global light text for icon */
-    transition: color 0.3s ease;
+    color: var(--text-light);
 }
 
-/* List of conversations */
 .messages-list {
-    flex-grow: 1; /* Takes remaining vertical space */
-    overflow-y: auto; /* Enable scrolling for the list */
-    padding-bottom: 15px;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+/* Custom Scrollbar */
+.messages-list::-webkit-scrollbar,
+.messages-display::-webkit-scrollbar {
+    width: 6px;
+}
+.messages-list::-webkit-scrollbar-thumb,
+.messages-display::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+.messages-list::-webkit-scrollbar-track,
+.messages-display::-webkit-scrollbar-track {
+    background-color: transparent;
 }
 
 .conversation-list-item {
     display: flex;
     align-items: center;
-    padding: 15px 20px;
-    border-bottom: 1px solid var(--border-color-light); /* Uses lighter border for subtle separation */
+    padding: 15px;
     cursor: pointer;
-    transition: background-color 0.2s ease, border-bottom-color 0.3s ease;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid var(--border-color-light);
 }
 
 .conversation-list-item:hover {
-    background-color: var(--background-section); /* Uses global section background for hover */
+    background-color: var(--background-section);
 }
 
 .conversation-list-item.active {
-    background-color: var(--primary-hover-light); /* Uses light orange for active background */
-    border-left: 4px solid var(--primary-orange); /* Highlight active conversation with primary orange */
+    background-color: rgba(227, 139, 64, 0.08); /* Very light orange */
+    border-left: 4px solid var(--logo-orange);
 }
 
 .conversation-item-avatar {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     object-fit: cover;
     margin-right: 15px;
-    border: 2px solid var(--border-color); /* Uses global border color */
-    transition: border-color 0.3s ease;
-}
-
-.conversation-list-item.active .conversation-item-avatar {
-    border-color: var(--primary-orange); /* Active avatar border matches primary orange */
+    border: 2px solid #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .conversation-item-info {
     flex-grow: 1;
-    position: relative;
+    overflow: hidden;
 }
 
 .conversation-item-info h4 {
-    margin: 0;
-    font-size: 1.1em;
-    color: var(--text-dark); /* Uses global dark text */
+    margin: 0 0 4px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; /* Truncate long names */
+    text-overflow: ellipsis;
 }
 
 .conversation-item-info .last-message-preview {
-    margin: 5px 0 0;
-    font-size: 0.85em;
-    color: var(--text-medium); /* Uses global medium text */
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-medium);
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; /* Truncate long messages */
-    max-width: 100%;
+    text-overflow: ellipsis;
 }
 
-/* Status badges for conversations */
-.status-badge {
-    font-size: 0.75em;
-    padding: 4px 8px;
-    border-radius: 12px;
-    margin-top: 5px;
-    display: inline-block;
-    font-weight: 500;
-}
-
-.pending-confirmation-badge {
-    background-color: var(--warning-light-bg); /* Uses global warning light background */
-    color: var(--warning-color); /* Uses global warning color */
-}
-
-.completed-badge {
-    background-color: var(--success-light-bg); /* Uses global success light background */
-    color: var(--success-color); /* Uses global success color */
-}
-
-/* Right area for active conversation display */
+/* --- Chat Area --- */
 .active-conversation-area {
-    flex-grow: 1; /* Takes remaining horizontal space */
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    background-color: var(--background-page); /* Uses global page background for chat area */
-    transition: background-color 0.3s ease;
+    background-color: var(--background-beige);
+    position: relative;
 }
 
-/* Message shown when no conversation is selected */
-.no-active-conversation {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    color: var(--text-light); /* Uses global light text */
-    text-align: center;
-}
-
-.no-active-conversation .no-conversation-icon {
-    color: var(--border-color-light); /* Uses lighter border color for icon */
-    margin-bottom: 20px;
-}
-
-.no-active-conversation p {
-    font-size: 1.2em;
-    font-weight: 500;
-    margin-bottom: 10px;
-}
-
-.no-active-conversation .no-conversation-subtext {
-    font-size: 0.9em;
-    color: var(--text-light); /* Uses global light text */
-}
-
-/* Chat conversation container */
 .conversation-container {
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
     height: 100%;
-    overflow: hidden;
 }
 
-/* Header for the active chat (partner info and action buttons) */
 .chat-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 15px 20px;
-    background-color: var(--card-background); /* Uses global card background */
-    border-bottom: 1px solid var(--border-color); /* Uses global border color */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    z-index: 10; /* Ensure header is on top */
-    transition: background-color 0.3s ease, border-bottom-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-body.dark-mode .chat-header {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    padding: 15px 25px;
+    background-color: var(--card-background);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    z-index: 2;
 }
 
 .chat-partner-info {
@@ -230,242 +172,193 @@ body.dark-mode .chat-header {
 }
 
 .chat-partner-avatar {
-    width: 45px;
-    height: 45px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    margin-right: 15px;
-    border: 2px solid var(--light-blue-review-border); /* Uses global blue border */
-    transition: border-color 0.3s ease;
+    margin-right: 12px;
 }
 
 .chat-partner-info h3 {
     margin: 0;
-    font-size: 1.3em;
-    color: var(--text-dark); /* Uses global dark text */
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--text-dark);
 }
 
 .chat-actions {
     display: flex;
-    gap: 10px; /* Space between buttons */
+    gap: 10px;
 }
 
-.chat-action-btn {
-    padding: 8px 15px;
-    font-size: 0.9em;
-    display: flex;
-    align-items: center;
-    border-radius: 20px;
-    background-color: var(--button-secondary-bg); /* Use secondary button background */
-    color: var(--button-secondary-text); /* Use secondary button text */
-    border: 1px solid var(--button-secondary-text); /* Consistent border */
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
-.chat-action-btn:hover {
-    background-color: var(--button-secondary-hover-bg);
-    color: var(--button-secondary-hover-text);
-    border-color: var(--button-secondary-hover-bg);
-}
-
-/* Main display area for messages */
+/* Chat Messages Display */
 .messages-display {
-    flex-grow: 1; /* Takes all available vertical space */
+    flex-grow: 1;
     padding: 20px;
-    overflow-y: auto; /* Enable scrolling for messages */
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Space between message bubbles */
-    background-color: var(--background-page); /* Uses global page background for chat area */
-    transition: background-color 0.3s ease;
+    gap: 8px;
+    /* Subtle Pattern Background */
+    background-color: #f0f2f5; 
+    background-image: 
+        radial-gradient(#e38b40 0.5px, transparent 0.5px), 
+        radial-gradient(#e38b40 0.5px, #f0f2f5 0.5px);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+    background-blend-mode: soft-light;
+    opacity: 0.95;
 }
 
-/* Individual chat message bubble */
+body.dark-mode .messages-display {
+    background-color: #1a1a1a;
+    background-image: none; /* Cleaner for dark mode */
+}
+
+/* Chat Bubbles */
 .chat-message {
     display: flex;
-    max-width: 70%; /* Limit bubble width */
-    padding: 10px 15px;
-    border-radius: 20px;
-    position: relative;
+    flex-direction: column;
+    max-width: 65%;
+    padding: 10px 14px;
     font-size: 0.95em;
-    word-wrap: break-word; /* Ensure long words break */
+    line-height: 1.4;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
+/* Current User (Right) */
 .chat-message.current-user {
-    align-self: flex-end; /* Align user's messages to the right */
-    background-color: var(--primary-orange); /* Uses global primary orange */
-    color: var(--button-primary-text); /* Uses primary button text color */
-    border-bottom-right-radius: 5px; /* Small corner for visual appeal */
+    align-self: flex-end;
+    background-color: #e38b40; /* Logo Orange */
+    color: #fff;
+    border-radius: 18px 18px 0 18px; /* Top-Left, Top-Right, Bottom-Right (Sharp), Bottom-Left */
+    margin-left: auto;
 }
 
+/* Other User (Left) */
 .chat-message.other-user {
-    align-self: flex-start; /* Align other user's messages to the left */
-    background-color: var(--background-section); /* Uses global section background for other messages */
-    color: var(--text-dark); /* Uses global dark text */
-    border-bottom-left-radius: 5px; /* Small corner for visual appeal */
+    align-self: flex-start;
+    background-color: #ffffff;
+    color: #333;
+    border-radius: 18px 18px 18px 0; /* Top-Left (Sharp), Top-Right, Bottom-Right, Bottom-Left */
+    margin-right: auto;
 }
 
-.message-content {
-    flex-grow: 1;
+body.dark-mode .chat-message.other-user {
+    background-color: #333;
+    color: #fff;
 }
 
 .message-time {
-    font-size: 0.75em;
-    margin-top: 5px;
-    text-align: right;
+    font-size: 0.7em;
+    margin-top: 4px;
     opacity: 0.8;
-    align-self: flex-end; /* Align time to bottom-right within the bubble */
-    margin-left: 10px; /* Space between text and time */
-    color: inherit; /* Inherit color from parent bubble */
+    text-align: right;
+    display: block;
 }
 
-/* Fixed input area for typing messages */
+.chat-message.current-user .message-time {
+    color: rgba(255,255,255,0.9);
+}
+
+.chat-message.other-user .message-time {
+    color: #999;
+}
+
+/* Input Area */
 .message-input-area {
     display: flex;
-    padding: 15px 20px;
-    background-color: var(--card-background); /* Uses global card background */
-    border-top: 1px solid var(--border-color); /* Uses global border color */
-    box-shadow: 0 -2px 4px rgba(0,0,0,0.05); /* Shadow at the top */
-    position: sticky; /* Sticky to bottom */
-    bottom: 0;
-    width: 100%;
-    z-index: 10;
-    transition: background-color 0.3s ease, border-top-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-body.dark-mode .message-input-area {
-    box-shadow: 0 -2px 4px rgba(0,0,0,0.2);
+    padding: 15px 25px;
+    background-color: var(--card-background);
+    border-top: 1px solid var(--border-color);
+    align-items: center;
+    gap: 10px;
 }
 
 .message-input-area input {
     flex-grow: 1;
     padding: 12px 18px;
-    border: 1px solid var(--border-color); /* Uses global border color */
-    border-radius: 25px; /* Rounded input field */
-    margin-right: 10px;
-    font-size: 1em;
-    background-color: var(--input-background); /* Uses global input background */
-    color: var(--text-dark); /* Uses global dark text */
-    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    font-size: 1rem;
+    background-color: var(--input-background);
+    color: var(--text-dark);
+    transition: all 0.2s ease;
 }
 
 .message-input-area input:focus {
-    border-color: var(--primary-orange); /* Uses global primary orange */
     outline: none;
+    border-color: var(--logo-orange);
+    box-shadow: 0 0 0 3px rgba(227, 139, 64, 0.15);
 }
 
-.message-input-area .btn-send {
-    background-color: var(--primary-orange); /* Uses global primary orange */
-    color: var(--button-primary-text); /* Uses primary button text color */
+.btn-send {
+    background-color: var(--logo-orange);
+    color: #fff;
     border: none;
-    border-radius: 50%; /* Circular send button */
     width: 45px;
     height: 45px;
+    border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Uses small shadow */
+    transition: background-color 0.2s ease, transform 0.1s;
+    box-shadow: 0 2px 8px rgba(227, 139, 64, 0.4);
 }
 
-.message-input-area .btn-send:hover {
-    background-color: var(--button-primary-hover-bg); /* Uses primary button hover background */
+.btn-send:hover {
+    background-color: var(--logo-dark-orange);
+    transform: scale(1.05);
 }
 
-/* Banner for completed exchanges */
-.exchange-completed-banner {
-    text-align: center;
-    padding: 10px;
-    background-color: var(--info-light-bg); /* Uses global info light background */
-    color: var(--info-color); /* Uses global info color */
-    border-radius: 8px;
-    margin-top: 10px;
-    font-weight: 500;
-    font-size: 0.9em;
-    border: 1px solid var(--info-color); /* Added border */
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
-.no-messages-found {
-    text-align: center;
-    color: var(--text-medium); /* Uses global medium text */
+/* Locked State */
+.message-input-area.locked {
+    background-color: #f9f9f9;
+    justify-content: center;
     padding: 20px;
-    font-size: 1em;
 }
 
-/* Responsive adjustments */
-@media (max-width: 992px) {
-    .messages-list-sidebar {
-        flex: 0 0 300px; /* Adjust sidebar width for medium screens */
-    }
+body.dark-mode .message-input-area.locked {
+    background-color: #2a2a2a;
 }
 
+/* No Conversation Selected */
+.no-active-conversation {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: var(--text-medium);
+    text-align: center;
+    background-color: var(--background-page);
+}
+
+.no-conversation-icon {
+    opacity: 0.3;
+    margin-bottom: 15px;
+}
+
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
     .messages-page-wrapper {
-        flex-direction: column; /* Stack sidebar and chat area vertically */
-        height: auto; /* Allow height to adjust based on content */
+        flex-direction: column;
+        height: auto;
         margin: 10px;
     }
-
     .messages-list-sidebar {
         width: 100%;
         flex: none;
-        height: 300px; /* Fixed height for sidebar on mobile, with scrolling */
-        border-right: none; /* Remove right border */
-        border-bottom: 1px solid var(--border-color); /* Add bottom border */
+        height: 300px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
     }
-
     .active-conversation-area {
-        width: 100%;
-        /* Fill remaining viewport height after sidebar and fixed elements */
-        height: calc(100vh - var(--navbar-height) - var(--footer-height, 100px) - 300px - 20px); /* Adjusted */
+        height: 60vh;
     }
-
     .chat-message {
-        max-width: 85%; /* Increase message bubble width on smaller screens */
-    }
-
-    .chat-header {
-        flex-direction: column; /* Stack header elements vertically */
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .chat-actions {
-        width: 100%;
-        justify-content: space-around; /* Distribute buttons evenly */
-    }
-
-    .chat-action-btn {
-        flex: 1; /* Make buttons take equal space */
-        text-align: center;
-        justify-content: center;
-    }
-}
-
-@media (max-width: 480px) {
-    .chat-header {
-        padding: 10px;
-    }
-    .chat-partner-info h3 {
-        font-size: 1.1em;
-    }
-    .chat-action-btn {
-        padding: 6px 10px;
-        font-size: 0.8em;
-    }
-    .messages-display {
-        padding: 10px;
-    }
-    .message-input-area {
-        padding: 10px;
-    }
-    .message-input-area input {
-        padding: 10px 15px;
-    }
-    .message-input-area .btn-send {
-        width: 40px;
-        height: 40px;
+        max-width: 85%;
     }
 }

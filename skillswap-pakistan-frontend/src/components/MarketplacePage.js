@@ -6,26 +6,21 @@ import HelplinePopup from './HelplinePopup';
 import LoadingSpinner from './LoadingSpinner';
 import SuccessMessageModal from './SuccessMessageModal';
 import '../styles/marketplace.css';
-import '../styles/forms.css'; // For remote switch
+import '../styles/forms.css'; 
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
-// Import icons from lucide-react for consistent styling
 import {
   Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star, Search, Tag, X, Lightbulb, MapPin, Send
 } from 'lucide-react';
 
-// Helper for placeholder images
 const getPlaceholderImage = (width = 280, height = 180) =>
   `https://placehold.co/${width}x${height}/e0e0e0/666666?text=Skill`;
 
-// Shared SkillCard component
+// ✅ SHARED SKILL CARD WITH REVIEW DISPLAY
 const SkillCard = ({ skillOffer, onViewDetails }) => {
   const { t } = useTranslation();
   const imageUrl = skillOffer.photo ? `${process.env.REACT_APP_API_URL}${skillOffer.photo.replace(/\\/g, '/')}` : getPlaceholderImage();
-
-  // Determine author name: if anonymous flag is true, show 'Anonymous'.
-  // Otherwise, use the populated username from skillOffer.user, falling back to 'Anonymous' if somehow missing.
   const authorName = skillOffer.anonymous ? t('anonymous_label') : (skillOffer.user?.username || t('anonymous_label'));
 
   return (
@@ -43,6 +38,34 @@ const SkillCard = ({ skillOffer, onViewDetails }) => {
         <p className="skill-card-author">
           {t('offer_skill_label')} {t('by_label')} {authorName}
         </p>
+
+        {/* ✅ NEW: Review Display Section */}
+        <div className="skill-card-review-section" style={{ 
+            backgroundColor: '#f9f9f9', 
+            padding: '10px', 
+            borderRadius: '8px', 
+            margin: '10px 0', 
+            fontSize: '0.85rem' 
+        }}>
+          {skillOffer.latestReview ? (
+            <div>
+              <div style={{display:'flex', alignItems:'center', gap:'5px', marginBottom:'4px'}}>
+                 <Star size={14} fill="#e38b40" stroke="#e38b40" /> 
+                 <strong>{skillOffer.latestReview.rating}/5</strong>
+              </div>
+              <p style={{fontStyle:'italic', margin:0}}>
+                "{skillOffer.latestReview.comment.length > 50 ? skillOffer.latestReview.comment.substring(0, 50) + '...' : skillOffer.latestReview.comment}"
+              </p>
+              <p style={{margin:'4px 0 0', fontWeight:'bold', color:'#666'}}>
+                - {skillOffer.latestReview.reviewerName}
+              </p>
+            </div>
+          ) : (
+            <p style={{color: '#999', fontStyle: 'italic', margin:0}}>No review</p>
+          )}
+        </div>
+        {/* END NEW Section */}
+
         <p className="skill-card-description">{skillOffer.description}</p>
         <div className="skill-card-tags">
           {skillOffer.remotely && <span className="skill-card-tag">{t('remotely_label')}</span>}
@@ -59,16 +82,15 @@ const SkillCard = ({ skillOffer, onViewDetails }) => {
   );
 };
 
-// FullDetailsModal component - ENHANCED for Request Logic
 const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuccess }) => {
   const { t } = useTranslation();
   const [showRequestForm, setShowRequestForm] = useState(false);
   const [skillRequested, setSkillRequested] = useState('');
-  const [isRemote, setIsRemote] = useState(true); // Default to remote work
-  const [location, setLocation] = useState(''); // State for location
-  const [sendingRequest, setSendingRequest] = useState(false); // State to manage button disabled status
+  const [isRemote, setIsRemote] = useState(true); 
+  const [location, setLocation] = useState(''); 
+  const [sendingRequest, setSendingRequest] = useState(false); 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [successMessage, setSuccessMessage] = useState(''); // ADDED: successMessage state
+  const [successMessage, setSuccessMessage] = useState(''); 
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -86,16 +108,16 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
       return;
     }
 
-    setSendingRequest(true); // Disable button immediately
+    setSendingRequest(true); 
     try {
       const token = localStorage.getItem('token');
       const payload = {
-        receiverId: skillOffer.user._id, // ID of the user offering the skill
-        skillOfferId: skillOffer._id, // ID of the specific skill offer
+        receiverId: skillOffer.user._id, 
+        skillOfferId: skillOffer._id, 
         skillRequested: skillRequested,
         message: t('initial_request_message', { skill: skillOffer.skills.join(', ') }),
         isRemote: isRemote,
-        location: isRemote ? '' : location, // Send empty string if remote
+        location: isRemote ? '' : location, 
       };
 
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/requests`, payload, {
@@ -103,23 +125,19 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
       });
 
       console.log('Request sent:', response.data);
-      setSuccessMessage(t('request_sent_success_message')); // Set translated success message
+      setSuccessMessage(t('request_sent_success_message')); 
       setShowSuccessModal(true);
       onSendRequestSuccess();
     } catch (err) {
       console.error('Failed to send request:', err.response?.data || err);
-      // Use err.response?.data?.msg for backend validation messages
       setErrorMessage(err.response?.data?.msg || err.response?.data?.errors?.[0]?.msg || t('failed_to_send_request_error'));
       setShowErrorModal(true);
     } finally {
-      setSendingRequest(false); // Re-enable button
+      setSendingRequest(false); 
     }
   };
 
-  // Determine author name for display in modal
   const authorName = skillOffer.anonymous ? t('anonymous_label') : (skillOffer.user?.username || t('anonymous_label'));
-
-  // Prevent current user from requesting their own skill
   const isOwnSkill = currentUserId === skillOffer.user?._id;
 
   if (!skillOffer) return null;
@@ -147,7 +165,6 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
             <h3 className="full-details-info-label">{t('description_label')}</h3>
             <p className="full-details-info-value">{skillOffer.description}</p>
           </div>
-          {/* Show location ONLY if the skill is NOT remotely offered */}
           {!skillOffer.remotely && (
             <div className="full-details-info-box">
               <h3 className="full-details-info-label">{t('location_label')}</h3>
@@ -172,7 +189,6 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
             <h3 className="full-details-info-label">{t('swap_skill_label')}</h3>
             <p className="full-details-info-value">{skillOffer.skillsToSwap?.join(', ') || t('skill_not_specified')}</p>
           </div>
-          {/* Show phone number ONLY if the skill is NOT anonymous */}
           {!skillOffer.anonymous && skillOffer.user?.phoneNumber && (
             <div className="full-details-info-box">
               <h3 className="full-details-info-label">{t('phone_label')}</h3>
@@ -205,7 +221,7 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
                     checked={isRemote}
                     onChange={(e) => {
                       setIsRemote(e.target.checked);
-                      if (e.target.checked) setLocation(''); // Clear location if remote
+                      if (e.target.checked) setLocation(''); 
                     }}
                   />
                   <span className="slider round"></span>
@@ -222,7 +238,7 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
                     placeholder={t('enter_location_placeholder')}
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    className="input-field" // Use global input style
+                    className="input-field" 
                   />
                 </div>
               )}
@@ -243,7 +259,7 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
           message={successMessage}
           onClose={() => {
             setShowSuccessModal(false);
-            onClose(); // Close the FullDetailsModal after success
+            onClose(); 
           }}
           type="success"
         />
@@ -252,7 +268,7 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
       {showErrorModal && (
         <SuccessMessageModal
           isOpen={showErrorModal}
-          title={t("error_title")} // Use translation key directly
+          title={t("error_title")} 
           message={errorMessage}
           onClose={() => setShowErrorModal(false)}
           type="error"
@@ -269,8 +285,8 @@ function MarketplacePage({ onChatbotToggle }) {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [showHelplinePopup, setShowHelplinePopup] = useState(false);
-  const [allSkills, setAllSkills] = useState([]); // Stores all skills fetched from API
-  const [filteredSkills, setFilteredSkills] = useState([]); // Skills after applying search/filters
+  const [allSkills, setAllSkills] = useState([]); 
+  const [filteredSkills, setFilteredSkills] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSkillOffer, setSelectedSkillOffer] = useState(null);

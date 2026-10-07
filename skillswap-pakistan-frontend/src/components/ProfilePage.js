@@ -72,8 +72,8 @@ function ProfilePage({ onChatbotToggle }) {
 
   useEffect(() => {
       const hasChanged = locationValue !== initialState.location ||
-                         aboutMe !== initialState.aboutMe ||
-                         profilePicture instanceof File;
+                          aboutMe !== initialState.aboutMe ||
+                          profilePicture instanceof File;
       setIsEditing(hasChanged);
   }, [locationValue, aboutMe, profilePicture, initialState]);
 

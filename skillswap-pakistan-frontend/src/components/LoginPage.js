@@ -5,10 +5,11 @@ import Footer from '../components/Footer';
 import HelplinePopup from '../components/HelplinePopup';
 import SuccessMessageModal from '../components/SuccessMessageModal';
 import axios from 'axios';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
+// Accept onChatbotToggle as a prop
 function LoginPage({ onChatbotToggle }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(); // Use translation hook
   const navigate = useNavigate();
   const [credential, setCredential] = useState('');
   const [password, setPassword] = useState('');
@@ -26,13 +27,17 @@ function LoginPage({ onChatbotToggle }) {
     }
   }, []);
 
-  const openHelplinePopup = () => setShowHelplinePopup(true);
-  const closeHelplinePopup = () => setShowHelplinePopup(false);
+  const openHelplinePopup = () => {
+    setShowHelplinePopup(true);
+  };
+
+  const closeHelplinePopup = () => {
+    setShowHelplinePopup(false);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    localStorage.removeItem('role');
     setUser(null);
     navigate('/login');
   };
@@ -43,6 +48,7 @@ function LoginPage({ onChatbotToggle }) {
     setLoading(true);
 
     try {
+      // Use process.env.REACT_APP_API_URL for the API endpoint
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
         credential,
         password,
@@ -52,11 +58,12 @@ function LoginPage({ onChatbotToggle }) {
 
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
-      localStorage.setItem('role', response.data.user.role || 'user');
       setUser(response.data.user);
 
-      setSuccessMessage(t('login_success_message'));
+      // Show success modal
+      setSuccessMessage(t('login_success_message')); // Use translation key
       setShowSuccessModal(true);
+
     } catch (err) {
       console.error('Login error:', err.response ? err.response.data : err.message);
       if (err.response && err.response.data && err.response.data.errors) {
@@ -64,7 +71,7 @@ function LoginPage({ onChatbotToggle }) {
       } else if (err.response && err.response.data && err.response.data.msg) {
         setError(err.response.data.msg);
       } else {
-        setError(t('login_unexpected_error'));
+        setError(t('login_unexpected_error')); // Use translation key
       }
     } finally {
       setLoading(false);
@@ -73,12 +80,7 @@ function LoginPage({ onChatbotToggle }) {
 
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
-    const role = localStorage.getItem('role');
-    if (role === 'admin') {
-      navigate('/admin');
-    } else {
-      navigate('/dashboard');
-    }
+    navigate('/dashboard'); // Redirect to dashboard after closing the modal
   };
 
   return (
@@ -135,7 +137,9 @@ function LoginPage({ onChatbotToggle }) {
         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
       </button>
 
-      {showHelplinePopup && <HelplinePopup onClose={closeHelplinePopup} />}
+      {showHelplinePopup && (
+        <HelplinePopup onClose={closeHelplinePopup} />
+      )}
 
       <SuccessMessageModal
         isOpen={showSuccessModal}

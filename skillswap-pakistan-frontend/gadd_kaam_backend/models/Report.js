@@ -1,4 +1,3 @@
-// models/Report.js
 const mongoose = require('mongoose');
 
 const ReportSchema = new mongoose.Schema({
@@ -11,6 +10,12 @@ const ReportSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: false,
+  },
+  // ✅ Link to the specific conversation (Request)
+  requestId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Request', 
+    required: false, 
   },
   reportedSkill: {
     type: mongoose.Schema.Types.ObjectId,

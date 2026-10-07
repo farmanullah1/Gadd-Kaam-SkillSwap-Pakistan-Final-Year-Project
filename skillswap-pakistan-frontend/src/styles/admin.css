@@ -263,3 +263,167 @@
   box-shadow: 0 0 20px rgba(255,255,255,0.2);
   cursor: zoom-out;
 }
+/* --- Admin Chat Viewer Styles --- */
+.wide-modal {
+    max-width: 700px !important;
+    text-align: left !important;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.admin-chat-viewer {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.chat-logs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.chat-log-msg {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: #fff;
+    border: 1px solid #eee;
+}
+
+.chat-log-msg.reported-user {
+    border-left: 4px solid #e74c3c; /* Red highlight for the reported user */
+    background-color: #fff5f5;
+}
+
+.chat-log-msg .time {
+    float: right;
+    font-size: 0.75rem;
+    color: #999;
+    margin-left: 10px;
+}
+
+.modal-actions-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.status-open { background: #ffeeba; color: #856404; }
+.status-resolved { background: #d4edda; color: #155724; }
+.status-dismissed { background: #e2e3e5; color: #383d41; }
+
+/* Banned User Styling */
+.banned-user {
+    opacity: 0.7;
+    border: 2px solid #e74c3c;
+}
+
+.btn-primary { background-color: #3498db; color: white; border: none; }
+.btn-success { background-color: #27ae60; color: white; border: none; }
+.btn-danger { background-color: #e74c3c; color: white; border: none; }
+.btn-secondary { background-color: #95a5a6; color: white; border: none; }
+/* --- Admin Chat Viewer Styles --- */
+.wide-modal {
+    max-width: 700px !important;
+    text-align: left !important;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.admin-chat-viewer {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.chat-logs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.chat-log-msg {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: #fff;
+    border: 1px solid #eee;
+}
+
+.chat-log-msg.reported-user {
+    border-left: 4px solid #e74c3c; /* Red highlight for the reported user */
+    background-color: #fff5f5;
+}
+
+.chat-log-msg .time {
+    float: right;
+    font-size: 0.75rem;
+    color: #999;
+    margin-left: 10px;
+}
+
+.modal-actions-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.status-open { background: #ffeeba; color: #856404; }
+.status-resolved { background: #d4edda; color: #155724; }
+.status-dismissed { background: #e2e3e5; color: #383d41; }
+
+/* Banned User Styling */
+.banned-user {
+    opacity: 0.7;
+    border: 2px solid #e74c3c;
+}
+
+.btn-primary { background-color: #3498db; color: white; border: none; }
+.btn-success { background-color: #27ae60; color: white; border: none; }
+.btn-danger { background-color: #e74c3c; color: white; border: none; }
+.btn-secondary { background-color: #95a5a6; color: white; border: none; }
