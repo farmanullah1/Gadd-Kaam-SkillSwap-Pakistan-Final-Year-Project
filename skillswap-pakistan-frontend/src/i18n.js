@@ -379,7 +379,7 @@ i18n
           "write_review_for_label": "Write a Review for {{username}}",
           "no_received_reviews": "No reviews received yet.",
           "received_reviews_tab": "Received Reviews",
-          "app_name": "Gadd Kaam",
+          "app_name": "Gadd Kaam – SkillSwap Pakistan",
       
       // --- Navbar ---
       "navbar_home": "Home",

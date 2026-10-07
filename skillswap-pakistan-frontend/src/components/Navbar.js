@@ -188,7 +188,7 @@ function Navbar(props) {
           {/* Logo */}
           <Link to="/" className="navbar-brand" onClick={() => setIsMenuOpen(false)}>
             <div className="logo-wrapper">
-                <img src="/Gadd_Kaam.png" alt="Gadd Kaam" className="brand-logo" onError={(e) => {e.target.onerror=null; e.target.src="https://placehold.co/40x40?text=GK";}} />
+                <img src="/Gadd_Kaam Light.png" alt="Gadd Kaam" className="brand-logo" onError={(e) => {e.target.onerror=null; e.target.src="https://placehold.co/40x40?text=GK";}} />
             </div>
             <span className="brand-text">Gadd <span className="highlight-text">Kaam</span></span>
           </Link>
@@ -212,8 +212,8 @@ function Navbar(props) {
             <Link to="/contact" className={`nav-item ${isActive('/contact')}`}>
                 {t("navbar_contact")}
             </Link>
-            <Link to="/contact" className={`nav-item ${isActive('/contact')}`}>
-                {t("navbar_contact")}
+            <Link to="/dashboard" className={`nav-item ${isActive('/dashboard')}`}>
+                {t("navbar_dashboard")}
             </Link>
           </div>
 

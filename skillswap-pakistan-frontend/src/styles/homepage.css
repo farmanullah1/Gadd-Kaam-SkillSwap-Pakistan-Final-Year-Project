@@ -858,3 +858,44 @@ body.dark-mode .women-zone-description { color: #fce7f3; }
   .hero-buttons { flex-direction: column; width: 100%; }
   .section-title { font-size: 2rem; }
 }
+/* --- HERO DYNAMIC TEXT ANIMATION (FADE UP/DOWN) --- */
+.hero-dynamic-text {
+  color: var(--primary-orange);
+  display: inline-block;
+  white-space: nowrap; 
+  /* Important: maintain height to prevent layout shift */
+  vertical-align: bottom;
+  min-width: 150px; /* Optional: prevents width jumps if text length varies widely */
+}
+
+/* Fade In Animation (Comes from bottom) */
+.hero-dynamic-text.hero-fade-in {
+  animation: heroFadeInUp 0.5s ease-out forwards;
+}
+
+/* Fade Out Animation (Goes up and vanishes) */
+.hero-dynamic-text.hero-fade-out {
+  animation: heroFadeOutUp 0.5s ease-in forwards;
+}
+
+@keyframes heroFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroFadeOutUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}

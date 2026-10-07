@@ -16,9 +16,9 @@ function HomePage({ onChatbotToggle }) {
   const [showHelplinePopup, setShowHelplinePopup] = useState(false);
   const [user, setUser] = useState(null);
 
-  // --- 1. Hero Dynamic Text State (Typewriter Effect) ---
+  // --- 1. Hero Dynamic Text State (Fade Up/Down Effect) ---
   const [heroIndex, setHeroIndex] = useState(0);
- const heroWords = [
+  const heroWords = [
   // Original words
   "Futures", "Community", "Trust", "Careers", "Dreams", 
   "Connections", "Opportunities", "Friendships", "Confidence", 
@@ -82,24 +82,26 @@ function HomePage({ onChatbotToggle }) {
   "Kamyabi", "Raaste", "Azadi", "Tajurba", "Umeed", 
   "Istehkam", "Maharat", "Saakh", "Ittehad", "Taraqqi"
 ];
-  const [typingClass, setTypingClass] = useState('typing');
+  
+  // Changed initial state to 'hero-fade-in'
+  const [heroFadeClass, setHeroFadeClass] = useState('hero-fade-in');
 
   useEffect(() => {
     const interval = setInterval(() => {
-      // 1. Remove the cursor/typing effect (start deleting)
-      setTypingClass('removing'); 
+      // 1. Trigger Fade Out (Move Up and vanish)
+      setHeroFadeClass('hero-fade-out'); 
       
       setTimeout(() => {
         // 2. Change the word
         setHeroIndex((prev) => (prev + 1) % heroWords.length);
-        // 3. Restart typing animation
-        setTypingClass('typing');
-      }, 1000); // Time to delete old word
+        // 3. Trigger Fade In (Move from bottom to center)
+        setHeroFadeClass('hero-fade-in');
+      }, 500); // Wait 0.5s for the fade out to finish
       
-    }, 2500); // Total cycle time per word
+    }, 3000); // Change word every 3 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [heroWords.length]);
 
   // --- 2. Women's Zone Dynamic Text State (Fade Effect) ---
   const [womenIndex, setWomenIndex] = useState(0);
@@ -114,42 +116,42 @@ function HomePage({ onChatbotToggle }) {
 
   // Sindhi words (script + Roman transliteration in comment)
   "عورتون",          // Auratoon (Women)
-  "ڀينر",             // Bhenar (Sisters)
-  "ترقي",             // Taraqqi (Progress/Growth)
-  "بااختيار بڻائڻ",   // Ba-ikhtiyar Banain (Empowerment)
-  "حفاظت",           // Hifazat (Safety)
-  "طاقت",             // Taqat (Strength)
-  "برابري",           // Barabari (Equality)
-  "حقوق",             // Huqooq (Rights)
-  "آزادي",            // Azadi (Freedom/Independence)
-  "اعتماد",           // Aitmaad (Confidence)
-  "رهنمائي",          // Rehnumai (Leadership/Guidance)
-  "عزت",              // Izzat (Dignity)
-  "تعلیم",            // Taleem (Education)
-  "همت",              // Himmat (Courage)
-  "اتحاد",            // Ittehad (Unity)
+  "ڀينر",              // Bhenar (Sisters)
+  "ترقي",              // Taraqqi (Progress/Growth)
+  "بااختيار بڻائڻ",    // Ba-ikhtiyar Banain (Empowerment)
+  "حفاظت",            // Hifazat (Safety)
+  "طاقت",              // Taqat (Strength)
+  "برابري",            // Barabari (Equality)
+  "حقوق",              // Huqooq (Rights)
+  "آزادي",             // Azadi (Freedom/Independence)
+  "اعتماد",            // Aitmaad (Confidence)
+  "رهنمائي",           // Rehnumai (Leadership/Guidance)
+  "عزت",               // Izzat (Dignity)
+  "تعلیم",             // Taleem (Education)
+  "همت",               // Himmat (Courage)
+  "اتحاد",             // Ittehad (Unity)
 
   // Urdu words (script)
-  "خواتین",           // Khawateen (Women)
-  "بہنیں",            // Behenain (Sisters)
-  "ترقی",             // Taraqqi (Growth/Progress)
-  "بااختیار بنانا",   // Ba-ikhtiyar Banana (Empowerment)
-  "حفاظت",           // Hifazat (Safety/Security)
-  "طاقت",             // Taqat (Strength/Power)
-  "برابری",           // Barabari (Equality)
-  "حقوق",             // Huqooq (Rights)
-  "آزادی",            // Azadi (Freedom)
-  "اعتماد",           // Aitmaad (Confidence)
-  "قیادت",            // Qayadat (Leadership)
-  "عزت نفس",          // Izzat-e-Nafs (Self-respect/Dignity)
-  "تعلیم",            // Taleem (Education)
-  "ہمت",              // Himmat (Courage)
-  "اتحاد",            // Ittehad (Unity/Solidarity)
-  "کامیابی",          // Kamyabi (Success)
-  "حوصلہ",            // Hausla (Inspiration/Motivation)
-  "خود مختاری",       // Khud Mukhtari (Independence)
-  "امید",             // Umeed (Hope)
-  "بہادری",           // Bahaduri (Bravery)
+  "خواتین",            // Khawateen (Women)
+  "بہنیں",             // Behenain (Sisters)
+  "ترقی",              // Taraqqi (Growth/Progress)
+  "بااختیار بنانا",    // Ba-ikhtiyar Banana (Empowerment)
+  "حفاظت",            // Hifazat (Safety/Security)
+  "طاقت",              // Taqat (Strength/Power)
+  "برابری",            // Barabari (Equality)
+  "حقوق",              // Huqooq (Rights)
+  "آزادی",             // Azadi (Freedom)
+  "اعتماد",            // Aitmaad (Confidence)
+  "قیادت",             // Qayadat (Leadership)
+  "عزت نفس",           // Izzat-e-Nafs (Self-respect/Dignity)
+  "تعلیم",             // Taleem (Education)
+  "ہمت",               // Himmat (Courage)
+  "اتحاد",             // Ittehad (Unity/Solidarity)
+  "کامیابی",           // Kamyabi (Success)
+  "حوصلہ",             // Hausla (Inspiration/Motivation)
+  "خود مختاری",        // Khud Mukhtari (Independence)
+  "امید",              // Umeed (Hope)
+  "بہادری",            // Bahaduri (Bravery)
 
   // Roman Urdu (for easy use in code/UI/search)
   "Khawateen", "Behenain", "Taraqqi", "Ba-ikhtiyar", "Hifazat", 
@@ -470,7 +472,8 @@ function HomePage({ onChatbotToggle }) {
             
             <h1 className="hero-headline">
               Trade Skills, Build
-              <span className={`dynamic-typewriter ${typingClass}`}>
+              {/* CHANGED: Replaced typewriter class with fade class */}
+              <span className={`hero-dynamic-text ${heroFadeClass}`}>
                 {heroWords[heroIndex]}
               </span>.
             </h1>
