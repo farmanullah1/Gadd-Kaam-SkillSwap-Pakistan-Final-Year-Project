@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Navbar from '../components/Navbar'; // Import the reusable Navbar
 import Footer from '../components/Footer'; // Import the reusable Footer
+import HelplinePopup from '../components/HelplinePopup'; // Import the new HelplinePopup component
 
 function HomePage() {
   const { t } = useTranslation();
@@ -247,16 +248,7 @@ function HomePage() {
 
       {/* Helpline Popup Modal */}
       {showHelplinePopup && (
-        <div className="helpline-popup-overlay" onClick={closeHelplinePopup}>
-          <div className="helpline-popup-content" onClick={e => e.stopPropagation()}>
-            <button className="helpline-popup-close-btn" onClick={closeHelplinePopup} aria-label="Close popup">
-              &times;
-            </button>
-            <h3 className="helpline-popup-title">Helpline Number</h3>
-            <p className="helpline-number">+923113147029</p>
-            <p className="helpline-note">Please call us for immediate assistance.</p>
-          </div>
-        </div>
+        <HelplinePopup onClose={closeHelplinePopup} />
       )}
     </div>
   );

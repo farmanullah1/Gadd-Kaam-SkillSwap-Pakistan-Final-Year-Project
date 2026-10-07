@@ -1,11 +1,9 @@
-// src/components/Navbar.js
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import i18n from '../i18n'; // Import i18n instance
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import i18n from '../i18n';
+import { Link } from 'react-router-dom';
 
-// Navbar now accepts a prop 'onHelplineClick'
-function Navbar(props) { // Added 'props' to the function signature
+function Navbar(props) {
   const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -13,7 +11,6 @@ function Navbar(props) { // Added 'props' to the function signature
     if (savedMode) {
       return JSON.parse(savedMode);
     }
-    // Default to dark mode if user's system prefers it
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
   const [showLanguageOptions, setShowLanguageOptions] = useState(false);
@@ -80,7 +77,7 @@ function Navbar(props) { // Added 'props' to the function signature
       {/* Main Navigation Bar */}
       <nav className="navbar sticky-header">
         <div className="navbar-content">
-          <Link to="/" className="navbar-logo"> {/* Link to homepage */}
+          <Link to="/" className="navbar-logo">
             <img
               src="/Gadd_Kaam.jpg"
               alt="Gadd Kaam Logo"
@@ -126,7 +123,7 @@ function Navbar(props) { // Added 'props' to the function signature
           </div>
 
           <div className="navbar-links-desktop">
-            <Link to="/" className="nav-link">{t("navbar_marketplace")}</Link>
+            <Link to="/marketplace" className="nav-link">{t("navbar_marketplace")}</Link>
             <Link to="/about" className="nav-link">{t("navbar_about_us")}</Link>
             <Link to="/women-zone" className="nav-link">{t("navbar_women_zone")}</Link>
             <Link to="/contact" className="nav-link">{t("navbar_contact")}</Link>
@@ -137,12 +134,12 @@ function Navbar(props) { // Added 'props' to the function signature
 
         {isMenuOpen && (
           <div className="navbar-mobile-menu">
-            <Link to="/" className="nav-link-mobile">{t("navbar_marketplace")}</Link>
-            <Link to="/about" className="nav-link-mobile">{t("navbar_about_us")}</Link>
-            <Link to="/women-zone" className="nav-link-mobile">{t("navbar_women_zone")}</Link>
-            <Link to="/contact" className="nav-link-mobile">{t("navbar_contact")}</Link>
-            <Link to="/login" className="btn btn-login-mobile">{t("navbar_login_btn")}</Link>
-            <Link to="/signup" className="btn btn-signup-mobile">{t("navbar_signup_btn")}</Link>
+            <Link to="/marketplace" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>{t("navbar_marketplace")}</Link>
+            <Link to="/about" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>{t("navbar_about_us")}</Link>
+            <Link to="/women-zone" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>{t("navbar_women_zone")}</Link>
+            <Link to="/contact" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>{t("navbar_contact")}</Link>
+            <Link to="/login" className="btn btn-login-mobile" onClick={() => setIsMenuOpen(false)}>{t("navbar_login_btn")}</Link>
+            <Link to="/signup" className="btn btn-signup-mobile" onClick={() => setIsMenuOpen(false)}>{t("navbar_signup_btn")}</Link>
           </div>
         )}
       </nav>

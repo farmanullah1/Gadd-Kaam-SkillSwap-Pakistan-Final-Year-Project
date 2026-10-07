@@ -1,12 +1,24 @@
+// src/pages/SignupPage.js
 import React, { useState } from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import Navbar from '../components/Navbar'; // Import the reusable Navbar
+import Footer from '../components/Footer'; // Import the reusable Footer
+import { useTranslation } from 'react-i18next'; // For translating form labels if needed
+import { Link } from 'react-router-dom'; // For the "Log In" link
+import HelplinePopup from '../components/HelplinePopup'; // Import the new HelplinePopup component
 
 function SignupPage() {
   const { t } = useTranslation();
-  const [showHelplinePopup, setShowHelplinePopup] = useState(false);
+  const [showHelplinePopup, setShowHelplinePopup] = useState(false); // State for helpline popup
+
+  // Function to open the helpline popup
+  const openHelplinePopup = () => {
+    setShowHelplinePopup(true);
+  };
+
+  // Function to close the helpline popup
+  const closeHelplinePopup = () => {
+    setShowHelplinePopup(false);
+  };
 
   // State variables for form fields
   const [firstName, setFirstName] = useState('');
@@ -18,12 +30,15 @@ function SignupPage() {
   const [cnicNumber, setCnicNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  // You might want to add state for file inputs if you're handling them as controlled components
+  // const [profilePicture, setProfilePicture] = useState(null);
+  // const [cnicFrontPicture, setCnicFrontPicture] = useState(null);
+  // const [cnicBackPicture, setCnicBackPicture] = useState(null);
 
-  const openHelplinePopup = () => setShowHelplinePopup(true);
-  const closeHelplinePopup = () => setShowHelplinePopup(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Basic form validation (add more robust validation as needed)
     if (password !== confirmPassword) {
       alert("Passwords do not match!");
       return;
@@ -31,12 +46,17 @@ function SignupPage() {
     // Handle form submission logic here
     console.log('Signup form submitted:', {
       firstName, lastName, username, phoneNumber, email, dateOfBirth, cnicNumber, password
+      // Include file inputs here if you add state for them
     });
+    // In a real application, you'd send this data to an API
     alert('Signup form submitted! (Check console for data)');
+    // Optionally clear form fields
+    // setFirstName(''); setLastName(''); etc.
   };
 
   return (
     <div className="signup-page-container">
+      {/* Navbar now receives the openHelplinePopup function as a prop */}
       <Navbar onHelplineClick={openHelplinePopup} />
 
       <main className="signup-section section-container">
@@ -72,6 +92,7 @@ function SignupPage() {
 
             <div className="form-group">
               <label htmlFor="profilePicture">Profile Picture</label>
+              {/* For uncontrolled file input, you'd access file via ref or event.target.files[0] */}
               <input type="file" id="profilePicture" accept="image/*" />
             </div>
 
@@ -181,25 +202,17 @@ function SignupPage() {
         </div>
       </main>
 
-      <Footer />
+      <Footer /> {/* Use the reusable Footer */}
 
-      {/* Sticky Chatbot Button */}
+      {/* Sticky Chatbot Button (can be part of App.js if global, or kept per page) */}
       <button className="chatbot-sticky-btn" aria-label="Open chatbot">
+        {/* Chatbot SVG Icon */}
         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
       </button>
 
       {/* Helpline Popup Modal */}
       {showHelplinePopup && (
-        <div className="helpline-popup-overlay" onClick={closeHelplinePopup}>
-          <div className="helpline-popup-content" onClick={e => e.stopPropagation()}>
-            <button className="helpline-popup-close-btn" onClick={closeHelplinePopup} aria-label="Close popup">
-              &times;
-            </button>
-            <h3 className="helpline-popup-title">Helpline Number</h3>
-            <p className="helpline-number">+923113147029</p>
-            <p className="helpline-note">Please call us for immediate assistance.</p>
-          </div>
-        </div>
+        <HelplinePopup onClose={closeHelplinePopup} />
       )}
     </div>
   );
