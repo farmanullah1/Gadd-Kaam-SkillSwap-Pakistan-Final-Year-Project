@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const SkillOfferSchema = new mongoose.Schema({
+const WomenSkillOfferSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Links to User model
+    ref: "User",
     required: true,
   },
   skills: {
@@ -31,10 +31,6 @@ const SkillOfferSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  shareWithWomenZone: {
-    type: Boolean,
-    default: false,
-  },
   skillsToSwap: {
     type: [String],
     required: false,
@@ -45,4 +41,7 @@ const SkillOfferSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.models.SkillOffer || mongoose.model('SkillOffer', SkillOfferSchema);
+// Always use same export style to avoid overwrite issues
+module.exports =
+  mongoose.models.WomenSkillOffer ||
+  mongoose.model("WomenSkillOffer", WomenSkillOfferSchema);

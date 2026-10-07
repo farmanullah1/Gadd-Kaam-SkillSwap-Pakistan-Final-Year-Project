@@ -1,354 +1,297 @@
-// gadd_kaam_backend/routes/requestRoutes.js
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth'); // For protecting routes
+const auth = require('../middleware/auth'); 
 const Request = require('../models/Request');
-const User = require('../models/User'); // Import User model to populate sender/receiver details
-const SkillOffer = require('../models/SkillOffer'); // Import SkillOffer model to populate skill details
-const { check, validationResult } = require('express-validator'); // Import for validation
+const User = require('../models/User');
+const SkillOffer = require('../models/SkillOffer');
+const { check, validationResult } = require('express-validator');
 
-// @route   POST api/requests
-// @desc    Send a skill swap request
-// @access  Private
-// This route now handles sending requests, replacing the old /api/requests/send
-router.post('/', auth, [
+// =======================
+// Create a new request
+// =======================
+router.post(
+  '/',
+  auth,
+  [
     check('receiverId', 'Receiver ID is required').not().isEmpty(),
     check('skillOfferId', 'Skill Offer ID is required').not().isEmpty(),
     check('skillRequested', 'Skill you are offering in return is required').not().isEmpty(),
-    check('message', 'Initial message is required').not().isEmpty(), // Ensure initial message is present
+    check('message', 'Initial message is required').not().isEmpty(),
     check('isRemote', 'Remote status is required').isBoolean(),
     check('location', 'Location must be a string if provided').optional({ nullable: true }).isString(),
-], async (req, res) => {
+  ],
+  async (req, res) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const { receiverId, skillOfferId, skillRequested, message, isRemote, location } = req.body;
     const senderId = req.user.id;
 
-    // Basic validation for location based on isRemote
     if (!isRemote && (!location || location.trim() === '')) {
-        return res.status(400).json({ msg: 'Location is required for non-remote requests.' });
+      return res.status(400).json({ msg: 'Location is required for non-remote requests.' });
     }
 
     try {
-        // Ensure sender and receiver are not the same user
-        if (senderId === receiverId) {
-            return res.status(400).json({ msg: 'Cannot send a request to yourself' });
-        }
+      if (senderId === receiverId) {
+        return res.status(400).json({ msg: 'Cannot send a request to yourself' });
+      }
 
-        // Check if the skill offer exists
-        const skillOffer = await SkillOffer.findById(skillOfferId);
-        if (!skillOffer) {
-            return res.status(404).json({ msg: 'Skill offer not found' });
-        }
+      const skillOffer = await SkillOffer.findById(skillOfferId);
+      if (!skillOffer) return res.status(404).json({ msg: 'Skill offer not found' });
 
-        // Ensure the receiverId matches the owner of the skill offer
-        if (skillOffer.user.toString() !== receiverId) {
-            return res.status(400).json({ msg: 'Invalid receiver for this skill offer' });
-        }
+      if (skillOffer.user.toString() !== receiverId) {
+        return res.status(400).json({ msg: 'Invalid receiver for this skill offer' });
+      }
 
-        // Check if a pending request already exists between these users for this skill offer
-        const existingRequest = await Request.findOne({
-            sender: senderId,
-            receiver: receiverId,
-            skillOffer: skillOfferId,
-            status: 'pending',
-        });
+      const existingRequest = await Request.findOne({
+        sender: senderId,
+        receiver: receiverId,
+        skillOffer: skillOfferId,
+        status: 'pending',
+      });
 
-        if (existingRequest) {
-            return res.status(400).json({ msg: 'You have already sent a pending request for this skill offer.' });
-        }
+      if (existingRequest) {
+        return res.status(400).json({ msg: 'You already have a pending request for this skill offer.' });
+      }
 
-        const newRequest = new Request({
-            sender: senderId,
-            receiver: receiverId,
-            skillOffer: skillOfferId,
-            skillRequested,
-            message, // Store the initial message
-            isRemote,
-            location: isRemote ? '' : location // Clear location if remote
-        });
+      const newRequest = new Request({
+        sender: senderId,
+        receiver: receiverId,
+        skillOffer: skillOfferId,
+        skillRequested,
+        message,
+        isRemote,
+        location: isRemote ? '' : location,
+      });
 
-        const request = await newRequest.save();
+      const request = await newRequest.save();
 
-        // FIX: Robust way to populate a newly saved document
-        const populatedRequest = await Request.findById(request._id)
-            .populate('sender', 'username profilePicture')
-            .populate('receiver', 'username profilePicture')
-            .populate('skillOffer', 'skills');
+      const populatedRequest = await Request.findById(request._id)
+        .populate('sender', 'username profilePicture')
+        .populate('receiver', 'username profilePicture')
+        .populate('skillOffer', 'skills');
 
-        res.status(201).json(populatedRequest);
+      res.status(201).json(populatedRequest);
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
+      console.error(err.message);
+      res.status(500).send('Server Error');
     }
-});
+  }
+);
 
-
-// @route   GET api/requests/received
-// @desc    Get all requests received by the authenticated user
-// @access  Private
-// NOTE: Frontend primarily uses GET /api/requests/ for consolidated list
+// =======================
+// Get received requests
+// =======================
 router.get('/received', auth, async (req, res) => {
-    try {
-        const requests = await Request.find({ receiver: req.user.id })
-            .populate('sender', 'username profilePicture location phoneNumber')
-            .populate('skillOffer', 'skills')
-            .sort({ createdAt: -1 });
-        res.json(requests);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
+  try {
+    const requests = await Request.find({ receiver: req.user.id })
+      .populate('sender', 'username profilePicture location phoneNumber')
+      .populate('skillOffer', 'skills')
+      .sort({ createdAt: -1 });
+
+    res.json(requests);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
 });
 
-// @route   GET api/requests/sent
-// @desc    Get all requests sent by the authenticated user
-// @access  Private
-// NOTE: Frontend primarily uses GET /api/requests/ for consolidated list
+// =======================
+// Get sent requests
+// =======================
 router.get('/sent', auth, async (req, res) => {
-    try {
-        const requests = await Request.find({ sender: req.user.id })
-            .populate('receiver', 'username profilePicture location phoneNumber')
-            .populate('skillOffer', 'skills')
-            .sort({ createdAt: -1 });
-        res.json(requests);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
+  try {
+    const requests = await Request.find({ sender: req.user.id })
+      .populate('receiver', 'username profilePicture location phoneNumber')
+      .populate('skillOffer', 'skills')
+      .sort({ createdAt: -1 });
+
+    res.json(requests);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
 });
 
-// NEW/UPDATED: @route   GET api/requests/
-// @desc    Get all requests where the user is either sender or receiver (for messages and received requests pages)
-// @access  Private
+// =======================
+// Get all requests (sent + received)
+// =======================
 router.get('/', auth, async (req, res) => {
-    try {
-        const requests = await Request.find({
-            $or: [{ sender: req.user.id }, { receiver: req.user.id }]
-        })
-        .populate('sender', 'username profilePicture location phoneNumber')
-        .populate('receiver', 'username profilePicture location phoneNumber')
-        .populate('skillOffer', 'skills')
-        .sort({ updatedAt: -1 }); // Sort by most recently updated for messages page activity
+  try {
+    const requests = await Request.find({
+      $or: [{ sender: req.user.id }, { receiver: req.user.id }],
+    })
+      .populate('sender', 'username profilePicture location phoneNumber')
+      .populate('receiver', 'username profilePicture location phoneNumber')
+      .populate('skillOffer', 'skills')
+      .sort({ updatedAt: -1 });
 
-        res.json(requests);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
+    res.json(requests);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
 });
 
-// @route   POST api/requests/:id/accept
-// @desc    Accept a skill swap request
-// @access  Private (Receiver only)
+// =======================
+// Accept a request
+// =======================
 router.post('/:id/accept', auth, async (req, res) => {
-    try {
-        let request = await Request.findById(req.params.id);
+  try {
+    let request = await Request.findById(req.params.id);
+    if (!request) return res.status(404).json({ msg: 'Request not found' });
 
-        if (!request) {
-            return res.status(404).json({ msg: 'Request not found' });
-        }
-
-        // Ensure only the receiver can accept
-        if (request.receiver.toString() !== req.user.id) {
-            return res.status(401).json({ msg: 'User not authorized to accept this request' });
-        }
-
-        if (request.status !== 'pending') {
-          return res.status(400).json({ msg: 'Request is not pending and cannot be accepted' });
-        }
-
-        request.status = 'accepted';
-        await request.save();
-
-        // FIX: Robust way to populate an updated document
-        const populatedRequest = await Request.findById(request._id)
-            .populate('sender', 'username profilePicture location phoneNumber')
-            .populate('receiver', 'username profilePicture location phoneNumber')
-            .populate('skillOffer', 'skills');
-
-        res.json(populatedRequest);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
+    if (request.receiver.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'Not authorized to accept this request' });
     }
+
+    if (request.status !== 'pending') {
+      return res.status(400).json({ msg: 'Request is not pending and cannot be accepted' });
+    }
+
+    request.status = 'accepted';
+    await request.save();
+
+    const populatedRequest = await Request.findById(request._id)
+      .populate('sender', 'username profilePicture location phoneNumber')
+      .populate('receiver', 'username profilePicture location phoneNumber')
+      .populate('skillOffer', 'skills');
+
+    res.json(populatedRequest);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
 });
 
-// @route   POST api/requests/:id/cancel
-// @desc    Cancel a skill swap request (by sender or receiver)
-// @access  Private
+// =======================
+// Cancel a request
+// =======================
 router.post('/:id/cancel', auth, async (req, res) => {
-    try {
-        let request = await Request.findById(req.params.id);
+  try {
+    let request = await Request.findById(req.params.id);
+    if (!request) return res.status(404).json({ msg: 'Request not found' });
 
-        if (!request) {
-            return res.status(404).json({ msg: 'Request not found' });
-        }
-
-        // Allow sender or receiver to cancel
-        if (request.sender.toString() !== req.user.id && request.receiver.toString() !== req.user.id) {
-            return res.status(401).json({ msg: 'User not authorized to cancel this request' });
-        }
-
-        if (request.status !== 'pending' && request.status !== 'accepted') { // Can cancel pending or accepted requests
-            return res.status(400).json({ msg: 'Request cannot be cancelled in its current state.' });
-        }
-
-        request.status = 'cancelled';
-        await request.save();
-
-        res.json({ msg: 'Request cancelled successfully', request }); // Send back the updated request
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
+    if (request.sender.toString() !== req.user.id && request.receiver.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'Not authorized to cancel this request' });
     }
+
+    if (!['pending', 'accepted'].includes(request.status)) {
+      return res.status(400).json({ msg: 'Request cannot be cancelled in its current state' });
+    }
+
+    request.status = 'cancelled';
+    await request.save();
+
+    res.json({ msg: 'Request cancelled successfully', request });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
 });
 
-// NEW/UPDATED: @route   POST api/requests/:id/confirm-skill-received
-// @desc    Confirm skill received for a request by either participant
-// @access  Private
+// =======================
+// Confirm skill received
+// =======================
 router.post('/:id/confirm-skill-received', auth, async (req, res) => {
-    try {
-        let request = await Request.findById(req.params.id);
+  try {
+    let request = await Request.findById(req.params.id);
+    if (!request) return res.status(404).json({ msg: 'Request not found' });
 
-        if (!request) {
-            return res.status(404).json({ msg: 'Request not found' });
-        }
-
-        const userId = req.user.id;
-
-        if (request.status !== 'accepted') {
-            return res.status(400).json({ msg: 'Skill can only be confirmed for accepted requests.' });
-        }
-
-        let updated = false;
-        if (request.sender.toString() === userId) {
-            if (request.senderConfirmedReceived) {
-                return res.status(400).json({ msg: 'You have already confirmed this skill exchange.' });
-            }
-            request.senderConfirmedReceived = true;
-            updated = true;
-        } else if (request.receiver.toString() === userId) {
-            if (request.receiverConfirmedReceived) {
-                return res.status(400).json({ msg: 'You have already confirmed this skill exchange.' });
-            }
-            request.receiverConfirmedReceived = true;
-            updated = true;
-        } else {
-            return res.status(401).json({ msg: 'User not authorized to confirm this request.' });
-        }
-
-        if (updated) {
-            // If both parties have confirmed, set status to 'completed'
-            if (request.senderConfirmedReceived && request.receiverConfirmedReceived) {
-                request.status = 'completed';
-            }
-            await request.save();
-        }
-
-        // FIX: Robust way to populate an updated document
-        const populatedRequest = await Request.findById(request._id)
-            .populate('sender', 'username profilePicture location phoneNumber')
-            .populate('receiver', 'username profilePicture location phoneNumber')
-            .populate('skillOffer', 'skills');
-
-        res.json({ msg: 'Skill received confirmed!', request: populatedRequest });
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
+    if (request.status !== 'accepted') {
+      return res.status(400).json({ msg: 'Can only confirm skills for accepted requests' });
     }
+
+    const userId = req.user.id;
+    let updated = false;
+
+    if (request.sender.toString() === userId) {
+      if (request.senderConfirmedReceived) {
+        return res.status(400).json({ msg: 'You already confirmed this skill exchange' });
+      }
+      request.senderConfirmedReceived = true;
+      updated = true;
+    } else if (request.receiver.toString() === userId) {
+      if (request.receiverConfirmedReceived) {
+        return res.status(400).json({ msg: 'You already confirmed this skill exchange' });
+      }
+      request.receiverConfirmedReceived = true;
+      updated = true;
+    } else {
+      return res.status(401).json({ msg: 'Not authorized to confirm this request' });
+    }
+
+    if (updated && request.senderConfirmedReceived && request.receiverConfirmedReceived) {
+      request.status = 'completed';
+    }
+
+    await request.save();
+
+    const populatedRequest = await Request.findById(request._id)
+      .populate('sender', 'username profilePicture location phoneNumber')
+      .populate('receiver', 'username profilePicture location phoneNumber')
+      .populate('skillOffer', 'skills');
+
+    res.json({ msg: 'Skill received confirmed!', request: populatedRequest });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
 });
 
-// NEW: @route   POST api/requests/:id/messages
-// @desc    Add a message to a specific request's chat
-// @access  Private (Only sender or receiver of the request)
+// =======================
+// Add message to request chat
+// =======================
 router.post('/:id/messages', auth, async (req, res) => {
-    const { text } = req.body;
+  const { text } = req.body;
+  if (!text) return res.status(400).json({ msg: 'Message text is required' });
 
-    if (!text) {
-        return res.status(400).json({ msg: 'Message text is required.' });
+  try {
+    let request = await Request.findById(req.params.id);
+    if (!request) return res.status(404).json({ msg: 'Request not found' });
+
+    const isParticipant = request.sender.toString() === req.user.id || request.receiver.toString() === req.user.id;
+    if (!isParticipant) return res.status(401).json({ msg: 'Not authorized to send messages here' });
+
+    if (request.status === 'completed') {
+      return res.status(400).json({ msg: 'Exchange completed. No more messages allowed' });
     }
 
-    try {
-        let request = await Request.findById(req.params.id);
+    const newMessage = { sender: req.user.id, text, timestamp: new Date() };
+    request.messages.push(newMessage);
+    await request.save();
 
-        if (!request) {
-            return res.status(404).json({ msg: 'Request not found.' });
-        }
+    const updatedRequest = await Request.findById(req.params.id)
+      .populate('messages.sender', 'username profilePicture')
+      .select('messages');
 
-        // Check if the authenticated user is either the sender or receiver of the request
-        const isParticipant = request.sender.toString() === req.user.id || request.receiver.toString() === req.user.id;
-        if (!isParticipant) {
-            return res.status(401).json({ msg: 'User not authorized to send messages in this conversation.' });
-        }
-
-        // Prevent sending messages if the exchange is completed
-        if (request.status === 'completed') {
-            return res.status(400).json({ msg: 'This exchange has been completed. Messages cannot be sent.' });
-        }
-
-        const newMessage = {
-            sender: req.user.id,
-            text: text,
-            timestamp: new Date()
-        };
-
-        request.messages.push(newMessage);
-        await request.save();
-
-        // To return the message with populated sender details for the frontend
-        // FIX: Populate the specific message's sender
-        const sentMessage = request.messages[request.messages.length - 1]; // Get the last message added
-        // The sender needs to be populated on the MESSAGE itself if it's an embedded sub-document
-        // However, a direct populate on sentMessage won't work if it's not a Mongoose document.
-        // It's usually better to send back just the message and have the frontend populate/display based on context,
-        // or re-fetch the entire request with populated messages if absolutely necessary.
-        // For simplicity, we'll try to populate the sub-document's reference if Mongoose supports it directly
-        // on a saved subdocument. If not, the frontend will need to handle user lookup.
-
-        // A more robust way to send back the populated message would be to re-fetch the parent request:
-        const updatedRequestWithPopulatedMessage = await Request.findById(request._id)
-            .populate('messages.sender', 'username profilePicture')
-            .select('messages'); // Only select messages field
-
-        const latestPopulatedMessage = updatedRequestWithPopulatedMessage.messages[updatedRequestWithPopulatedMessage.messages.length - 1];
-
-        res.status(201).json(latestPopulatedMessage);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
+    const latestMessage = updatedRequest.messages[updatedRequest.messages.length - 1];
+    res.status(201).json(latestMessage);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
 });
 
-// NEW: @route   GET api/requests/:id/messages
-// @desc    Get all messages for a specific request's chat
-// @access  Private (Only sender or receiver of the request)
+// =======================
+// Get messages for a request
+// =======================
 router.get('/:id/messages', auth, async (req, res) => {
-    try {
-        // Find the request and populate the sender of each message in the messages array
-        const request = await Request.findById(req.params.id)
-            .populate('messages.sender', 'username profilePicture')
-            .select('messages status sender receiver'); // Also select status and participants for frontend validation
+  try {
+    const request = await Request.findById(req.params.id)
+      .populate('messages.sender', 'username profilePicture')
+      .select('messages status sender receiver');
 
-        if (!request) {
-            return res.status(404).json({ msg: 'Request not found.' });
-        }
+    if (!request) return res.status(404).json({ msg: 'Request not found' });
 
-        // Check if the authenticated user is either the sender or receiver of the request
-        const isParticipant = request.sender.toString() === req.user.id || request.receiver.toString() === req.user.id;
-        if (!isParticipant) {
-            return res.status(401).json({ msg: 'User not authorized to view messages in this conversation.' });
-        }
+    const isParticipant = request.sender.toString() === req.user.id || request.receiver.toString() === req.user.id;
+    if (!isParticipant) return res.status(401).json({ msg: 'Not authorized to view messages' });
 
-        res.json(request.messages);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
+    res.json(request.messages);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
 });
-
 
 module.exports = router;
