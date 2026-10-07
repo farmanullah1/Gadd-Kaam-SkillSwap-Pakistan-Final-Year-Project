@@ -1,10 +1,10 @@
 // src/components/OfferSkillSteps/Step1.js
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { FaChevronRight } from 'react-icons/fa';
-import { VscClose } from 'react-icons/vsc'; // Added for closing tags
+import { VscClose } from 'react-icons/vsc';
 
 const Step1 = ({ onNext, data }) => {
   const { t } = useTranslation();
@@ -13,6 +13,7 @@ const Step1 = ({ onNext, data }) => {
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedSkills, setSelectedSkills] = useState(data.skills || []);
 
   const initialSuggestions = [
     { skillName: 'Tractor Repair' },
@@ -51,13 +52,13 @@ const Step1 = ({ onNext, data }) => {
   }, [searchTerm, suggestions]);
 
   const handleSelectSkill = (skillName) => {
-    if (data.skills.length >= 3) {
+    if (selectedSkills.length >= 3) {
       setError('You can select up to 3 skills.');
       return;
     }
-    const skillExists = data.skills.some(s => s.toLowerCase() === skillName.toLowerCase());
+    const skillExists = selectedSkills.some(s => s.toLowerCase() === skillName.toLowerCase());
     if (!skillExists) {
-      onNext({ skills: [...data.skills, skillName] });
+      setSelectedSkills([...selectedSkills, skillName]);
       setSearchTerm('');
       setShowSuggestions(false);
       setError(null);
@@ -65,7 +66,7 @@ const Step1 = ({ onNext, data }) => {
   };
 
   const handleRemoveSkill = (skillToRemove) => {
-    onNext({ skills: data.skills.filter(s => s !== skillToRemove) });
+    setSelectedSkills(selectedSkills.filter(s => s !== skillToRemove));
     setError(null);
   };
 
@@ -73,21 +74,19 @@ const Step1 = ({ onNext, data }) => {
     const newSkill = searchTerm.trim();
     if (!newSkill) return;
 
-    // Check if skill already exists locally or is being added
-    const skillExists = data.skills.some(s => s.toLowerCase() === newSkill.toLowerCase());
+    const skillExists = selectedSkills.some(s => s.toLowerCase() === newSkill.toLowerCase());
     if (skillExists) {
       setError('This skill is already selected.');
       return;
     }
     
-    if (data.skills.length >= 3) {
+    if (selectedSkills.length >= 3) {
         setError('You can select up to 3 skills.');
         return;
     }
 
     try {
       const token = localStorage.getItem('token');
-      // Check if the skill is in the suggestions list
       const suggestionExists = suggestions.some(s => s.skillName.toLowerCase() === newSkill.toLowerCase());
 
       if (!suggestionExists) {
@@ -100,15 +99,15 @@ const Step1 = ({ onNext, data }) => {
     } catch (err) {
       console.error('Failed to add new skill or publish:', err);
       setError('Could not save new skill suggestion, but proceeding. Please try again later.');
-      handleSelectSkill(newSkill); // Proceed even if saving fails
+      handleSelectSkill(newSkill);
     }
   };
 
   const handleNextClick = () => {
-    if (data.skills.length === 0) {
+    if (selectedSkills.length === 0) {
       setError('Please select at least one skill to offer.');
     } else {
-      onNext({ skills: data.skills });
+      onNext({ skills: selectedSkills });
     }
   };
 
@@ -140,7 +139,7 @@ const Step1 = ({ onNext, data }) => {
               type="button"
               className="add-skill-btn"
               onClick={handleAddCustomSkill}
-              disabled={data.skills.length >= 3}
+              disabled={selectedSkills.length >= 3}
             >
               Add
             </button>
@@ -149,7 +148,7 @@ const Step1 = ({ onNext, data }) => {
         {error && <p className="error-message">{error}</p>}
         
         <div className="selected-skills-container">
-            {data.skills.map((skill, index) => (
+            {selectedSkills.map((skill, index) => (
                 <span key={index} className="selected-skill-tag">
                     {skill} <button type="button" onClick={() => handleRemoveSkill(skill)}><VscClose /></button>
                 </span>
@@ -174,7 +173,7 @@ const Step1 = ({ onNext, data }) => {
           type="button"
           className="btn-primary-orange"
           onClick={handleNextClick}
-          disabled={data.skills.length === 0}
+          disabled={selectedSkills.length === 0}
         >
           Next <FaChevronRight style={{ marginLeft: '8px' }} />
         </button>

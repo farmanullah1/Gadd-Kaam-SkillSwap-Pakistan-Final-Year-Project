@@ -1,11 +1,12 @@
-// src/components/DashboardPage.js
+// src/components/ReceivedRequestsPage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import HelplinePopup from './HelplinePopup';
+import '../styles/dashboard.css'; // Reusing dashboard styles for consistency
 
-function DashboardPage() {
+function ReceivedRequestsPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
@@ -78,56 +79,12 @@ function DashboardPage() {
         </aside>
 
         <section className="dashboard-content-area">
-          <h1 className="dashboard-welcome-heading">Welcome back, {user.username}!</h1>
-          <p className="dashboard-sub-heading">Here's a quick overview of your SkillSwap activity.</p>
-
-          <div className="dashboard-summary-grid">
-            <div className="summary-card">
-              <div className="summary-icon check-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check-circle"><path d="M22 11.08V12a10 10 0 1 1-5.93-8.5"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-              </div>
-              <h3 className="summary-title">Skills Offered</h3>
-              <p className="summary-value">0</p>
-              <p className="summary-detail">Post a skill to get started!</p>
-            </div>
-
-            <div className="summary-card">
-              <div className="summary-icon star-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-              </div>
-              <h3 className="summary-title">Skills Received</h3>
-              <p className="summary-value">0</p>
-              <p className="summary-detail">Start learning new things today!</p>
-            </div>
-
-            <div className="summary-card">
-              <div className="summary-icon message-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-              </div>
-              <h3 className="summary-title">Unread Messages</h3>
-              <p className="summary-value">0</p>
-              <p className="summary-detail">No new messages yet.</p>
-            </div>
-          </div>
-
-          <div className="dashboard-action-cards">
-            <div className="action-card">
-              <div className="action-icon search-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              </div>
-              <h3 className="action-title">Find a Skill</h3>
-              <p className="action-description">Explore the marketplace to discover new skills and connect with talented people in your community.</p>
-              <Link to="/marketplace" className="btn btn-primary-orange action-button">Browse Marketplace <span className="arrow-right">→</span></Link>
-            </div>
-
-            <div className="action-card">
-              <div className="action-icon plus-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-              </div>
-              <h3 className="action-title">Offer a Skill</h3>
-              <p className="action-description">Share your expertise with the community. Post a skill you can teach or a service you can provide.</p>
-              <Link to="/offer-skill" className="btn btn-primary-orange action-button">Post a New Skill <span className="arrow-right">→</span></Link>
-            </div>
+          <h1 className="dashboard-welcome-heading">Received Requests</h1>
+          <p className="dashboard-sub-heading">Manage the requests you have received for your skill offers here.</p>
+          {/* Placeholder content for received requests */}
+          <div style={{ padding: '20px', textAlign: 'center', fontSize: '1.1em', color: '#555' }}>
+            <p>You currently have no new skill requests.</p>
+            <p>When someone requests one of your skills, it will appear here.</p>
           </div>
         </section>
       </div>
@@ -141,4 +98,4 @@ function DashboardPage() {
   );
 }
 
-export default DashboardPage;
+export default ReceivedRequestsPage;

@@ -1,33 +1,35 @@
 // src/components/MySkillPage.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // Added Link import
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import HelplinePopup from './HelplinePopup';
-import LoadingSpinner from './LoadingSpinner'; // Correct import path
-import '../styles/my-skills.css'; // Import the shared skill card styles
+import LoadingSpinner from './LoadingSpinner';
+import '../styles/my-skills.css';
+import '../styles/marketplace.css';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
-import { FaTrashAlt, FaEdit } from 'react-icons/fa'; // Icons for actions
+import { FaTrashAlt, FaEdit, FaTimes } from 'react-icons/fa';
 
-// SkillCard component (reused from previous context, but tailored for My Skills)
+// Shared SkillCard component
 const SkillCard = ({ skill, onViewDetails, onDeleteOffer }) => {
   const { t } = useTranslation();
   const placeholderImage = 'https://placehold.co/400x240/e0e0e0/666666?text=No+Image';
+  const imageUrl = skill.photo ? `${process.env.REACT_APP_API_URL}${skill.photo}` : placeholderImage;
 
   return (
     <div className="skill-card">
       <div className="skill-card-image-wrapper">
         <img
-          src={skill.photo || placeholderImage}
-          alt={skill.skills}
+          src={imageUrl}
+          alt={skill.skills.join(', ')}
           className="skill-card-image"
           onError={(e) => { e.target.onerror = null; e.target.src = placeholderImage; }}
         />
       </div>
       <div className="skill-card-content">
-        <h3 className="skill-card-title">{skill.skills}</h3>
-        <p className="skill-card-author">{t('offer_skill_label')}</p> {/* Generic label for offered skill */}
+        <h3 className="skill-card-title">{skill.skills.join(', ')}</h3>
+        <p className="skill-card-author">{t('offer_skill_label')}</p>
         <p className="skill-card-description">{skill.description}</p>
         <div className="skill-card-tags">
           {skill.remotely && <span className="skill-card-tag">{t('remotely_label')}</span>}
@@ -47,26 +49,24 @@ const SkillCard = ({ skill, onViewDetails, onDeleteOffer }) => {
   );
 };
 
-// FullDetailsModal component (reused and adapted)
+// FullDetailsModal component
 const FullDetailsModal = ({ skill, onClose, onDelete }) => {
   const { t } = useTranslation();
   const placeholderImage = 'https://placehold.co/800x480/e0e0e0/666666?text=No+Image';
+  const imageUrl = skill.photo ? `${process.env.REACT_APP_API_URL}${skill.photo}` : placeholderImage;
 
   if (!skill) return null;
 
   return (
     <div className="full-details-modal-overlay">
       <div className="full-details-modal-content">
-        <button className="full-details-modal-close-btn" onClick={onClose}>&times;</button>
+        <button className="full-details-modal-close-btn" onClick={onClose}><FaTimes /></button>
         <div className="full-details-header">
-          <h2 className="full-details-title">{skill.skills}</h2>
-          <p className="full-details-author">
-            {t('offer_skill_label')} by {skill.anonymous ? t('anonymous_label') : skill.username}
-          </p>
+          <h2 className="full-details-title">{skill.skills.join(', ')}</h2>
         </div>
         <img
-          src={skill.photo || placeholderImage}
-          alt={skill.skills}
+          src={imageUrl}
+          alt={skill.skills.join(', ')}
           className="full-details-image"
           onError={(e) => { e.target.onerror = null; e.target.src = placeholderImage; }}
         />
@@ -77,7 +77,7 @@ const FullDetailsModal = ({ skill, onClose, onDelete }) => {
           </div>
           <div className="full-details-info-box">
             <h3 className="full-details-info-label">{t('location_label')}</h3>
-            <p className="full-details-info-value">{skill.location}</p>
+            <p className="full-details-info-value">{skill.location || t('not_specified')}</p>
           </div>
           <div className="full-details-info-box">
             <h3 className="full-details-info-label">{t('remotely_label')}</h3>
@@ -95,12 +95,16 @@ const FullDetailsModal = ({ skill, onClose, onDelete }) => {
           )}
           <div className="full-details-info-box">
             <h3 className="full-details-info-label">{t('swap_skill_label')}</h3>
-            <p className="full-details-info-value">{skill.skillsToSwap || t('skill_not_specified')}</p>
+            <p className="full-details-info-value">{skill.skillsToSwap.join(', ') || t('skill_not_specified')}</p>
+          </div>
+          <div className="full-details-info-box">
+            <h3 className="full-details-info-label">{t('phone_label')}</h3>
+            <p className="full-details-info-value">{skill.phoneNumber || t('not_specified')}</p>
           </div>
         </div>
         <div className="full-details-actions">
           <button className="btn-delete-offer" onClick={() => onDelete(skill._id)}>
-            {t('delete_offer_btn')}
+            <FaTrashAlt style={{ marginRight: '8px' }} />{t('delete_offer_btn')}
           </button>
         </div>
       </div>
@@ -108,16 +112,16 @@ const FullDetailsModal = ({ skill, onClose, onDelete }) => {
   );
 };
 
-
 function MySkillPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [showHelplinePopup, setShowHelplinePopup] = useState(false);
   const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedSkill, setSelectedSkill] = useState(null); // For modal
+  const [selectedSkill, setSelectedSkill] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -147,7 +151,6 @@ function MySkillPage() {
   };
 
   const handleDeleteOffer = async (skillId) => {
-    // Using window.confirm for now, consider a custom modal later
     if (window.confirm('Are you sure you want to delete this skill offer?')) {
       setLoading(true);
       setError(null);
@@ -156,13 +159,13 @@ function MySkillPage() {
         await axios.delete(`${process.env.REACT_APP_API_URL}/api/skill-offers/${skillId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        alert('Skill offer deleted successfully!'); // Using alert for now
-        fetchMySkills(); // Refresh the list
-        setSelectedSkill(null); // Close modal if open
+        alert('Skill offer deleted successfully!');
+        fetchMySkills();
+        setSelectedSkill(null);
       } catch (err) {
         console.error('Failed to delete skill offer:', err);
         setError('Failed to delete skill offer. Please try again.');
-        alert('Failed to delete skill offer. Please try again.'); // Using alert for now
+        alert('Failed to delete skill offer. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -171,13 +174,15 @@ function MySkillPage() {
 
   const openHelplinePopup = () => setShowHelplinePopup(true);
   const closeHelplinePopup = () => setShowHelplinePopup(false);
-  
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
     navigate('/login');
   };
+
+  const currentPath = location.pathname;
 
   if (!user) {
     return null;
@@ -188,29 +193,37 @@ function MySkillPage() {
       <Navbar onHelplineClick={openHelplinePopup} onLogout={handleLogout} user={user} />
 
       <div className="dashboard-main-content">
-        {/* Sidebar (reused from DashboardPage) */}
         <aside className="dashboard-sidebar">
           <nav className="dashboard-nav">
-            <Link to="/dashboard" className="dashboard-nav-item">
+            <Link to="/dashboard" className={`dashboard-nav-item ${currentPath === '/dashboard' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
               Dashboard
             </Link>
-            <Link to="/dashboard/profile" className="dashboard-nav-item">
+            <Link to="/dashboard/profile" className={`dashboard-nav-item ${currentPath === '/dashboard/profile' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
               Profile
             </Link>
-            <Link to="/dashboard/my-skills" className="dashboard-nav-item active"> {/* Active state for My Skills */}
+            <Link to="/dashboard/my-skills" className={`dashboard-nav-item ${currentPath === '/dashboard/my-skills' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-tool"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z"></path></svg>
               My Skills
             </Link>
-            <Link to="/dashboard/messages" className="dashboard-nav-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-              Messages
+            <Link to="/marketplace" className={`dashboard-nav-item ${currentPath === '/marketplace' ? 'active' : ''}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+              Marketplace
+            </Link>
+            {user.gender === 'Female' && (
+              <Link to="/women-zone" className={`dashboard-nav-item ${currentPath === '/women-zone' ? 'active' : ''}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                Women's Zone
+              </Link>
+            )}
+            <Link to="/dashboard/received-requests" className={`dashboard-nav-item ${currentPath === '/dashboard/received-requests' ? 'active' : ''}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              Received Requests
             </Link>
           </nav>
         </aside>
 
-        {/* Main Content Area */}
         <section className="dashboard-content-area">
           <div className="my-skills-page">
             <div className="my-skills-header">
@@ -241,7 +254,7 @@ function MySkillPage() {
       </div>
 
       <Footer />
-      
+
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />
       )}

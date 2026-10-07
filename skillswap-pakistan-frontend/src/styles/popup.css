@@ -7,25 +7,25 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8); /* Increased opacity for darker overlay */
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000; /* Ensure it's above everything else */
-  backdrop-filter: blur(5px); /* Increased blur for stronger effect */
+  z-index: 2000;
+  backdrop-filter: blur(5px);
 }
 
 .helpline-popup-content {
-  background-color: var(--card-background); /* Adapts to dark/light mode automatically */
+  background-color: var(--card-background);
   padding: 2rem;
   border-radius: 0.75rem;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
   text-align: center;
   position: relative;
-  max-width: 90%; /* Responsive width */
-  width: 350px; /* Max width for larger screens */
-  transform: scale(1); /* Initial state for animation */
-  animation: fadeInZoom 0.3s ease-out forwards; /* Simple animation */
+  max-width: 90%;
+  width: 350px;
+  transform: scale(1);
+  animation: fadeInZoom 0.3s ease-out forwards;
 }
 
 /* Animation for popup appearing */
@@ -48,7 +48,7 @@
   border: none;
   font-size: 1.8rem;
   cursor: pointer;
-  color: var(--text-dark); /* Will be white/light grey in dark mode, dark grey in light mode */
+  color: var(--text-dark);
   line-height: 1;
   padding: 0.25rem;
   transition: color 0.2s ease;
@@ -61,7 +61,7 @@
 .helpline-popup-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-dark); /* Adapts to dark/light mode automatically */
+  color: var(--text-dark);
   margin-top: 0.5rem;
   margin-bottom: 1rem;
 }
@@ -69,12 +69,90 @@
 .helpline-number {
   font-size: 1.8rem;
   font-weight: 800;
-  color: var(--logo-orange); /* Always orange */
+  color: var(--logo-orange);
   margin-bottom: 0.5rem;
 }
 
 .helpline-note {
   font-size: 0.95rem;
-  color: var(--text-light-gray); /* Adapts to dark/light mode automatically */
+  color: var(--text-light-gray);
   margin-top: 0;
+}
+
+/* Generic Popup Modal Styles */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(5px);
+}
+
+.popup-content {
+  background-color: var(--card-background);
+  padding: 2.5rem 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  position: relative;
+  max-width: 90%;
+  width: 400px;
+  animation: fadeInZoom 0.3s ease-out forwards;
+  border-left: 5px solid var(--border-color);
+}
+
+.popup-content.success {
+  border-left-color: var(--success-green);
+}
+
+.popup-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: var(--text-dark);
+  line-height: 1;
+  padding: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+.popup-close-btn:hover {
+  color: var(--logo-orange);
+}
+
+.popup-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.popup-content.success .popup-title {
+  color: var(--success-green);
+}
+
+.popup-message {
+  font-size: 1rem;
+  color: var(--text-medium);
+  margin-bottom: 1.5rem;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.popup-btn {
+  padding: 10px 24px;
+  min-width: 120px;
 }

@@ -1,7 +1,7 @@
 // src/components/OfferSkillSteps/Step2.js
 import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaImage, FaChevronLeft, FaChevronRight } from 'react-icons/fa'; // Import icons
+import { FaImage, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const Step2 = ({ onNext, onBack, data, user }) => {
   const { t } = useTranslation();

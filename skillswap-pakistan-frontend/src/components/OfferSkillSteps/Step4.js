@@ -12,14 +12,14 @@ const Step4 = ({ onBack, onPublish, data }) => {
       <p className="step-content-subheading">{t('step4_offer_skill_desc')}</p>
 
       <div className="review-section">
-        <div className="review-section-header">Skill Details</div>
+        <div className="review-section-header">Your Offered Skills</div>
         <div className="review-info">
           <span className="review-info-label">{t('offer_skill_label')}:</span>
           <span className="review-info-value">{data.skills.join(', ')}</span>
         </div>
         {data.skillsToSwap.length > 0 && (
           <div className="review-info">
-            <span className="review-info-label">{t('swap_skill_label')}:</span>
+            <span className="review-info-label">Skills You Need:</span>
             <span className="review-info-value">{data.skillsToSwap.join(', ')}</span>
           </div>
         )}

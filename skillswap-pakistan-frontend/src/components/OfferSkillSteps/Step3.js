@@ -12,6 +12,7 @@ const Step3 = ({ onNext, onBack, data }) => {
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedSkillsToSwap, setSelectedSkillsToSwap] = useState(data.skillsToSwap || []);
 
   const initialSuggestions = [
     { skillName: 'Tractor Repair' },
@@ -50,13 +51,13 @@ const Step3 = ({ onNext, onBack, data }) => {
   }, [searchTerm, suggestions]);
 
   const handleSelectSkillToSwap = (skillName) => {
-    if (data.skillsToSwap.length >= 3) {
+    if (selectedSkillsToSwap.length >= 3) {
       setError('You can select up to 3 skills to swap.');
       return;
     }
-    const skillExists = data.skillsToSwap.some(s => s.toLowerCase() === skillName.toLowerCase());
+    const skillExists = selectedSkillsToSwap.some(s => s.toLowerCase() === skillName.toLowerCase());
     if (!skillExists) {
-        onNext({ skillsToSwap: [...data.skillsToSwap, skillName] });
+        setSelectedSkillsToSwap([...selectedSkillsToSwap, skillName]);
         setSearchTerm('');
         setShowSuggestions(false);
         setError(null);
@@ -64,12 +65,12 @@ const Step3 = ({ onNext, onBack, data }) => {
   };
 
   const handleRemoveSkillToSwap = (skillToRemove) => {
-    onNext({ skillsToSwap: data.skillsToSwap.filter(s => s !== skillToRemove) });
+    setSelectedSkillsToSwap(selectedSkillsToSwap.filter(s => s !== skillToRemove));
     setError(null);
   };
   
   const handleNextClick = () => {
-    onNext({ skillsToSwap: data.skillsToSwap });
+    onNext({ skillsToSwap: selectedSkillsToSwap });
   };
 
 
@@ -99,7 +100,7 @@ const Step3 = ({ onNext, onBack, data }) => {
         {error && <p className="error-message">{error}</p>}
 
         <div className="selected-skills-container">
-            {data.skillsToSwap.map((skill, index) => (
+            {selectedSkillsToSwap.map((skill, index) => (
                 <span key={index} className="selected-skill-tag">
                     {skill} <button type="button" onClick={() => handleRemoveSkillToSwap(skill)}><VscClose /></button>
                 </span>

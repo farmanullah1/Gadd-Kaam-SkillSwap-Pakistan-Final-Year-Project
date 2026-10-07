@@ -9,6 +9,7 @@ import '../styles/offer-skill.css';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import LoadingSpinner from './LoadingSpinner';
+import SuccessMessageModal from './SuccessMessageModal'; 
 
 // Import step components
 import Step1 from './OfferSkillSteps/Step1';
@@ -25,9 +26,11 @@ function OfferSkillPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const [skillData, setSkillData] = useState({
-    skills: [], // Changed to array for multiple skills
+    skills: [],
     photo: null,
     description: '',
     username: '',
@@ -36,7 +39,7 @@ function OfferSkillPage() {
     remotely: false,
     anonymous: false,
     shareWithWomenZone: false,
-    skillsToSwap: [], // Changed to array for multiple skills
+    skillsToSwap: [],
   });
 
   useEffect(() => {
@@ -69,12 +72,12 @@ function OfferSkillPage() {
   const handleNextStep = (data) => {
     setSkillData(prevData => ({ ...prevData, ...data }));
     setCurrentStep(prevStep => prevStep + 1);
-    setError(null); // Clear error on step change
+    setError(null);
   };
   
   const handleBackStep = () => {
     setCurrentStep(prevStep => prevStep - 1);
-    setError(null); // Clear error on step change
+    setError(null);
   };
 
   const handlePublishSkill = async () => {
@@ -84,7 +87,6 @@ function OfferSkillPage() {
       const token = localStorage.getItem('token');
       const formDataToSend = new FormData();
       
-      // Append skills and skillsToSwap as JSON strings
       formDataToSend.append('skills', JSON.stringify(skillData.skills));
       formDataToSend.append('skillsToSwap', JSON.stringify(skillData.skillsToSwap));
       
@@ -105,8 +107,9 @@ function OfferSkillPage() {
         },
       });
 
-      alert('Skill offer published successfully!');
-      navigate('/dashboard/my-skills');
+      setSuccessMessage('Skill offer published successfully!');
+      setShowSuccessModal(true);
+
     } catch (err) {
       console.error('Failed to publish skill offer:', err);
       const errorMessage = err.response?.data?.message || 'Failed to publish skill offer. Please try again.';
@@ -114,6 +117,12 @@ function OfferSkillPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    setSuccessMessage('');
+    navigate('/dashboard/my-skills');
   };
 
   const renderStep = () => {
@@ -176,6 +185,14 @@ function OfferSkillPage() {
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />
       )}
+
+      <SuccessMessageModal
+        isOpen={showSuccessModal}
+        title="Success!"
+        message={successMessage}
+        onClose={handleCloseSuccessModal}
+        type="success"
+      />
     </>
   );
 }
