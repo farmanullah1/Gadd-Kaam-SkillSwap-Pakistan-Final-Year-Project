@@ -5,7 +5,8 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import HelplinePopup from './HelplinePopup';
 
-function DashboardPage() {
+// Accept onChatbotToggle as a prop
+function DashboardPage({ onChatbotToggle }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
@@ -132,11 +133,13 @@ function DashboardPage() {
         </section>
       </div>
 
-      <Footer />
+      {/* Pass onChatbotToggle to the Footer component */}
+      <Footer onChatbotToggle={onChatbotToggle} />
 
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />
       )}
+
     </div>
   );
 }

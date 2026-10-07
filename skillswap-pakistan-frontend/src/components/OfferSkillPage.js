@@ -17,7 +17,8 @@ import Step2 from './OfferSkillSteps/Step2';
 import Step3 from './OfferSkillSteps/Step3';
 import Step4 from './OfferSkillSteps/Step4';
 
-function OfferSkillPage() {
+// Accept onChatbotToggle as a prop
+function OfferSkillPage({ onChatbotToggle }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -180,7 +181,8 @@ function OfferSkillPage() {
         </div>
         
       </div>
-      <Footer />
+      {/* Pass onChatbotToggle to the Footer component */}
+      <Footer onChatbotToggle={onChatbotToggle} />
       
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />

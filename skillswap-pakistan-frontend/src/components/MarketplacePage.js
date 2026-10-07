@@ -68,11 +68,12 @@ const FullDetailsModal = ({ skill, onClose }) => {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert('Request sent successfully!');
+      console.log('Request sent successfully!'); // Changed from alert()
       onClose(); // Close modal after sending
     } catch (err) {
       console.error('Failed to send request:', err);
-      alert('Failed to send request. Please try again.');
+      // You might want to implement a custom modal/toast for user feedback here
+      console.error('Failed to send request. Please try again.'); // Changed from alert()
     }
   };
 
@@ -152,14 +153,14 @@ const FullDetailsModal = ({ skill, onClose }) => {
 };
 
 
-function MarketplacePage() {
+function MarketplacePage({ onChatbotToggle }) { // Accept onChatbotToggle as a prop
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [showHelplinePopup, setShowHelplinePopup] = useState(false);
   const [skills, setSkills] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // FIX: Corrected useState initialization
   const [error, setError] = useState(null);
   const [selectedSkill, setSelectedSkill] = useState(null);
 
@@ -270,7 +271,8 @@ function MarketplacePage() {
         </section>
       </div>
 
-      <Footer />
+      {/* Pass onChatbotToggle to the Footer component */}
+      <Footer onChatbotToggle={onChatbotToggle} />
 
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />

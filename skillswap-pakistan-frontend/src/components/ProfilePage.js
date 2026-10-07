@@ -8,7 +8,8 @@ import HelplinePopup from './HelplinePopup';
 import '../styles/profile.css';
 import axios from 'axios';
 
-function ProfilePage() {
+// Accept onChatbotToggle as a prop
+function ProfilePage({ onChatbotToggle }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
@@ -281,7 +282,8 @@ function ProfilePage() {
         </section>
       </div>
 
-      <Footer />
+      {/* Pass onChatbotToggle to the Footer component */}
+      <Footer onChatbotToggle={onChatbotToggle} />
 
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />

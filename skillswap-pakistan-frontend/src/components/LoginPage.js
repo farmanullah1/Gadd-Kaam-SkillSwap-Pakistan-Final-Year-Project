@@ -4,10 +4,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HelplinePopup from '../components/HelplinePopup';
-import SuccessMessageModal from '../components/SuccessMessageModal'; // Import the new modal
+import SuccessMessageModal from '../components/SuccessMessageModal';
 import axios from 'axios';
 
-function LoginPage() {
+// Accept onChatbotToggle as a prop
+function LoginPage({ onChatbotToggle }) {
   const navigate = useNavigate();
   const [credential, setCredential] = useState('');
   const [password, setPassword] = useState('');
@@ -15,8 +16,8 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false); // State for success modal
-  const [successMessage, setSuccessMessage] = useState(''); // State for success message
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -128,9 +129,11 @@ function LoginPage() {
         </div>
       </main>
 
-      <Footer />
+      {/* Pass onChatbotToggle to the Footer component */}
+      <Footer onChatbotToggle={onChatbotToggle} />
 
-      <button className="chatbot-sticky-btn" aria-label="Open chatbot">
+      {/* Attach onClick handler to the chatbot sticky button */}
+      <button className="chatbot-sticky-btn" aria-label="Open chatbot" onClick={onChatbotToggle}>
         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
       </button>
 

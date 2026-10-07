@@ -76,7 +76,8 @@ const AcceptedRequestNotification = ({ request }) => {
   );
 };
 
-function ReceivedRequestsPage() {
+// Accept onChatbotToggle as a prop
+function ReceivedRequestsPage({ onChatbotToggle }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
@@ -127,11 +128,11 @@ function ReceivedRequestsPage() {
       await axios.post(`${process.env.REACT_APP_API_URL}/api/requests/${requestId}/accept`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert('Request accepted! The user has been notified.');
+      console.log('Request accepted! The user has been notified.'); // Replaced alert
       fetchRequests(); // Refresh requests after action
     } catch (err) {
       console.error('Failed to accept request:', err);
-      alert('Failed to accept request. Please try again.');
+      console.error('Failed to accept request. Please try again.'); // Replaced alert
     }
   };
 
@@ -141,11 +142,11 @@ function ReceivedRequestsPage() {
       await axios.post(`${process.env.REACT_APP_API_URL}/api/requests/${requestId}/cancel`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert('Request cancelled.');
+      console.log('Request cancelled.'); // Replaced alert
       fetchRequests(); // Refresh requests after action
     } catch (err) {
       console.error('Failed to cancel request:', err);
-      alert('Failed to cancel request. Please try again.');
+      console.error('Failed to cancel request. Please try again.'); // Replaced alert
     }
   };
 
@@ -248,7 +249,8 @@ function ReceivedRequestsPage() {
         </section>
       </div>
 
-      <Footer />
+      {/* Pass onChatbotToggle to the Footer component */}
+      <Footer onChatbotToggle={onChatbotToggle} />
 
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />

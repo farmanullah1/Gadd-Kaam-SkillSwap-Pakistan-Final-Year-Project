@@ -68,11 +68,11 @@ const FullDetailsModal = ({ skill, onClose }) => {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert('Request sent successfully!');
+      console.log('Request sent successfully!'); // Replaced alert
       onClose(); // Close modal after sending
     } catch (err) {
       console.error('Failed to send request:', err);
-      alert('Failed to send request. Please try again.');
+      console.error('Failed to send request. Please try again.'); // Replaced alert
     }
   };
 
@@ -149,7 +149,8 @@ const FullDetailsModal = ({ skill, onClose }) => {
   );
 };
 
-function WomenOnlyZonePage() {
+// Accept onChatbotToggle as a prop
+function WomenOnlyZonePage({ onChatbotToggle }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -166,7 +167,7 @@ function WomenOnlyZonePage() {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
       if (parsedUser.gender !== 'Female') {
-        alert('Access Denied: This zone is for female users only.');
+        console.log('Access Denied: This zone is for female users only.'); // Replaced alert
         navigate('/marketplace');
       } else {
         fetchWomenOnlySkills();
@@ -274,7 +275,8 @@ function WomenOnlyZonePage() {
         </section>
       </div>
 
-      <Footer />
+      {/* Pass onChatbotToggle to the Footer component */}
+      <Footer onChatbotToggle={onChatbotToggle} />
       
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />

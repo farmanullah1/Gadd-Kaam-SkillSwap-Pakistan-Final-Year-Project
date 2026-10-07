@@ -6,7 +6,9 @@ import Footer from '../components/Footer';
 import HelplinePopup from './HelplinePopup';
 import { useNavigate } from 'react-router-dom';
 
-function HomePage() {
+
+// IMPORTANT: HomePage must accept onChatbotToggle as a prop
+function HomePage({ onChatbotToggle }) { // <-- ADD onChatbotToggle here
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [showHelplinePopup, setShowHelplinePopup] = useState(false);
@@ -280,7 +282,8 @@ function HomePage() {
         </section>
       )}
 
-      <Footer />
+      {/* IMPORTANT: Pass the onChatbotToggle prop to the Footer component */}
+      <Footer onChatbotToggle={onChatbotToggle} user={user} /> {/* <-- ADDED onChatbotToggle here */}
 
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />

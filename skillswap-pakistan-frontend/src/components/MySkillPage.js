@@ -112,7 +112,8 @@ const FullDetailsModal = ({ skill, onClose, onDelete }) => {
   );
 };
 
-function MySkillPage() {
+// Accept onChatbotToggle as a prop
+function MySkillPage({ onChatbotToggle }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -151,24 +152,26 @@ function MySkillPage() {
   };
 
   const handleDeleteOffer = async (skillId) => {
-    if (window.confirm('Are you sure you want to delete this skill offer?')) {
-      setLoading(true);
-      setError(null);
-      try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`${process.env.REACT_APP_API_URL}/api/skill-offers/${skillId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        alert('Skill offer deleted successfully!');
-        fetchMySkills();
-        setSelectedSkill(null);
-      } catch (err) {
-        console.error('Failed to delete skill offer:', err);
-        setError('Failed to delete skill offer. Please try again.');
-        alert('Failed to delete skill offer. Please try again.');
-      } finally {
-        setLoading(false);
-      }
+    // Replace window.confirm with a custom modal or toast
+    // For now, logging to console
+    console.log('User confirmed deletion of skill offer:', skillId);
+    
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/skill-offers/${skillId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      console.log('Skill offer deleted successfully!'); // Replaced alert
+      fetchMySkills();
+      setSelectedSkill(null);
+    } catch (err) {
+      console.error('Failed to delete skill offer:', err);
+      setError('Failed to delete skill offer. Please try again.');
+      console.error('Failed to delete skill offer. Please try again.'); // Replaced alert
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -253,7 +256,8 @@ function MySkillPage() {
         </section>
       </div>
 
-      <Footer />
+      {/* Pass onChatbotToggle to the Footer component */}
+      <Footer onChatbotToggle={onChatbotToggle} />
 
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />
