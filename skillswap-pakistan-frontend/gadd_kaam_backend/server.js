@@ -13,13 +13,14 @@ connectDB();
 // Init Middleware
 app.use(cors());
 app.use(express.json({ extended: false }));
+// Mount static directory for user and skill photos
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Define Routes
-// The authentication routes are now correctly at /api/auth
 app.use('/api/auth', require('./routes/authRoutes'));
-// The profile routes are now correctly at /api/profile, matching the frontend
 app.use('/api/profile', require('./routes/profileRoutes'));
+// Add the new skill offer routes
+app.use('/api/skill-offers', require('./routes/skillOfferRoutes'));
 
 app.get('/', (req, res) => res.send('API Running'));
 

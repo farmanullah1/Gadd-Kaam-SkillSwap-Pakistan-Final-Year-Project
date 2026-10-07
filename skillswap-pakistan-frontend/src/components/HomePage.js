@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import HelplinePopup from '../components/HelplinePopup';
+import HelplinePopup from './HelplinePopup';
 import { useNavigate } from 'react-router-dom';
 
 function HomePage() {
@@ -33,6 +33,15 @@ function HomePage() {
     localStorage.removeItem('user');
     setUser(null);
     navigate('/login'); // Redirect to login after logout
+  };
+
+  // New function to handle the "Offer a Skill" button click with a login check
+  const handleOfferSkillClick = () => {
+    if (user) {
+      navigate('/offer-skill');
+    } else {
+      navigate('/login');
+    }
   };
 
   const featuredSkills = [
@@ -106,7 +115,7 @@ function HomePage() {
             {t("hero_subtext")}
           </p>
           <div className="hero-buttons">
-            <button className="btn btn-primary-orange">
+            <button className="btn btn-primary-orange" onClick={handleOfferSkillClick}>
               {t("hero_offer_skill_btn")}
             </button>
             <button className="btn btn-secondary-light">
@@ -258,10 +267,10 @@ function HomePage() {
 
       <Footer />
 
-      {/* Sticky Chatbot Button */}
+      {/* Sticky Chatbot Button
       <button className="chatbot-sticky-btn" aria-label="Open chatbot">
         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-      </button>
+      </button> */}
 
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />
