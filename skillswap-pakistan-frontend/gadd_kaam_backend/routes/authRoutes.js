@@ -1,5 +1,4 @@
 // routes/authRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
@@ -9,7 +8,6 @@ const User = require('../models/User');
 const keys = require('../config/keys');
 const path = require('path');
 const fs = require('fs');
-// The auth middleware is no longer needed in this file as the update route has been moved.
 
 // Helper function to generate JWT
 const generateToken = (id) => {
@@ -231,7 +229,7 @@ router.post(
           firstName: user.firstName,
           lastName: user.lastName,
           gender: user.gender,
-          phoneNumber: user.phoneNumber, // THIS LINE IS THE FIX
+          phoneNumber: user.phoneNumber,
           profilePicture: user.profilePicture
         }
       });
@@ -241,7 +239,5 @@ router.post(
     }
   }
 );
-
-// The profile update route has been moved to its own file (routes/profileRoutes.js).
 
 module.exports = router;

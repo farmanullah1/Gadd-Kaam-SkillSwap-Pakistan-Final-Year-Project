@@ -1,147 +1,153 @@
-import React, { useState } from 'react';
+// src/components/OfferSkillSteps/Step2.js
+import React, { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { FaImage, FaChevronLeft, FaChevronRight } from 'react-icons/fa'; // Import icons
 
-function Step2({ onBack, onNext, data, user }) {
-    const [stepData, setStepData] = useState({
-        photo: data.photo,
-        description: data.description,
-        username: data.username,
-        phoneNumber: data.phoneNumber,
-        location: data.location,
-        remotely: data.remotely,
-        anonymous: data.anonymous,
+const Step2 = ({ onNext, onBack, data, user }) => {
+  const { t } = useTranslation();
+  const fileInputRef = useRef(null);
+  
+  const [description, setDescription] = useState(data.description || '');
+  const [location, setLocation] = useState(data.location || '');
+  const [photo, setPhoto] = useState(data.photo || null);
+  const [isAnonymous, setIsAnonymous] = useState(data.anonymous || false);
+  const [isRemote, setIsRemote] = useState(data.remotely || false);
+  const [shareWomenOnly, setShareWomenOnly] = useState(data.shareWithWomenZone || false);
+  const [error, setError] = useState(null);
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPhoto(file);
+    }
+  };
+
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!description.trim() || !location.trim()) {
+      setError('Please fill in description and location.');
+      return;
+    }
+    setError(null);
+    onNext({
+      description,
+      location,
+      photo,
+      anonymous: isAnonymous,
+      remotely: isRemote,
+      shareWithWomenZone: shareWomenOnly,
     });
-    
-    const handleChange = (e) => {
-        const { name, value, type, checked, files } = e.target;
-        if (type === 'checkbox') {
-            setStepData(prev => ({ ...prev, [name]: checked }));
-        } else if (type === 'file') {
-            setStepData(prev => ({ ...prev, [name]: files[0] }));
-        } else {
-            setStepData(prev => ({ ...prev, [name]: value }));
-        }
-    };
+  };
 
-    const handleContinue = (e) => {
-        e.preventDefault();
-        onNext(stepData);
-    };
-
-    return (
-        <div className="offer-skill-card">
-            <h2>Step 2: Add more details</h2>
-            <p className="card-subtitle">
-                Add an optional photo and a description to make your listing stand out. Provide your location and contact details to help people connect with you.
-            </p>
-            <form onSubmit={handleContinue}>
-                <div className="form-group">
-                    <label>Upload a Photo (Optional)</label>
-                    <div className="upload-area">
-                        <input type="file" name="photo" onChange={handleChange} style={{ display: 'none' }} id="photo-upload" />
-                        <label htmlFor="photo-upload" style={{ cursor: 'pointer' }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="upload-icon"><path d="M21.2 15.6a5 5 0 0 1-5.3-2.6L12 7l-3.9 6c-.3.4-.6.8-1 1a5 5 0 0 1-5.3 2.6c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3h12.4c2.4 0 4.3-1.9 4.3-4.3s-1.9-4.3-4.3-4.3z"></path><path d="M12 16V4"></path><path d="M8 8l4-4 4 4"></path></svg>
-                            <p className="upload-text">Click to upload or drag and drop</p>
-                            <p className="upload-text">PNG, JPG, or GIF</p>
-                        </label>
-                    </div>
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="description">Description</label>
-                    <textarea
-                        id="description"
-                        name="description"
-                        value={stepData.description}
-                        onChange={handleChange}
-                        placeholder="Describe what you’re offering in more detail..."
-                    ></textarea>
-                </div>
-
-                <div className="form-group-grid">
-                    <div className="form-group">
-                        <label htmlFor="username">Username</label>
-                        <div className="input-with-icon">
-                            <span className="input-icon">👤</span>
-                            <input
-                                type="text"
-                                id="username"
-                                name="username"
-                                value={stepData.username}
-                                readOnly
-                            />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="phoneNumber">Phone Number</label>
-                        <div className="input-with-icon">
-                            <span className="input-icon">📞</span>
-                            <input
-                                type="tel"
-                                id="phoneNumber"
-                                name="phoneNumber"
-                                value={stepData.phoneNumber}
-                                readOnly
-                            />
-                        </div>
-                    </div>
-                </div>
-                
-                <div className="form-group">
-                    <label htmlFor="location">Location</label>
-                    <div className="input-with-icon">
-                        <span className="input-icon">📍</span>
-                        <input
-                            type="text"
-                            id="location"
-                            name="location"
-                            value={stepData.location}
-                            onChange={handleChange}
-                            placeholder="e.g., Lahore, Pakistan"
-                        />
-                    </div>
-                </div>
-
-                <div className="toggle-group">
-                    <div className="toggle-content">
-                        <span className="toggle-icon">🌐</span>
-                        <div className="toggle-text">
-                            <h4>Available Remotely</h4>
-                            <p>Can this skill be taught or provided online?</p>
-                        </div>
-                    </div>
-                    <label className="toggle-switch">
-                        <input type="checkbox" name="remotely" checked={stepData.remotely} onChange={handleChange} />
-                        <span className="slider"></span>
-                    </label>
-                </div>
-
-                <div className="toggle-group">
-                    <div className="toggle-content">
-                        <span className="toggle-icon">👁️‍🗨️</span>
-                        <div className="toggle-text">
-                            <h4>Go Anonymous</h4>
-                            <p>Hide your username and contact info on the listing.</p>
-                        </div>
-                    </div>
-                    <label className="toggle-switch">
-                        <input type="checkbox" name="anonymous" checked={stepData.anonymous} onChange={handleChange} />
-                        <span className="slider"></span>
-                    </label>
-                </div>
-                
-                <div className="form-actions">
-                    <button type="button" className="btn-back" onClick={() => onBack(stepData)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                        Back
-                    </button>
-                    <button type="submit" className="btn-continue">
-                        Continue
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                    </button>
-                </div>
-            </form>
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2 className="step-content-heading">{t('step2_offer_skill')}</h2>
+      <p className="step-content-subheading">{t('step2_offer_skill_desc')}</p>
+      
+      {error && <p className="error-message">{error}</p>}
+      
+      <div className="form-group">
+        <label>{t('step2_photo_label')}</label>
+        <div
+          className={`image-upload-wrapper ${photo ? 'has-image' : ''}`}
+          onClick={handleImageClick}
+        >
+          {photo ? (
+            <img src={typeof photo === 'string' ? photo : URL.createObjectURL(photo)} alt="Skill" />
+          ) : (
+            <>
+              <FaImage className="upload-icon" />
+              <p className="upload-text">Click to upload a photo</p>
+            </>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handlePhotoChange}
+            style={{ display: 'none' }}
+          />
         </div>
-    );
-}
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="description">{t('step2_description_label')}</label>
+        <textarea
+          id="description"
+          rows="5"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder={t('step2_description_placeholder')}
+          className="form-input"
+          required
+        ></textarea>
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="location">{t('step2_location_label')}</label>
+        <input
+          type="text"
+          id="location"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          placeholder={t('step2_location_placeholder')}
+          className="form-input"
+          required
+        />
+      </div>
+      
+      <div className="switch-group">
+        <span className="switch-label">{t('step2_go_anonymous_switch')}</span>
+        <label className="switch">
+          <input
+            type="checkbox"
+            checked={isAnonymous}
+            onChange={() => setIsAnonymous(!isAnonymous)}
+          />
+          <span className="slider"></span>
+        </label>
+      </div>
+
+      <div className="switch-group">
+        <span className="switch-label">{t('step2_remotely_switch')}</span>
+        <label className="switch">
+          <input
+            type="checkbox"
+            checked={isRemote}
+            onChange={() => setIsRemote(!isRemote)}
+          />
+          <span className="slider"></span>
+        </label>
+      </div>
+      
+      {user && user.gender === 'Female' && (
+        <div className="switch-group">
+          <span className="switch-label">{t('step2_women_zone_switch')}</span>
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={shareWomenOnly}
+              onChange={() => setShareWomenOnly(!shareWomenOnly)}
+            />
+            <span className="slider"></span>
+          </label>
+        </div>
+      )}
+
+      <div className="offer-skill-actions">
+        <button type="button" className="btn-secondary-outline" onClick={onBack}>
+          <FaChevronLeft style={{ marginRight: '8px' }} /> {t('go_back_btn')}
+        </button>
+        <button type="submit" className="btn-primary-orange">
+          Next <FaChevronRight style={{ marginLeft: '8px' }} />
+        </button>
+      </div>
+    </form>
+  );
+};
 
 export default Step2;

@@ -1,0 +1,398 @@
+/* src/styles/my-skills.css */
+
+/* Define CSS variables for Light Mode */
+/* :root {
+  --background-beige: #FBF7F1;
+  --card-background: #FFFFFF;
+  --text-dark: #333333;
+  --text-medium: #666666;
+  --border-color: #E0E0E0;
+  --logo-orange: #e38b40;
+  --logo-dark-orange: #d17835;
+  --success-green: #28a745;
+  --error-red: #dc3545; */
+
+  /* Dark Mode variables (if applicable, ensure these are toggled by a class on body/html) */
+  /* --dark-background-color: #1a1a1a;
+  --dark-sidebar-background: #232323;
+  --dark-sidebar-hover: #333333;
+  --dark-card-background: #282828;
+  --dark-text-light: #f0f0f0;
+  --dark-text-medium: #b0b0b0;
+  --dark-icon-color: #707070;
+} */
+
+
+.my-skills-page {
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.my-skills-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.my-skills-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-dark); /* Default to light mode, adjust for dark */
+  margin-bottom: 0.5rem;
+}
+
+.dark-mode .my-skills-header h1 {
+  color: var(--dark-text-light);
+}
+
+.my-skills-header p {
+  font-size: 1.1rem;
+  color: var(--text-medium); /* Default to light mode, adjust for dark */
+}
+
+.dark-mode .my-skills-header p {
+  color: var(--dark-text-medium);
+}
+
+.skill-card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.skill-card {
+  background-color: var(--card-background); /* Light card background */
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+}
+
+.dark-mode .skill-card {
+  background-color: var(--dark-card-background);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  border: none; /* No border in dark mode for cards */
+}
+
+.skill-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Lighter shadow for light mode */
+}
+
+.dark-mode .skill-card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.skill-card-image-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 60%; /* 5:3 Aspect Ratio */
+}
+
+.skill-card-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.skill-card-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--border-color);
+  color: var(--text-medium); /* Light mode placeholder text */
+  font-size: 1.5rem;
+}
+
+.dark-mode .skill-card-placeholder {
+  color: var(--dark-text-medium);
+}
+
+.skill-card-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.skill-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.skill-card-user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--logo-orange);
+}
+
+.skill-card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-dark); /* Light mode title */
+  margin: 0;
+}
+
+.dark-mode .skill-card-title {
+  color: var(--dark-text-light);
+}
+
+.skill-card-author {
+  font-size: 0.9rem;
+  color: var(--text-medium); /* Light mode author text */
+  margin-top: 0.25rem;
+}
+
+.dark-mode .skill-card-author {
+  color: var(--dark-text-medium);
+}
+
+.skill-card-description {
+  font-size: 1rem;
+  color: var(--text-dark); /* Light mode description */
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.dark-mode .skill-card-description {
+  color: var(--dark-text-light);
+}
+
+.skill-card-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.skill-card-tag {
+  background-color: var(--border-color); /* Light mode tag background */
+  color: var(--logo-orange);
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.dark-mode .skill-card-tag {
+  background-color: var(--dark-sidebar-hover);
+}
+
+.skill-card-actions {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-view-details {
+  background-color: var(--logo-orange);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.btn-view-details:hover {
+  background-color: var(--logo-dark-orange);
+}
+
+.btn-delete-offer, .btn-request-offer {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-delete-offer {
+  background-color: var(--error-red);
+  color: #fff;
+  border: none;
+}
+
+.btn-delete-offer:hover {
+  background-color: #c82333; /* Darker red on hover */
+}
+
+.btn-request-offer {
+  background-color: var(--logo-orange);
+  color: #fff;
+  border: none;
+}
+
+.btn-request-offer:hover {
+  background-color: var(--logo-dark-orange);
+}
+
+
+/* Modal for full details */
+.full-details-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.full-details-modal-content {
+  background-color: var(--card-background); /* Light modal background */
+  padding: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  max-width: 90%;
+  width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.dark-mode .full-details-modal-content {
+  background-color: var(--dark-card-background);
+}
+
+.full-details-modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: var(--text-dark); /* Light mode close button */
+  line-height: 1;
+  padding: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+.dark-mode .full-details-modal-close-btn {
+  color: var(--dark-text-light);
+}
+
+.full-details-modal-close-btn:hover {
+  color: var(--logo-orange);
+}
+
+.full-details-header {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.full-details-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-dark); /* Light mode title */
+  margin-bottom: 0.5rem;
+}
+
+.dark-mode .full-details-title {
+  color: var(--dark-text-light);
+}
+
+.full-details-author {
+  font-size: 1rem;
+  color: var(--text-medium); /* Light mode author */
+}
+
+.dark-mode .full-details-author {
+  color: var(--dark-text-medium);
+}
+
+.full-details-image {
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.full-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.full-details-info-box {
+  background-color: var(--border-color); /* Light mode info box */
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+}
+
+.dark-mode .full-details-info-box {
+  background-color: var(--dark-sidebar-hover);
+}
+
+.full-details-info-label {
+  font-weight: 500;
+  color: var(--text-medium); /* Light mode label */
+  margin-bottom: 0.5rem;
+}
+
+.dark-mode .full-details-info-label {
+  color: var(--dark-text-medium);
+}
+
+.full-details-info-value {
+  font-size: 1.1rem;
+  color: var(--text-dark); /* Light mode value */
+}
+
+.dark-mode .full-details-info-value {
+  color: var(--dark-text-light);
+}
+
+.full-details-description-box {
+  grid-column: 1 / -1;
+}
+
+.full-details-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments for modals */
+@media (max-width: 768px) {
+  .full-details-modal-content {
+    padding: 1.5rem;
+  }
+  .full-details-grid {
+    grid-template-columns: 1fr;
+  }
+}

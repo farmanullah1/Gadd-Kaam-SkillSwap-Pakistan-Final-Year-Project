@@ -1,5 +1,4 @@
 // models/SkillOffer.js
-
 const mongoose = require('mongoose');
 
 const SkillOfferSchema = new mongoose.Schema({
@@ -38,6 +37,10 @@ const SkillOfferSchema = new mongoose.Schema({
     default: false,
   },
   anonymous: {
+    type: Boolean,
+    default: false,
+  },
+  shareWithWomenZone: { // New field for women-only zone
     type: Boolean,
     default: false,
   },

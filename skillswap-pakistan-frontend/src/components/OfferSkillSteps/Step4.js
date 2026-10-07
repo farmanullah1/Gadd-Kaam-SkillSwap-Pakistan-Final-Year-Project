@@ -1,89 +1,78 @@
+// src/components/OfferSkillSteps/Step4.js
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { FaChevronLeft, FaPaperPlane } from 'react-icons/fa';
 
-function Step4({ onBack, onNext, data }) {
-    const handleConfirmAndPublish = () => {
-        // This is where we'll handle the API call in the next step
-        console.log('Final Data:', data);
-        onNext(data); // In a real app, this would be an API call
-    };
+const Step4 = ({ onBack, onPublish, data }) => {
+  const { t } = useTranslation();
 
-    return (
-        <div className="offer-skill-card">
-            <h2>Step 4: Review & Publish</h2>
-            <p className="card-subtitle">
-                Please review all the details below. If everything looks good, publish your offer to the marketplace.
-            </p>
+  return (
+    <div>
+      <h2 className="step-content-heading">{t('step4_offer_skill')}</h2>
+      <p className="step-content-subheading">{t('step4_offer_skill_desc')}</p>
 
-            <div className="review-section">
-                <div className="review-header">
-                    <h3 className="review-title"><span className="icon">🚀</span>Skills You’re Offering</h3>
-                    <button className="btn-edit" onClick={() => onBack(data)}>Edit</button>
-                </div>
-                <div className="review-details">
-                    {data.skills.length > 0 ? (
-                        data.skills.map((skill, index) => <p key={index}>{skill}</p>)
-                    ) : (
-                        <p>No skills added.</p>
-                    )}
-                </div>
-            </div>
-
-            <div className="review-section">
-                <div className="review-header">
-                    <h3 className="review-title">Your Details</h3>
-                    <button className="btn-edit" onClick={() => onBack(data)}>Edit</button>
-                </div>
-                <div className="review-details">
-                    <p>{data.description || "No description provided."}</p>
-                    <div className="detail-item">
-                        <span className="detail-icon">👤</span>
-                        <span className="detail-text">{data.username || 'Not provided'}</span>
-                    </div>
-                    <div className="detail-item">
-                        <span className="detail-icon">📞</span>
-                        <span className="detail-text">{data.phoneNumber || 'Not provided'}</span>
-                    </div>
-                    <div className="detail-item">
-                        <span className="detail-icon">📍</span>
-                        <span className="detail-text">{data.location || 'Not provided'}</span>
-                    </div>
-                    <div className="detail-item">
-                        <span className="detail-icon">🌍</span>
-                        <span className="detail-text">{data.remotely ? 'Available Remotely' : 'In-person only'}</span>
-                    </div>
-                    <div className="detail-item">
-                        <span className="detail-icon">👁️‍🗨️</span>
-                        <span className="detail-text">{data.anonymous ? 'Go Anonymous (Hidden)' : 'Public Profile'}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div className="review-section">
-                <div className="review-header">
-                    <h3 className="review-title"><span className="icon">⭐</span>Skills You Want</h3>
-                    <button className="btn-edit" onClick={() => onBack(data)}>Edit</button>
-                </div>
-                <div className="review-details">
-                    {data.skillsToSwap.length > 0 ? (
-                        data.skillsToSwap.map((skill, index) => <p key={index}>{skill}</p>)
-                    ) : (
-                        <p>No specific skills requested in return.</p>
-                    )}
-                </div>
-            </div>
-
-            <div className="form-actions">
-                <button type="button" className="btn-back" onClick={() => onBack(data)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                    Back
-                </button>
-                <button type="submit" className="btn-confirm" onClick={handleConfirmAndPublish}>
-                    Confirm & Publish
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 4L19 12 5 20V4z"></path></svg>
-                </button>
-            </div>
+      <div className="review-section">
+        <div className="review-section-header">Skill Details</div>
+        <div className="review-info">
+          <span className="review-info-label">{t('offer_skill_label')}:</span>
+          <span className="review-info-value">{data.skills.join(', ')}</span>
         </div>
-    );
-}
+        {data.skillsToSwap.length > 0 && (
+          <div className="review-info">
+            <span className="review-info-label">{t('swap_skill_label')}:</span>
+            <span className="review-info-value">{data.skillsToSwap.join(', ')}</span>
+          </div>
+        )}
+        <div className="review-info">
+          <span className="review-info-label">{t('location_label')}:</span>
+          <span className="review-info-value">{data.location}</span>
+        </div>
+        <div className="review-info">
+          <span className="review-info-label">{t('remotely_label')}:</span>
+          <span className="review-info-value">{data.remotely ? t('yes') : t('no')}</span>
+        </div>
+        <div className="review-info">
+          <span className="review-info-label">{t('anonymous_label')}:</span>
+          <span className="review-info-value">{data.anonymous ? t('yes') : t('no')}</span>
+        </div>
+        {data.shareWithWomenZone !== undefined && (
+          <div className="review-info">
+            <span className="review-info-label">{t('step2_women_zone_switch')}:</span>
+            <span className="review-info-value">{data.shareWithWomenZone ? t('yes') : t('no')}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="review-section">
+        <div className="review-section-header">Description</div>
+        <div className="review-description">
+          <p>{data.description}</p>
+        </div>
+      </div>
+      
+      {data.photo && (
+        <div className="review-section">
+          <div className="review-section-header">Offer Photo</div>
+          <img
+            src={typeof data.photo === 'string' ? data.photo : URL.createObjectURL(data.photo)}
+            alt="Skill Offer Preview"
+            className="review-image-preview"
+          />
+        </div>
+      )}
+
+      <p className="step-content-subheading" style={{ textAlign: 'center' }}>{t('step4_review_message')}</p>
+
+      <div className="offer-skill-actions">
+        <button type="button" className="btn-secondary-outline" onClick={onBack}>
+          <FaChevronLeft style={{ marginRight: '8px' }} /> {t('go_back_btn')}
+        </button>
+        <button type="button" className="btn-primary-orange" onClick={onPublish}>
+          {t('step4_confirm_publish_btn')} <FaPaperPlane style={{ marginLeft: '8px' }} />
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default Step4;

@@ -1,50 +1,133 @@
-import React, { useState } from 'react';
+// src/components/OfferSkillSteps/Step3.js
+import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { VscClose } from 'react-icons/vsc';
+import axios from 'axios';
 
-function Step3({ onBack, onNext, data }) {
-    const [skillsToSwap, setSkillsToSwap] = useState(data.skillsToSwap);
+const Step3 = ({ onNext, onBack, data }) => {
+  const { t } = useTranslation();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [error, setError] = useState(null);
 
-    const handleReviewOffer = (e) => {
-        e.preventDefault();
-        onNext({ skillsToSwap: skillsToSwap });
+  const initialSuggestions = [
+    { skillName: 'Tractor Repair' },
+    { skillName: 'Water Pump Maintenance' },
+    { skillName: 'Basic Welding' },
+    { skillName: 'English Speaking' },
+    { skillName: 'Smartphone Usage' },
+    { skillName: 'Public Speaking' },
+    { skillName: 'Cooking' },
+    { skillName: 'Writing' },
+    { skillName: 'Embroidery' },
+  ];
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      try {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/skill-suggestions`);
+        const allSuggestionsMap = new Map();
+        initialSuggestions.forEach(s => allSuggestionsMap.set(s.skillName.toLowerCase(), s));
+        res.data.forEach(s => allSuggestionsMap.set(s.skillName.toLowerCase(), s));
+        const uniqueSuggestions = Array.from(allSuggestionsMap.values());
+
+        setSuggestions(uniqueSuggestions);
+      } catch (err) {
+        console.error('Failed to fetch skill suggestions:', err);
+        setSuggestions(initialSuggestions);
+      }
     };
+    fetchSuggestions();
+  }, []);
 
-    return (
-        <div className="offer-skill-card">
-            <div className="card-header">
-                <span className="icon">⭐</span>
-                <h2>Step 3: What do you want in return?</h2>
-            </div>
-            <p className="card-subtitle">
-                Tell us what skills you’d like to swap for and discover new opportunities! Pick up to 3 skills you want to learn or improve from the list.
-            </p>
-            <form onSubmit={handleReviewOffer}>
-                <p className="form-prompt">What new skills are you excited to swap for? ☀️</p>
-                <div className="search-bar-container">
-                    <span className="search-icon">🔍</span>
-                    <input type="text" placeholder="Search for skills you want to learn..." />
-                </div>
-                {/* We'll handle skill selection here later */}
-                {/* Display selected skills as chips */}
-                {skillsToSwap.map((skill, index) => (
-                    <div className="chip" key={index}>
-                        {skill}
-                        <button className="chip-close" type="button">×</button>
-                    </div>
-                ))}
-
-                <div className="form-actions">
-                    <button type="button" className="btn-back" onClick={() => onBack({ skillsToSwap: skillsToSwap })}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                        Back
-                    </button>
-                    <button type="submit" className="btn-continue">
-                        Review Offer
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                    </button>
-                </div>
-            </form>
-        </div>
+  useEffect(() => {
+    setFilteredSuggestions(
+      suggestions.filter(s => s.skillName.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-}
+  }, [searchTerm, suggestions]);
+
+  const handleSelectSkillToSwap = (skillName) => {
+    if (data.skillsToSwap.length >= 3) {
+      setError('You can select up to 3 skills to swap.');
+      return;
+    }
+    const skillExists = data.skillsToSwap.some(s => s.toLowerCase() === skillName.toLowerCase());
+    if (!skillExists) {
+        onNext({ skillsToSwap: [...data.skillsToSwap, skillName] });
+        setSearchTerm('');
+        setShowSuggestions(false);
+        setError(null);
+    }
+  };
+
+  const handleRemoveSkillToSwap = (skillToRemove) => {
+    onNext({ skillsToSwap: data.skillsToSwap.filter(s => s !== skillToRemove) });
+    setError(null);
+  };
+  
+  const handleNextClick = () => {
+    onNext({ skillsToSwap: data.skillsToSwap });
+  };
+
+
+  return (
+    <div>
+      <h2 className="step-content-heading">{t('step3_offer_skill')}</h2>
+      <p className="step-content-subheading">{t('step3_offer_skill_desc')}</p>
+      <div className="form-group form-group-skills-select">
+        <label htmlFor="skillsToSwap">{t('step3_offer_skill_label')}</label>
+        
+        <div className="skills-input-container">
+          <input
+            type="text"
+            id="skillsToSwap"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setShowSuggestions(true);
+            }}
+            onFocus={() => setShowSuggestions(true)}
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+            placeholder={t('step3_offer_skill_placeholder')}
+            className="form-input"
+            autoComplete="off"
+          />
+        </div>
+        {error && <p className="error-message">{error}</p>}
+
+        <div className="selected-skills-container">
+            {data.skillsToSwap.map((skill, index) => (
+                <span key={index} className="selected-skill-tag">
+                    {skill} <button type="button" onClick={() => handleRemoveSkillToSwap(skill)}><VscClose /></button>
+                </span>
+            ))}
+        </div>
+
+        {showSuggestions && (
+          <ul className="skill-suggestions-dropdown">
+            {filteredSuggestions.length > 0 ? (
+              filteredSuggestions.map((s, index) => (
+                <li key={index} onMouseDown={() => handleSelectSkillToSwap(s.skillName)}>{s.skillName}</li>
+              ))
+            ) : (
+              <li className="no-suggestions-item">No suggestions found.</li>
+            )}
+          </ul>
+        )}
+      </div>
+      <div className="offer-skill-actions">
+        <button type="button" className="btn-secondary-outline" onClick={onBack}>
+          <FaChevronLeft style={{ marginRight: '8px' }} /> {t('go_back_btn')}
+        </button>
+        <button type="button" className="btn-primary-orange" onClick={handleNextClick}>
+          Next <FaChevronRight style={{ marginLeft: '8px' }} />
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default Step3;

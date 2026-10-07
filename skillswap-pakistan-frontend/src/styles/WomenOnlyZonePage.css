@@ -1,0 +1,53 @@
+/* src/styles/women-only-zone.css */
+
+/* Reusing general styles from marketplace.css and my-skills.css */
+/* Ensure these are imported in index.js after global.css */
+
+.women-only-zone-page {
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - var(--navbar-height) - var(--footer-height, 100px)); /* Adjust as needed */
+  background-color: var(--background-beige); /* Light mode background */
+  color: var(--text-dark); /* Light mode text */
+}
+
+/* Dark mode specific overrides */
+.dark-mode .women-only-zone-page {
+  background-color: var(--dark-background-color);
+  color: var(--dark-text-light);
+}
+
+.women-only-zone-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.women-only-zone-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-dark); /* Default to light mode, adjust for dark */
+  margin-bottom: 0.5rem;
+}
+
+.dark-mode .women-only-zone-header h1 {
+  color: var(--dark-text-light);
+}
+
+.women-only-zone-header p {
+  font-size: 1.1rem;
+  color: var(--text-medium); /* Default to light mode, adjust for dark */
+}
+
+.dark-mode .women-only-zone-header p {
+  color: var(--dark-text-medium);
+}
+
+.women-only-skill-card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+/* The skill-card, full-details-modal-overlay, etc., styles are inherited from my-skills.css */
+/* No-skills-message is also inherited from marketplace.css */

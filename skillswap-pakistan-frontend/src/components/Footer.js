@@ -43,7 +43,7 @@ function Footer(props) {
               <h4 className="footer-heading">{t("Quick Links")}</h4>
               <ul>
                 {/* UPDATED: Add the onClick handler to the Marketplace link */}
-                <li><Link to="/marketplace" className="footer-link" onClick={handleMarketplaceClick}>{t("Marketplace")}</Link></li>
+                <li><Link to="/marketplace" className="nav-link-mobile">{t("navbar_marketplace")}</Link></li>
                 <li><Link to="/about" className="footer-link">{t("About Us")}</Link></li>
                 <li><Link to="/offer-skill" className="footer-link">{t("Post a Skill")}</Link></li>
               </ul>

@@ -1,45 +1,247 @@
 // src/components/MarketplacePage.js
 import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom'; // Added Link import
 import Navbar from './Navbar';
 import Footer from './Footer';
 import HelplinePopup from './HelplinePopup';
+import LoadingSpinner from './LoadingSpinner'; // Correct import path
+import '../styles/marketplace.css'; // Import marketplace specific styles
+import '../styles/my-skills.css'; // Import shared skill card styles
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { FaPaperPlane } from 'react-icons/fa'; // Icon for request button
+
+// SkillCard component (reused from MySkillPage, adapted for Marketplace)
+const SkillCard = ({ skill, onViewDetails, onRequestOffer }) => {
+  const { t } = useTranslation();
+  const placeholderImage = 'https://placehold.co/400x240/e0e0e0/666666?text=No+Image';
+
+  return (
+    <div className="skill-card">
+      <div className="skill-card-image-wrapper">
+        <img
+          src={skill.photo || placeholderImage}
+          alt={skill.skills}
+          className="skill-card-image"
+          onError={(e) => { e.target.onerror = null; e.target.src = placeholderImage; }}
+        />
+      </div>
+      <div className="skill-card-content">
+        <h3 className="skill-card-title">{skill.skills}</h3>
+        <p className="skill-card-author">
+          {t('offer_skill_label')} by {skill.anonymous ? t('anonymous_label') : skill.username}
+        </p>
+        <p className="skill-card-description">{skill.description}</p>
+        <div className="skill-card-tags">
+          {skill.remotely && <span className="skill-card-tag">{t('remotely_label')}</span>}
+          {skill.anonymous && <span className="skill-card-tag">{t('anonymous_label')}</span>}
+          {/* Only show women zone tag if it's explicitly shared there */}
+          {skill.shareWithWomenZone && <span className="skill-card-tag">{t('step2_women_zone_switch')}</span>}
+        </div>
+        <div className="skill-card-actions">
+          <button className="btn-view-details" onClick={() => onViewDetails(skill)}>
+            {t('view_full_details_btn')}
+          </button>
+          <button className="btn-request-offer" onClick={() => onRequestOffer(skill)}>
+            {t('request_btn')} <FaPaperPlane />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// FullDetailsModal component (reused and adapted)
+const FullDetailsModal = ({ skill, onClose, onRequest }) => {
+  const { t } = useTranslation();
+  const placeholderImage = 'https://placehold.co/800x480/e0e0e0/666666?text=No+Image';
+
+  if (!skill) return null;
+
+  return (
+    <div className="full-details-modal-overlay">
+      <div className="full-details-modal-content">
+        <button className="full-details-modal-close-btn" onClick={onClose}>&times;</button>
+        <div className="full-details-header">
+          <h2 className="full-details-title">{skill.skills}</h2>
+          <p className="full-details-author">
+            {t('offer_skill_label')} by {skill.anonymous ? t('anonymous_label') : skill.username}
+          </p>
+        </div>
+        <img
+          src={skill.photo || placeholderImage}
+          alt={skill.skills}
+          className="full-details-image"
+          onError={(e) => { e.target.onerror = null; e.target.src = placeholderImage; }}
+        />
+        <div className="full-details-grid">
+          <div className="full-details-info-box full-details-description-box">
+            <h3 className="full-details-info-label">{t('description_label')}</h3>
+            <p className="full-details-info-value">{skill.description}</p>
+          </div>
+          <div className="full-details-info-box">
+            <h3 className="full-details-info-label">{t('location_label')}</h3>
+            <p className="full-details-info-value">{skill.location}</p>
+          </div>
+          <div className="full-details-info-box">
+            <h3 className="full-details-info-label">{t('remotely_label')}</h3>
+            <p className="full-details-info-value">{skill.remotely ? t('yes') : t('no')}</p>
+          </div>
+          <div className="full-details-info-box">
+            <h3 className="full-details-info-label">{t('anonymous_label')}</h3>
+            <p className="full-details-info-value">{skill.anonymous ? t('yes') : t('no')}</p>
+          </div>
+          {skill.shareWithWomenZone && (
+            <div className="full-details-info-box">
+              <h3 className="full-details-info-label">{t('step2_women_zone_switch')}</h3>
+              <p className="full-details-info-value">{skill.shareWithWomenZone ? t('yes') : t('no')}</p>
+            </div>
+          )}
+          <div className="full-details-info-box">
+            <h3 className="full-details-info-label">{t('swap_skill_label')}</h3>
+            <p className="full-details-info-value">{skill.skillsToSwap || t('skill_not_specified')}</p>
+          </div>
+        </div>
+        <div className="full-details-actions">
+          <button className="btn-request-offer" onClick={() => onRequest(skill)}>
+            {t('request_btn')} <FaPaperPlane />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 function MarketplacePage() {
-    const { t } = useTranslation();
-    const navigate = useNavigate();
-    const [user, setUser] = useState(null);
-    const [showHelplinePopup, setShowHelplinePopup] = useState(false);
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [showHelplinePopup, setShowHelplinePopup] = useState(false);
+  const [skills, setSkills] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedSkill, setSelectedSkill] = useState(null); // For modal
 
-    useEffect(() => {
-        // Fetch user data from localStorage on page load
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-    }, []);
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
+      navigate('/login');
+    }
+    fetchAllSkills();
+  }, [navigate]);
 
-    const openHelplinePopup = () => setShowHelplinePopup(true);
-    const closeHelplinePopup = () => setShowHelplinePopup(false);
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setUser(null);
-        navigate('/login');
-    };
+  const fetchAllSkills = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/skill-offers`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSkills(response.data);
+    } catch (err) {
+      console.error('Failed to fetch marketplace skills:', err);
+      setError('Failed to load marketplace skills. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <div className="page-container">
-            <Navbar onHelplineClick={openHelplinePopup} onLogout={handleLogout} user={user} />
-            <main className="main-content">
-                <h1>{t("Marketplace")}</h1>
-                <p>This is the marketplace page. The content will be added here later.</p>
-            </main>
-            <Footer />
-            {showHelplinePopup && <HelplinePopup onClose={closeHelplinePopup} />}
-        </div>
-    );
+  const handleRequestOffer = (skill) => {
+    // In a real application, this would initiate a chat or a formal request
+    alert(`You are requesting the skill: "${skill.skills}" from "${skill.username}".`);
+    // navigate('/dashboard/messages', { state: { skillToRequest: skill } });
+  };
+
+  const openHelplinePopup = () => setShowHelplinePopup(true);
+  const closeHelplinePopup = () => setShowHelplinePopup(false);
+  
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    navigate('/login');
+  };
+
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <div className="dashboard-page-container">
+      <Navbar onHelplineClick={openHelplinePopup} onLogout={handleLogout} user={user} />
+
+      <div className="dashboard-main-content">
+        {/* Sidebar (reused from DashboardPage) */}
+        <aside className="dashboard-sidebar">
+          <nav className="dashboard-nav">
+            <Link to="/dashboard" className="dashboard-nav-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              Dashboard
+            </Link>
+            <Link to="/dashboard/profile" className="dashboard-nav-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              Profile
+            </Link>
+            <Link to="/dashboard/my-skills" className="dashboard-nav-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-tool"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z"></path></svg>
+              My Skills
+            </Link>
+            <Link to="/dashboard/messages" className="dashboard-nav-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              Messages
+            </Link>
+          </nav>
+        </aside>
+
+        {/* Main Content Area */}
+        <section className="dashboard-content-area">
+          <div className="marketplace-page">
+            <div className="marketplace-header">
+              <h1>{t('marketplace_page_title')}</h1>
+              <p>{t('marketplace_page_subtitle')}</p>
+            </div>
+
+            {loading ? (
+              <LoadingSpinner />
+            ) : error ? (
+              <p className="error-message">{error}</p>
+            ) : skills.length === 0 ? (
+              <p className="no-skills-message">{t('no_skills_available')}</p>
+            ) : (
+              <div className="marketplace-skill-card-container">
+                {skills.map((skill) => (
+                  <SkillCard
+                    key={skill._id}
+                    skill={skill}
+                    onViewDetails={setSelectedSkill}
+                    onRequestOffer={handleRequestOffer}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+
+      <Footer />
+      
+      {showHelplinePopup && (
+        <HelplinePopup onClose={closeHelplinePopup} />
+      )}
+
+      {selectedSkill && (
+        <FullDetailsModal
+          skill={selectedSkill}
+          onClose={() => setSelectedSkill(null)}
+          onRequest={handleRequestOffer}
+        />
+      )}
+    </div>
+  );
 }
 
 export default MarketplacePage;

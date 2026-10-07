@@ -1,5 +1,4 @@
 // routes/profileRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
@@ -8,6 +7,9 @@ const User = require('../models/User');
 const path = require('path');
 const fs = require('fs');
 
+// @route   PUT /api/profile/update
+// @desc    Update user profile details
+// @access  Private
 router.put('/update', auth, upload, async (req, res) => {
     try {
         const userId = req.user.id;

@@ -1,5 +1,4 @@
 // routes/skillOfferRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
@@ -44,7 +43,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
     
-    const { skills, description, location, remotely, anonymous, skillsToSwap } = req.body;
+    const { skills, description, location, remotely, anonymous, shareWithWomenZone, skillsToSwap } = req.body;
     
     // Parse skills and skillsToSwap from JSON strings if they were sent that way
     // This is common for form-data mixed with JSON
@@ -61,13 +60,14 @@ router.post(
         user: req.user.id,
         skills: parsedSkills,
         description,
-        username: anonymous ? 'Anonymous User' : user.username,
-        phoneNumber: anonymous ? 'Contact via platform' : user.phoneNumber,
+        username: anonymous === 'true' ? 'Anonymous User' : user.username,
+        phoneNumber: anonymous === 'true' ? 'Contact via platform' : user.phoneNumber,
         location,
         remotely: remotely === 'true',
         anonymous: anonymous === 'true',
+        shareWithWomenZone: shareWithWomenZone === 'true', // Handle boolean conversion
         skillsToSwap: parsedSkillsToSwap,
-        photo: req.file ? path.basename(req.file.path) : null,
+        photo: req.file ? path.basename(req.file.path) : null, // Store only the filename
       });
 
       const skillOffer = await newSkillOffer.save();
@@ -87,7 +87,7 @@ router.post(
 );
 
 // @route   GET /api/skill-offers
-// @desc    Get all skill offers
+// @desc    Get all skill offers (for marketplace)
 // @access  Public
 router.get('/', async (req, res) => {
   try {
@@ -99,23 +99,37 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @route   GET /api/skill-offers/user/:user_id
-// @desc    Get skill offers by user ID
-// @access  Public
-router.get('/user/:user_id', async (req, res) => {
+// @route   GET /api/skill-offers/my-skills
+// @desc    Get skill offers by the authenticated user
+// @access  Private
+router.get('/my-skills', auth, async (req, res) => {
   try {
-    const skillOffers = await SkillOffer.find({ user: req.params.user_id }).sort({ date: -1 });
-    
-    if (skillOffers.length === 0) {
-      return res.status(404).json({ msg: 'No skill offers found for this user' });
-    }
-    
+    const skillOffers = await SkillOffer.find({ user: req.user.id }).sort({ date: -1 });
     res.json(skillOffers);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
   }
 });
+
+// @route   GET /api/skill-offers/women-only
+// @desc    Get skill offers shared specifically for the women-only zone
+// @access  Private (only accessible by authenticated female users)
+router.get('/women-only', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user || user.gender !== 'Female') {
+      return res.status(403).json({ msg: 'Access denied. This zone is for female users only.' });
+    }
+
+    const skillOffers = await SkillOffer.find({ shareWithWomenZone: true }).sort({ date: -1 });
+    res.json(skillOffers);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 
 // @route   DELETE /api/skill-offers/:offer_id
 // @desc    Delete a skill offer
@@ -141,7 +155,7 @@ router.delete('/:offer_id', auth, async (req, res) => {
       });
     }
     
-    await skillOffer.remove();
+    await skillOffer.deleteOne(); // Use deleteOne() instead of remove()
     
     res.json({ msg: 'Skill offer removed' });
   } catch (err) {
