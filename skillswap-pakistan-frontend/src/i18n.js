@@ -1,3 +1,5 @@
+// src/i18n.js
+
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -80,9 +82,9 @@ i18n
           "navbar_dashboard": "Dashboard",
           "navbar_my_profile": "My Profile",
           "navbar_my_skills": "My Skills",
-          "navbar_messages": "Messages", // New
+          "navbar_messages": "Messages",
           "navbar_marketplace": "Marketplace",
-          "navbar_reviews": "Reviews", // New
+          "navbar_reviews": "Reviews",
 
           // Hero Section
           "hero_headline": "Trade Skills, Build Futures.",
@@ -175,6 +177,7 @@ i18n
           "about_me_label": "About Me",
           "discard_changes_btn": "Discard Changes",
           "save_changes_btn": "Save Changes",
+          "my_badges_title": "My Badges", // New
 
           // --- Offer Skill Page Translations ---
           "offer_skill_title": "Offer a New Skill",
@@ -237,12 +240,61 @@ i18n
           "messages_page_title": "My Messages",
           "messages_page_subtitle": "View and manage your conversations with other users.",
           "no_messages_yet": "You don't have any messages yet.",
+          "search_messages_placeholder": "Search messages...",
+          "no_messages_found": "No conversations found.",
+          "select_conversation_message": "Select a conversation",
+          "choose_chat_to_start": "Choose a chat from the left to start messaging.",
+          "chat_with_user_placeholder": "Chat",
+          "skill_received_btn": "Skill Received",
+          "report_btn": "Report",
+          "type_your_message_placeholder": "Type your message...",
+          "chat_initial_greeting": "Hello there! How can I assist you today?",
+          "chat_how_can_i_help": "I am ready when you are!",
+          "chat_user_response": "Great, I'm looking forward to it!",
+          "chat_message_ali": "Sure, let's meet tomorrow.", // Dummy message content
+          "chat_message_fatima": "I received the skill!", // Dummy message content
+          "chat_message_usman": "Initial message for a new request.", // Dummy message content
+          "chat_message_ayesha": "Exchange completed. Please leave a review!", // Dummy message content
+          "exchange_completed_chat_view_only": "This exchange is completed. You can no longer send messages.",
+          "exchange_completed_no_chat": "This exchange is completed.",
+          "exchange_completed_chat_summary": "Exchange completed. Please leave a review!",
+          "confirm_skill_received_title": "Confirm Skill Received?",
+          "confirm_skill_received_message": "Did you really receive the skill? This action cannot be undone and will lead to the review process.",
+          "error_confirming_skill_received": "Failed to confirm skill received. Please try again.",
+          "error_confirming_skill_received_generic": "Failed to confirm skill received. An error occurred.",
+          "error_no_request_id": "Could not confirm skill. Request ID is missing.",
+          "error_title": "Error",
+          "your_confirmation_pending": "Your confirmation pending",
+          "partner_confirmation_pending": "Partner confirmation pending",
+          "exchange_completed_label": "Exchange Completed",
+
 
           // --- Reviews Page Translations (New) ---
-          "reviews_page_title": "My Reviews",
-          "reviews_page_subtitle": "See what others are saying about your skills.",
-          "no_reviews_yet": "You haven't received any reviews yet.",
-
+          "reviews_page_title": "Reviews",
+          "reviews_page_subtitle": "Share your feedback on completed skill exchanges and view reviews you've received.",
+          "no_reviews_yet": "You haven't received any reviews yet.", // Used for 'Reviews Received' tab
+          "review_submitted_title": "Review Submitted!",
+          "review_submitted_message": "Thank you for your feedback. Your review helps build trust in the community.",
+          "back_to_dashboard_btn": "Back to Dashboard",
+          "rate_skill_exchange_with": "Rate your skill exchange with {{username}}",
+          "your_review_label": "Your Review",
+          "review_placeholder": "Write your review here...",
+          "endorse_skills_label": "Endorse skills for {{username}}",
+          "endorse_btn": "Endorse",
+          "submit_review_btn": "Submit Review",
+          "reviews_received_tab": "Reviews Received",
+          "write_a_review_tab": "Write a Review",
+          "no_received_reviews_yet": "You haven't received any reviews yet.",
+          "no_pending_reviews": "No pending reviews. All completed exchanges have been reviewed by you!",
+          "review_for_exchange_with": "Review for exchange with {{username}}",
+          "skills_involved": "Skills involved:",
+          "skill_offered_by_them": "Skill offered by them:",
+          "skill_you_requested": "Skill you requested:",
+          "rating_label": "Rating:",
+          "by_reviewer_name": "by {{username}}",
+          "failed_to_submit_review": "Failed to submit review. Please try again.",
+          "failed_to_load_received_reviews": "Failed to load received reviews.",
+          "failed_to_load_pending_reviews": "Failed to load pending reviews.",
 
           // --- Login Page Translations ---
           "login_welcome_back": "Welcome Back!",
@@ -272,6 +324,7 @@ i18n
           "signup_email_label": "Email",
           "signup_dateOfBirth_label": "Date of Birth",
           "signup_cnicNumber_label": "CNIC Number",
+          "signup_cnicNumber_placeholder": "e.g., 12345-1234567-1", // New
           "signup_cnicFrontPic_label": "CNIC Front Picture",
           "signup_cnicBackPic_label": "CNIC Back Picture",
           "signup_password_label": "Password",
@@ -371,9 +424,9 @@ i18n
           "navbar_dashboard": "ڈیش بورڈ",
           "navbar_my_profile": "میرا پروفائل",
           "navbar_my_skills": "میری مہارتیں",
-          "navbar_messages": "پیغامات", // New
+          "navbar_messages": "پیغامات",
           "navbar_marketplace": "مارکیٹ پلیس",
-          "navbar_reviews": "جائزے", // New
+          "navbar_reviews": "جائزے",
 
           // Hero Section (Urdu)
           "hero_headline": "مہارتوں کا تبادلہ، مستقبل کی تعمیر۔",
@@ -465,6 +518,7 @@ i18n
           "about_me_label": "میرے بارے میں",
           "discard_changes_btn": "تبدیلیاں مسترد کریں",
           "save_changes_btn": "تبدیلیاں محفوظ کریں",
+          "my_badges_title": "میرے بیجز",
 
           // --- Offer Skill Page Translations (Urdu) ---
           "offer_skill_title": "ایک نئی مہارت پیش کریں",
@@ -527,11 +581,61 @@ i18n
           "messages_page_title": "میرے پیغامات",
           "messages_page_subtitle": "دوسرے صارفین کے ساتھ اپنی بات چیت دیکھیں اور ان کا انتظام کریں۔",
           "no_messages_yet": "آپ کے پاس ابھی کوئی پیغام نہیں ہے۔",
+          "search_messages_placeholder": "پیغامات تلاش کریں...",
+          "no_messages_found": "کوئی گفتگو نہیں ملی۔",
+          "select_conversation_message": "ایک گفتگو کا انتخاب کریں",
+          "choose_chat_to_start": "گفتگو شروع کرنے کے لیے بائیں جانب سے ایک چیٹ منتخب کریں۔",
+          "chat_with_user_placeholder": "چیٹ",
+          "skill_received_btn": "مہارت موصول ہوئی",
+          "report_btn": "رپورٹ کریں",
+          "type_your_message_placeholder": "اپنا پیغام لکھیں...",
+          "chat_initial_greeting": "ہیلو! میں آج آپ کی کیسے مدد کر سکتا ہوں؟",
+          "chat_how_can_i_help": "میں تیار ہوں جب آپ ہوں!",
+          "chat_user_response": "بہت اچھا، میں اس کا انتظار کر رہا ہوں!",
+          "chat_message_ali": "ضرور، کل ملتے ہیں۔", // Dummy message content
+          "chat_message_fatima": "مجھے مہارت موصول ہو گئی!", // Dummy message content
+          "chat_message_usman": "نئی درخواست کے لیے ابتدائی پیغام۔", // Dummy message content
+          "chat_message_ayesha": "تبادلہ مکمل ہو گیا۔ براہ کرم ایک جائزہ چھوڑیں!", // Dummy message content
+          "exchange_completed_chat_view_only": "یہ تبادلہ مکمل ہو گیا ہے۔ اب آپ پیغامات نہیں بھیج سکتے۔",
+          "exchange_completed_no_chat": "یہ تبادلہ مکمل ہو گیا ہے۔",
+          "exchange_completed_chat_summary": "تبادلہ مکمل ہو گیا۔ براہ کرم ایک جائزہ چھوڑیں!",
+          "confirm_skill_received_title": "مہارت موصول ہونے کی تصدیق کریں؟",
+          "confirm_skill_received_message": "کیا آپ کو واقعی مہارت موصول ہوئی؟ یہ کارروائی کالعدم نہیں کی جا سکتی اور جائزہ کے عمل کی طرف لے جائے گی۔",
+          "error_confirming_skill_received": "مہارت موصول ہونے کی تصدیق کرنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
+          "error_confirming_skill_received_generic": "مہارت موصول ہونے کی تصدیق کرنے میں ناکامی۔ ایک خامی پیش آگئی۔",
+          "error_no_request_id": "مہارت کی تصدیق نہیں ہو سکی۔ درخواست ID غائب ہے۔",
+          "error_title": "خامی",
+          "your_confirmation_pending": "آپ کی تصدیق زیر التوا ہے",
+          "partner_confirmation_pending": "پارٹنر کی تصدیق زیر التوا ہے",
+          "exchange_completed_label": "تبادلہ مکمل ہو گیا",
+
 
           // --- Reviews Page Translations (Urdu) ---
-          "reviews_page_title": "میرے جائزے",
-          "reviews_page_subtitle": "دیکھیں کہ دوسرے آپ کی مہارتوں کے بارے میں کیا کہہ رہے ہیں۔",
+          "reviews_page_title": "جائزے",
+          "reviews_page_subtitle": "مکمل شدہ مہارت کے تبادلوں پر اپنا رائے دیں اور موصول ہونے والے جائزے دیکھیں۔",
           "no_reviews_yet": "آپ کو ابھی تک کوئی جائزہ موصول نہیں ہوا ہے۔",
+          "review_submitted_title": "جائزہ جمع ہو گیا!",
+          "review_submitted_message": "آپ کی رائے کا شکریہ۔ آپ کا جائزہ کمیونٹی میں اعتماد پیدا کرنے میں مدد کرتا ہے۔",
+          "back_to_dashboard_btn": "ڈیش بورڈ پر واپس",
+          "rate_skill_exchange_with": "آپ کی مہارت کا {{username}} کے ساتھ تبادلہ کی درجہ بندی کریں",
+          "your_review_label": "آپ کا جائزہ",
+          "review_placeholder": "یہاں اپنا جائزہ لکھیں...",
+          "endorse_skills_label": "{{username}} کے لیے مہارتوں کی توثیق کریں",
+          "endorse_btn": "توثیق کریں",
+          "submit_review_btn": "جائزہ جمع کروائیں",
+          "reviews_received_tab": "موصول شدہ جائزے",
+          "write_a_review_tab": "جائزہ لکھیں",
+          "no_received_reviews_yet": "آپ کو ابھی تک کوئی جائزہ موصول نہیں ہوا ہے۔",
+          "no_pending_reviews": "کوئی زیر التوا جائزہ نہیں ہے۔ آپ نے تمام مکمل شدہ تبادلوں کا جائزہ لے لیا ہے!",
+          "review_for_exchange_with": "{{username}} کے ساتھ تبادلے کا جائزہ",
+          "skills_involved": "شامل مہارتیں:",
+          "skill_offered_by_them": "ان کی طرف سے پیش کردہ مہارت:",
+          "skill_you_requested": "آپ نے درخواست کی مہارت:",
+          "rating_label": "درجہ بندی:",
+          "by_reviewer_name": "بذریعہ {{username}}",
+          "failed_to_submit_review": "جائزہ جمع کرنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
+          "failed_to_load_received_reviews": "موصول شدہ جائزے لوڈ کرنے میں ناکامی۔",
+          "failed_to_load_pending_reviews": "زیر التوا جائزے لوڈ کرنے میں ناکامی۔",
 
           // --- Login Page Translations (Urdu) ---
           "login_welcome_back": "خوش آمدید!",
@@ -561,6 +665,7 @@ i18n
           "signup_email_label": "ای میل",
           "signup_dateOfBirth_label": "تاریخ پیدائش",
           "signup_cnicNumber_label": "شناختی کارڈ نمبر",
+          "signup_cnicNumber_placeholder": "مثال کے طور پر، 12345-1234567-1",
           "signup_cnicFrontPic_label": "شناختی کارڈ سامنے کی تصویر",
           "signup_cnicBackPic_label": "شناختی کارڈ پیچھے کی تصویر",
           "signup_password_label": "پاس ورڈ",
@@ -576,6 +681,7 @@ i18n
           "signup_gender_female": "عورت",
           "signup_creating_account": "اکاؤنٹ بنا رہا ہے...",
           "signup_success_modal_title": "اکاؤنٹ بن گیا!",
+
 
           // Chatbot Translations (Urdu)
           "chatbot_welcome_message": "گڈ کام – اسکل سویپ پاکستان میں خوش آمدید! 🤝\nمہارتوں اور مواقع کو جوڑ کر کمیونٹیز کو بااختیار بنانا۔\nمیں آج آپ کی سندھی یا اردو میں کیسے مدد کر سکتا ہوں؟ ہمارے مارکیٹ پلیس، خواتین کے زون، مہارتیں پوسٹ کرنے، یا سپورٹ جیسے سوالات اور تنازعات کے حل کے بارے میں کچھ بھی پوچھیں۔",
@@ -659,9 +765,9 @@ i18n
           "navbar_dashboard": "ڊيش بورڊ",
           "navbar_my_profile": "منهنجو پروفائل",
           "navbar_my_skills": "منهنجيون صلاحيتون",
-          "navbar_messages": "پيغام", // New
+          "navbar_messages": "پيغام",
           "navbar_marketplace": "مارڪيٽ پليس",
-          "navbar_reviews": "جائزه", // New
+          "navbar_reviews": "جائزه",
 
           // Hero Section (Sindhi)
           "hero_headline": "مهارتن جو تبادلو، مستقبل جي تعمير.",
@@ -674,7 +780,7 @@ i18n
           "hero_find_service": "خدمت ڳوليو",
           "hero_find_service_desc": "پنهنجي علائقي ۾ ماهر پيشه ورن پاران پيش ڪيل خدمتن جي وسيع رينج کي براؤز ڪريو.",
           "hero_offer_skills": "پنهنجيون صلاحيتون پيش ڪريو",
-          "hero_offer_skills_desc": "هڪ پروفائل ٺاهيو ۽ ڪميونٽي کي پنهنجيون خدمتون پيش ڪري ڪمائڻ شروع ڪريو.",
+          "hero_offer_skills_desc": "هڪ پروفائل ٺاهيو ۽ ڪميونٽي کي پنهنجيون خدمتون پيش کرکے ڪمائڻ شروع ڪريو.",
           "hero_secure_reliable": "محفوظ ۽ قابل اعتماد",
           "hero_secure_reliable_desc": "اسان سڀني ٽرانزيڪشن ۽ رابطن لاءِ هڪ محفوظ پليٽ فارم فراهم ڪندا آهيون.",
 
@@ -815,11 +921,60 @@ i18n
           "messages_page_title": "منهنجا پيغام",
           "messages_page_subtitle": "ٻين استعمال ڪندڙن سان پنهنجي گفتگو ڏسو ۽ انتظام ڪريو.",
           "no_messages_yet": "توهان وٽ اڃا تائين ڪو به پيغام ناهي.",
+          "search_messages_placeholder": "پيغام ڳوليو...",
+          "no_messages_found": "ڪوبه پيغام نه مليو.",
+          "select_conversation_message": "ڳالهه ٻولهه چونڊيو",
+          "choose_chat_to_start": "ڳالهه ٻولهه شروع ڪرڻ لاءِ کاٻي پاسي کان هڪ چيٽ چونڊيو.",
+          "chat_with_user_placeholder": "چيٽ",
+          "skill_received_btn": "مهارت وصول ٿي",
+          "report_btn": "رپورٽ ڪريو",
+          "type_your_message_placeholder": "هتي پنهنجو پيغام لکو...",
+          "chat_initial_greeting": "هيلو! اڄ مان توهان جي ڪيئن مدد ڪري سگهان ٿو؟",
+          "chat_how_can_i_help": "مان تيار آهيان جڏهن توهان تيار آهيو!",
+          "chat_user_response": "سٺو، مان ان جو انتظار ڪري رهيو آهيان!",
+          "chat_message_ali": "ضرور، سڀاڻي ملنداسين.",
+          "chat_message_fatima": "مون کي مهارت وصول ٿي وئي!",
+          "chat_message_usman": "نئين درخواست لاءِ شروعاتي پيغام.",
+          "chat_message_ayesha": "مٽاسٽا مڪمل ٿي وئي. مهرباني ڪري هڪ جائزو ڇڏيو!",
+          "exchange_completed_chat_view_only": "هي مٽاسٽا مڪمل ٿي وئي آهي. هاڻي توهان پيغام موڪلي يا وصول نٿا ڪري سگهو.",
+          "exchange_completed_no_chat": "هي مٽاسٽا مڪمل ٿي وئي آهي.",
+          "exchange_completed_chat_summary": "مٽاسٽا مڪمل ٿي وئي. مهرباني ڪري هڪ جائزو ڇڏيو!",
+          "confirm_skill_received_title": "مهارت وصول ٿيڻ جي تصديق ڪريو؟",
+          "confirm_skill_received_message": "ڇا توهان واقعي مهارت وصول ڪئي؟ هي عمل واپس نٿو وٺي سگهجي ۽ جائزو وٺڻ واري عمل ڏانهن وڌندو.",
+          "error_confirming_skill_received": "مهارت وصول ٿيڻ جي تصديق ڪرڻ ۾ ناڪامي. مهرباني ڪري ٻيهر ڪوشش ڪريو.",
+          "error_confirming_skill_received_generic": "مهارت وصول ٿيڻ جي تصديق ڪرڻ ۾ ناڪامي. هڪ خرابي پيش آئي.",
+          "error_no_request_id": "مهارت جي تصديق نه ٿي سگهي. درخواست ID غائب آهي.",
+          "error_title": "خرابي",
+          "your_confirmation_pending": "توهان جي تصديق زير التوا آهي",
+          "partner_confirmation_pending": "شريڪ جي تصديق زير التوا آهي",
+          "exchange_completed_label": "مٽاسٽا مڪمل ٿي وئي",
 
           // --- Reviews Page Translations (Sindhi) ---
-          "reviews_page_title": "منهنجا جائزا",
-          "reviews_page_subtitle": "ڏسو ته ٻيا توهان جي صلاحيتن بابت ڇا چئي رهيا آهن.",
+          "reviews_page_title": "جائزا",
+          "reviews_page_subtitle": "مڪمل ٿيل مهارت جي مٽاسٽا تي پنهنجي راءِ ڏيو ۽ موصول ٿيل جائزو ڏسو.",
           "no_reviews_yet": "توهان کي اڃا تائين ڪو به جائزو موصول نه ٿيو آهي.",
+          "review_submitted_title": "جائزو جمع ڪرايو ويو!",
+          "review_submitted_message": "توهان جي راءِ جي مهرباني. توهان جو جائزو ڪميونٽي ۾ اعتماد پيدا ڪرڻ ۾ مدد ڪري ٿو.",
+          "back_to_dashboard_btn": "ڊيش بورڊ ڏانهن واپس",
+          "rate_skill_exchange_with": "پنهنجي مهارت جي مٽاسٽا کي {{username}} سان درجه بندي ڪريو",
+          "your_review_label": "توهان جو جائزو",
+          "review_placeholder": "هتي پنهنجو جائزو لکو...",
+          "endorse_skills_label": "{{username}} لاءِ صلاحيتن جي تصديق ڪريو",
+          "endorse_btn": "تصديق ڪريو",
+          "submit_review_btn": "جائزو جمع ڪريو",
+          "reviews_received_tab": "وصول ٿيل جائزا",
+          "write_a_review_tab": "جائزو لکو",
+          "no_received_reviews_yet": "توهان کي اڃا تائين ڪو به جائزو موصول نه ٿيو آهي.",
+          "no_pending_reviews": "ڪو به زير التوا جائزو ناهي. سڀئي مڪمل ٿيل مٽاسٽا توهان طرفان جائزو ورتا ويا آهن!",
+          "review_for_exchange_with": "{{username}} سان مٽاسٽا لاءِ جائزو",
+          "skills_involved": "شامل صلاحيتون:",
+          "skill_offered_by_them": "انهن پاران پيش ڪيل مهارت:",
+          "skill_you_requested": "توهان جي گهربل مهارت:",
+          "rating_label": "درجه بندي:",
+          "by_reviewer_name": "پاران {{username}}",
+          "failed_to_submit_review": "جائزو جمع ڪرڻ ۾ ناڪامي. مهرباني ڪري ٻيهر ڪوشش ڪريو.",
+          "failed_to_load_received_reviews": "وصول ٿيل جائزو لوڊ ڪرڻ ۾ ناڪامي.",
+          "failed_to_load_pending_reviews": "زير التوا جائزو لوڊ ڪرڻ ۾ ناڪامي.",
 
           // --- Login Page Translations (Sindhi) ---
           "login_welcome_back": "ڀليڪار!",
@@ -849,6 +1004,7 @@ i18n
           "signup_email_label": "اي ميل",
           "signup_dateOfBirth_label": "ڄمڻ جي تاريخ",
           "signup_cnicNumber_label": "سي اين آءِ سي نمبر",
+          "signup_cnicNumber_placeholder": "مثال طور، 12345-1234567-1",
           "signup_cnicFrontPic_label": "سي اين آءِ سي سامهون جي تصوير",
           "signup_cnicBackPic_label": "سي اين آءِ سي پٺيان جي تصوير",
           "signup_password_label": "پاسورڊ",

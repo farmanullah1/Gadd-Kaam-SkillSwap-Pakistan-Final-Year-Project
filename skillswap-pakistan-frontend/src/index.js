@@ -17,6 +17,8 @@ import './styles/marketplace.css';
 import './styles/WomenOnlyZonePage.css';
 import './styles/LoadingSpinner.css';
 import './styles/chatbot-modal.css'; // Make sure this CSS import is here
+import './styles/requests.css'; // Ensure requests.css is imported
+import './styles/reviews.css'; // NEW: Import reviews.css
 
 // Import all your components
 import HomePage from './components/HomePage';
@@ -64,7 +66,7 @@ const RootApp = () => {
           <Route path="/dashboard/received-requests" element={<ReceivedRequestsPage onChatbotToggle={toggleChatbot} />} />
           {/* New Routes for Messages and Reviews */}
           <Route path="/dashboard/messages" element={<MessagesPage onChatbotToggle={toggleChatbot} />} />
-          <Route path="/dashboard/reviews" element={<ReviewsPage onChatbotToggle={toggleChatbot} />} />
+          <Route path="/dashboard/reviews" element={<ReviewsPage onChatbotToggle={toggleChatbot} />} /> {/* Corrected path */}
           {/* Add more routes here as needed, remembering to pass the prop if they have the button */}
           <Route path="/about" element={<HomePage onChatbotToggle={toggleChatbot} />} />
           <Route path="/contact" element={<HomePage onChatbotToggle={toggleChatbot} />} />

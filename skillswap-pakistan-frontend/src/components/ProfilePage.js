@@ -1,3 +1,5 @@
+// skillswap-pakistan-frontend/src/components/ProfilePage.js
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
@@ -9,7 +11,7 @@ import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 // Import icons from lucide-react for consistent styling
 import {
-  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star
+  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star as StarIcon, Award // Added Award for badges
 } from 'lucide-react';
 
 // Accept onChatbotToggle as a prop
@@ -32,6 +34,7 @@ function ProfilePage({ onChatbotToggle }) {
   const [locationValue, setLocationValue] = useState('');
   const [aboutMe, setAboutMe] = useState('');
   const [profilePicture, setProfilePicture] = useState(null);
+  const [earnedBadges, setEarnedBadges] = useState([]); // NEW: State for earned badges
 
   const defaultProfilePicture = 'https://placehold.co/150x150/cccccc/ffffff?text=No+Pic';
 
@@ -39,13 +42,13 @@ function ProfilePage({ onChatbotToggle }) {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
 
       const userLocation = parsedUser.location || '';
       const userAboutMe = parsedUser.aboutMe || '';
       const userPhoneNumber = parsedUser.phoneNumber || '';
       const userProfilePicture = parsedUser.profilePicture || null;
 
-      setUser(parsedUser);
       setFullName(`${parsedUser.firstName} ${parsedUser.lastName}`);
       setEmail(parsedUser.email);
       setPhoneNumber(userPhoneNumber);
@@ -58,6 +61,10 @@ function ProfilePage({ onChatbotToggle }) {
           aboutMe: userAboutMe,
           profilePicture: userProfilePicture
       });
+
+      // NEW: Fetch user's badges
+      fetchUserBadges(parsedUser.id);
+
     } else {
       navigate('/login');
     }
@@ -69,6 +76,26 @@ function ProfilePage({ onChatbotToggle }) {
                          profilePicture instanceof File;
       setIsEditing(hasChanged);
   }, [locationValue, aboutMe, profilePicture, initialState]);
+
+  // NEW FUNCTION: Fetch user's badges
+  const fetchUserBadges = async (userId) => {
+    try {
+      const token = localStorage.getItem('token');
+      // Fetch user profile with populated badges.
+      // This assumes your /api/auth/me or a new dedicated profile endpoint
+      // is updated to populate the 'badges' field.
+      // For this example, we'll assume /api/auth/me returns populated badges.
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.data.user && response.data.user.badges) {
+        setEarnedBadges(response.data.user.badges);
+      }
+    } catch (err) {
+      console.error('Failed to fetch user badges:', err);
+    }
+  };
+
 
   const openHelplinePopup = () => {
     setShowHelplinePopup(true);
@@ -153,7 +180,6 @@ function ProfilePage({ onChatbotToggle }) {
           return URL.createObjectURL(profilePictureState);
       }
       if (user && user.profilePicture) {
-          // Ensure this path correctly reflects your backend serving static files
           return `${process.env.REACT_APP_API_URL}/${user.profilePicture.replace(/\\/g, '/')}`;
       }
       return defaultProfilePicture;
@@ -167,38 +193,38 @@ function ProfilePage({ onChatbotToggle }) {
         <aside className="dashboard-sidebar">
           <nav className="dashboard-nav">
             <Link to="/dashboard" className={`dashboard-nav-item ${currentPath === '/dashboard' ? 'active' : ''}`}>
-              <Home size={20} /> {/* Replaced SVG with Lucide React Home icon */}
+              <Home size={20} />
               {t('navbar_dashboard')}
             </Link>
             <Link to="/dashboard/profile" className={`dashboard-nav-item ${currentPath === '/dashboard/profile' ? 'active' : ''}`}>
-              <User size={20} /> {/* Replaced SVG with Lucide React User icon */}
+              <User size={20} />
               {t('navbar_my_profile')}
             </Link>
             <Link to="/dashboard/my-skills" className={`dashboard-nav-item ${currentPath === '/dashboard/my-skills' ? 'active' : ''}`}>
-              <Settings size={20} /> {/* Replaced SVG with Lucide React Settings icon (wrench) */}
+              <Settings size={20} />
               {t('navbar_my_skills')}
             </Link>
             <Link to="/marketplace" className={`dashboard-nav-item ${currentPath === '/marketplace' ? 'active' : ''}`}>
-              <ShoppingCart size={20} /> {/* Replaced SVG with Lucide React ShoppingCart icon */}
+              <ShoppingCart size={20} />
               {t('navbar_marketplace')}
             </Link>
             {user.gender === 'Female' && (
               <Link to="/women-zone" className={`dashboard-nav-item ${currentPath === '/women-zone' ? 'active' : ''}`}>
-                <Shield size={20} /> {/* Replaced SVG with Lucide React Shield icon */}
+                <Shield size={20} />
                 {t('navbar_women_zone')}
               </Link>
             )}
             <Link to="/dashboard/received-requests" className={`dashboard-nav-item ${currentPath === '/dashboard/received-requests' ? 'active' : ''}`}>
-              <Mail size={20} /> {/* Replaced SVG with Lucide React Mail icon */}
+              <Mail size={20} />
               {t('received_requests_page_title')}
             </Link>
             {/* New Links for Messages and Reviews */}
             <Link to="/dashboard/messages" className={`dashboard-nav-item ${currentPath === '/dashboard/messages' ? 'active' : ''}`}>
-              <MessageSquare size={20} /> {/* Lucide React MessageSquare icon */}
+              <MessageSquare size={20} />
               {t('Messages')}
             </Link>
             <Link to="/dashboard/reviews" className={`dashboard-nav-item ${currentPath === '/dashboard/reviews' ? 'active' : ''}`}>
-              <Star size={20} /> {/* Lucide React Star icon */}
+              <StarIcon size={20} />
               {t('Reviews')}
             </Link>
           </nav>
@@ -273,8 +299,29 @@ function ProfilePage({ onChatbotToggle }) {
                   <button type="submit" className="btn btn-primary-orange">{t('save_changes_btn')}</button>
               </div>
             )}
-
           </form>
+
+          {/* NEW SECTION: Display Badges */}
+          {earnedBadges.length > 0 && (
+            <div className="profile-badges-section">
+              <h2>{t('my_badges_title')}</h2>
+              <div className="badges-grid">
+                {earnedBadges.map(badge => (
+                  <div key={badge._id} className="badge-item">
+                    {/* Render Lucide icon dynamically */}
+                    {React.createElement(
+                        // Dynamically get the Lucide icon component
+                        (require('lucide-react'))[badge.icon] || Award, // Fallback to Award if icon not found
+                        { size: 32, className: "badge-icon" }
+                    )}
+                    <span className="badge-name">{badge.name}</span>
+                    <p className="badge-description">{badge.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
         </section>
       </div>
 
