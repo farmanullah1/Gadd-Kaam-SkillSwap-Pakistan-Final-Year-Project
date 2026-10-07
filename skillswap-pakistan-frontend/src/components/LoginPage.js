@@ -1,5 +1,3 @@
-// src/components/LoginPage.js
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
@@ -8,6 +6,7 @@ import HelplinePopup from './HelplinePopup';
 import SuccessMessageModal from './SuccessMessageModal';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next'; 
+import { AlertCircle, User, Lock, ArrowRight } from 'lucide-react'; // Added Icons
 
 function LoginPage({ onChatbotToggle }) {
   const { t } = useTranslation(); 
@@ -55,7 +54,7 @@ function LoginPage({ onChatbotToggle }) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
-      // Save role specifically if your backend sends it, otherwise rely on user object
+      // Save role specifically
       if (response.data.user.role) {
         localStorage.setItem('role', response.data.user.role);
       }
@@ -68,13 +67,19 @@ function LoginPage({ onChatbotToggle }) {
 
     } catch (err) {
       console.error('Login error:', err.response ? err.response.data : err.message);
-      if (err.response && err.response.data && err.response.data.errors) {
-        setError(err.response.data.errors.map(e => e.msg).join(', '));
-      } else if (err.response && err.response.data && err.response.data.msg) {
-        setError(err.response.data.msg);
-      } else {
-        setError(t('login_unexpected_error')); 
+      
+      let errorMsg = t('login_unexpected_error');
+
+      // Enhanced Error Parsing
+      if (err.response && err.response.data) {
+        if (err.response.data.errors) {
+          errorMsg = err.response.data.errors.map(e => e.msg).join(' | ');
+        } else if (err.response.data.msg) {
+          errorMsg = err.response.data.msg;
+        }
       }
+      
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -83,14 +88,13 @@ function LoginPage({ onChatbotToggle }) {
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
     
-    // ✅ ADMIN REDIRECT LOGIC
     const storedUser = JSON.parse(localStorage.getItem('user'));
     
-    // Check if the user has the admin role
+    // Redirect based on role
     if (storedUser && storedUser.role === 'admin') {
-        navigate('/admin'); // Redirect to Admin Dashboard
+        navigate('/admin');
     } else {
-        navigate('/dashboard'); // Redirect to User Dashboard
+        navigate('/dashboard');
     }
   };
 
@@ -98,16 +102,29 @@ function LoginPage({ onChatbotToggle }) {
     <div className="login-page-container">
       <Navbar onHelplineClick={openHelplinePopup} onLogout={handleLogout} user={user} />
 
+      {/* Main Section with Animated Gradient Background */}
       <main className="login-section section-container">
-        <div className="login-form-card">
+        
+        {/* Glassmorphism Card */}
+        <div className="login-form-card animated-card">
           <h2 className="login-title">{t("login_welcome_back")}</h2>
           <p className="login-subtitle">{t("login_access_account")}</p>
 
-          <form className="login-form" onSubmit={handleSubmit}>
-            {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
+          {/* Improved Error Alert */}
+          {error && (
+            <div className="error-alert shake-anim">
+              <AlertCircle className="error-icon" size={20} />
+              <span className="error-text">{error}</span>
+            </div>
+          )}
 
+          <form className="login-form" onSubmit={handleSubmit}>
+            
             <div className="form-group">
-              <label htmlFor="credential">{t("login_credential_label")}</label>
+              <label htmlFor="credential">
+                <User size={16} style={{marginRight: 6}}/> 
+                {t("login_credential_label")}
+              </label>
               <input
                 type="text"
                 id="credential"
@@ -119,7 +136,10 @@ function LoginPage({ onChatbotToggle }) {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">{t("signup_password_label")}</label>
+              <label htmlFor="password">
+                <Lock size={16} style={{marginRight: 6}}/> 
+                {t("signup_password_label")}
+              </label>
               <input
                 type="password"
                 id="password"
@@ -128,11 +148,15 @@ function LoginPage({ onChatbotToggle }) {
                 placeholder={t("login_password_placeholder")}
                 required
               />
-              <Link to="/forgot-password" className="forgot-password-link">{t("login_forgot_password")}</Link>
+              <Link to="/forgot-password" class="forgot-password-link">{t("login_forgot_password")}</Link>
             </div>
 
-            <button type="submit" className="btn btn-primary-orange login-btn" disabled={loading}>
-              {loading ? t('login_logging_in') : t('navbar_login_btn')}
+            <button type="submit" className="btn btn-primary-orange login-btn pulse-on-hover" disabled={loading}>
+              {loading ? (
+                <span><span className="spinner-border"></span> {t('login_logging_in')}</span>
+              ) : (
+                <> {t('navbar_login_btn')} <ArrowRight size={18} style={{marginLeft: 5}}/> </>
+              )}
             </button>
 
             <p className="signup-prompt">

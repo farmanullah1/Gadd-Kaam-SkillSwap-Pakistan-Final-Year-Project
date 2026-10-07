@@ -41,8 +41,8 @@ function Footer({ user, onChatbotToggle }) {
           {/* Column 1: Brand */}
           <div className="footer-brand-column">
             <div className="footer-logo-main">
-              <img src="/Gadd_Kaam.jpg" alt="Logo" style={{width:'32px', height:'32px', borderRadius:'6px'}} onError={(e)=>{e.target.onerror=null; e.target.src="https://placehold.co/32x32?text=GK"}}/>
-              <span className="footer-logo-text-main">Gadd Kaam</span>
+              <img src="/Gadd_Kaam.png" alt="Logo" style={{width:'100px', height:'100px', borderRadius:'10px'}} onError={(e)=>{e.target.onerror=null; e.target.src="https://placehold.co/32x32?text=GK"}}/>
+              <span className="footer-logo-text-main">Gadd Kaam SkillSwap Pakistan</span>
             </div>
             <p className="footer-main-tagline">
               SkillSwap Pakistan is a community where you can exchange your talents for the help you need, all without money.

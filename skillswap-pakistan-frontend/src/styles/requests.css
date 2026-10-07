@@ -194,12 +194,15 @@
 .btn-accept {
   background-color: var(--success-green);
   color: white;
+  background-color:green;
+
 }
 
 .btn-cancel {
   background-color: var(--section-background);
-  color: var(--text-medium);
+  color: white;
   border: 1px solid var(--border-color);
+  background-color: rgb(255, 43, 43);
 }
 
 .btn:hover {

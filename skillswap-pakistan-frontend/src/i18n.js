@@ -379,6 +379,92 @@ i18n
           "write_review_for_label": "Write a Review for {{username}}",
           "no_received_reviews": "No reviews received yet.",
           "received_reviews_tab": "Received Reviews",
+          "app_name": "Gadd Kaam",
+      
+      // --- Navbar ---
+      "navbar_home": "Home",
+      "navbar_marketplace": "Marketplace",
+      "navbar_women_zone": "Women's Zone",
+      "navbar_about_us": "About Us",
+      "navbar_contact": "Contact",
+      "navbar_helpline": "Support Center",
+      "navbar_dashboard": "My Dashboard",
+      "navbar_logout": "Sign Out",
+      "navbar_login_btn": "Log In",
+      "navbar_signup_btn": "Sign Up",
+
+      // --- Hero Section ---
+      "hero_headline_prefix": "Trade Skills, Build",
+      "hero_subtext": "The most trusted community marketplace for trading skills and services in Pakistan.",
+      "hero_offer_skill_btn": "Offer a Skill",
+      "hero_find_skill_btn": "Find a Skill",
+
+      // --- How It Works ---
+      "how_it_works_title": "How It Works",
+      "how_it_works_subtitle": "Three simple steps to start trading your skills.",
+      "step1_title": "Create Profile",
+      "step1_description": "Sign up, verify your identity, and build your portfolio.",
+      "step2_title": "Search or Offer",
+      "step2_description": "Browse available skills or list your own services.",
+      "step3_title": "Connect & Trade",
+      "step3_description": "Chat, agree on terms, and swap skills securely.",
+
+      // --- Featured Skills ---
+      "featured_skills_title": "Featured Skills",
+      "view_all_link": "View All",
+      "view_details_link": "View Details",
+
+      // --- Women's Zone ---
+      "women_only_zone_tag": "Women Only Zone",
+      "women_zone_description": "A safe, secure, and exclusive environment for women to trade skills comfortably.",
+      "women_zone_button": "Enter Zone",
+
+      // --- Testimonials ---
+      "testimonials_title": "What Our Community Says",
+
+      // --- Login Page ---
+      "login_welcome_back": "Welcome Back!",
+      "login_access_account": "Access your account to manage skills and requests.",
+      "login_credential_label": "Email, Username, or CNIC",
+      "login_credential_placeholder": "Enter email, username, or CNIC",
+      "login_password_placeholder": "Enter your password",
+      "login_forgot_password": "Forgot Password?",
+      "login_logging_in": "Logging in...",
+      "login_no_account_prompt": "Don't have an account?",
+      "login_success_title": "Welcome!",
+      "login_success_message": "Login successful. Redirecting...",
+      "login_unexpected_error": "Login failed. Please check your credentials.",
+
+      // --- Signup Page ---
+      "signup_join_gadd_kaam": "Join Gadd Kaam",
+      "signup_start_offering_finding": "Start offering your skills or finding the right help today.",
+      "signup_firstName_label": "First Name",
+      "signup_firstName_placeholder": "Enter your first name",
+      "signup_lastName_label": "Last Name",
+      "signup_lastName_placeholder": "Enter your last name",
+      "signup_profilePicture_label": "Profile Picture",
+      "signup_username_label": "Username",
+      "signup_username_placeholder": "Choose a username",
+      "signup_phoneNumber_label": "Phone Number",
+      "signup_email_label": "Email Address",
+      "signup_dateOfBirth_label": "Date of Birth",
+      "signup_cnicNumber_label": "CNIC Number",
+      "signup_gender_label": "Gender",
+      "signup_gender_male": "Male",
+      "signup_gender_female": "Female",
+      "signup_cnicFrontPic_label": "CNIC Front Picture",
+      "signup_cnicBackPic_label": "CNIC Back Picture",
+      "signup_password_label": "Password",
+      "signup_confirmPassword_label": "Confirm Password",
+      "signup_creating_account": "Creating Account...",
+      "signup_create_account_btn": "Create Account",
+      "signup_already_have_account": "Already have an account?",
+      "signup_login_link": "Log In",
+      "signup_error_passwords_mismatch": "Passwords do not match.",
+      "signup_error_gender_required": "Please select a gender.",
+      "signup_success_message": "Account created successfully! Redirecting...",
+      "signup_success_modal_title": "Success",
+      "signup_unexpected_error": "An unexpected error occurred. Please try again.",
 
           // --- Login Page Translations ---
           "login_welcome_back": "Welcome Back!",
@@ -793,6 +879,92 @@ i18n
           "login_success_message": "آپ کامیابی سے لاگ ان ہو گئے ہیں!",
           "login_unexpected_error": "لاگ ان کے دوران ایک غیر متوقع خرابی پیش آئی۔ براہ کرم دوبارہ کوشش کریں۔",
           "login_success_title": "لاگ ان کامیاب!",
+          "app_name": "گڈ کام",
+      
+      // Navbar
+      "navbar_home": "ہوم",
+      "navbar_marketplace": "مارکیٹ پلیس",
+      "navbar_women_zone": "خواتین زون",
+      "navbar_about_us": "ہمارے بارے میں",
+      "navbar_contact": "رابطہ کریں",
+      "navbar_helpline": "سپورٹ سینٹر",
+      "navbar_dashboard": "میرا ڈیش بورڈ",
+      "navbar_logout": "لاگ آؤٹ",
+      "navbar_login_btn": "لاگ ان",
+      "navbar_signup_btn": "سائن اپ",
+
+      // Hero
+      "hero_headline_prefix": "مہارت کا تبادلہ، تعمیر کریں",
+      "hero_subtext": "مہارتوں اور خدمات کے تبادلے کے لیے پاکستان کی سب سے قابل اعتماد کمیونٹی۔",
+      "hero_offer_skill_btn": "مہارت پیش کریں",
+      "hero_find_skill_btn": "مہارت تلاش کریں",
+
+      // How It Works
+      "how_it_works_title": "یہ کیسے کام کرتا ہے",
+      "how_it_works_subtitle": "شروع کرنے کے لیے تین آسان اقدامات۔",
+      "step1_title": "پروفائل بنائیں",
+      "step1_description": "سائن اپ کریں، اپنی شناخت کی تصدیق کریں اور اپنا پورٹ فولیو بنائیں۔",
+      "step2_title": "تلاش کریں یا پیش کریں",
+      "step2_description": "دستیاب مہارتیں براؤز کریں یا اپنی خدمات کی فہرست بنائیں۔",
+      "step3_title": "رابطہ اور تجارت",
+      "step3_description": "بات چیت کریں، شرائط پر اتفاق کریں، اور محفوظ طریقے سے مہارت کا تبادلہ کریں۔",
+
+      // Featured Skills
+      "featured_skills_title": "نمایاں مہارتیں",
+      "view_all_link": "سب دیکھیں",
+      "view_details_link": "تفصیلات دیکھیں",
+
+      // Women's Zone
+      "women_only_zone_tag": "صرف خواتین کے لیے",
+      "women_zone_description": "خواتین کے لیے مہارتوں کے تبادلے کا ایک محفوظ اور پرسکون ماحول۔",
+      "women_zone_button": "زون میں داخل ہوں",
+
+      // Testimonials
+      "testimonials_title": "ہماری کمیونٹی کیا کہتی ہے",
+
+      // Login Page
+      "login_welcome_back": "خوش آمدید!",
+      "login_access_account": "مہارتوں اور درخواستوں کا انتظام کرنے کے لیے اپنے اکاؤنٹ تک رسائی حاصل کریں۔",
+      "login_credential_label": "ای میل، صارف نام، یا شناختی کارڈ",
+      "login_credential_placeholder": "ای میل، صارف نام، یا شناختی کارڈ درج کریں",
+      "login_password_placeholder": "اپنا پاس ورڈ درج کریں",
+      "login_forgot_password": "پاس ورڈ بھول گئے؟",
+      "login_logging_in": "لاگ ان ہو رہا ہے...",
+      "login_no_account_prompt": "اکاؤنٹ نہیں ہے؟",
+      "login_success_title": "خوش آمدید!",
+      "login_success_message": "لاگ ان کامیاب۔ ری ڈائریکٹ کیا جا رہا ہے...",
+      "login_unexpected_error": "لاگ ان ناکام۔ براہ کرم اپنی معلومات چیک کریں۔",
+
+      // Signup Page
+      "signup_join_gadd_kaam": "گڈ کام میں شامل ہوں",
+      "signup_start_offering_finding": "آج ہی اپنی مہارتیں پیش کرنا شروع کریں یا مدد تلاش کریں۔",
+      "signup_firstName_label": "پہلا نام",
+      "signup_firstName_placeholder": "اپنا پہلا نام درج کریں",
+      "signup_lastName_label": "آخری نام",
+      "signup_lastName_placeholder": "اپنا آخری نام درج کریں",
+      "signup_profilePicture_label": "پروفائل تصویر",
+      "signup_username_label": "صارف نام (Username)",
+      "signup_username_placeholder": "کوئی صارف نام منتخب کریں",
+      "signup_phoneNumber_label": "فون نمبر",
+      "signup_email_label": "ای میل ایڈریس",
+      "signup_dateOfBirth_label": "پیدائش کی تاریخ",
+      "signup_cnicNumber_label": "شناختی کارڈ نمبر",
+      "signup_gender_label": "صنف",
+      "signup_gender_male": "مرد",
+      "signup_gender_female": "عورت",
+      "signup_cnicFrontPic_label": "شناختی کارڈ سامنے کی تصویر",
+      "signup_cnicBackPic_label": "شناختی کارڈ پیچھے کی تصویر",
+      "signup_password_label": "پاس ورڈ",
+      "signup_confirmPassword_label": "پاس ورڈ کی تصدیق کریں",
+      "signup_creating_account": "اکاؤنٹ بنایا جا رہا ہے...",
+      "signup_create_account_btn": "اکاؤنٹ بنائیں",
+      "signup_already_have_account": "پہلے سے اکاؤنٹ موجود ہے؟",
+      "signup_login_link": "لاگ ان کریں",
+      "signup_error_passwords_mismatch": "پاس ورڈ میچ نہیں کر رہے۔",
+      "signup_error_gender_required": "براہ کرم صنف منتخب کریں۔",
+      "signup_success_message": "اکاؤنٹ کامیابی سے بن گیا! ری ڈائریکٹ کیا جا رہا ہے...",
+      "signup_success_modal_title": "کامیابی",
+      "signup_unexpected_error": "ایک غیر متوقع خرابی پیش آئی۔ براہ کرم دوبارہ کوشش کریں۔",
 
           // --- Signup Page Translations (Urdu) ---
           "signup_join_gadd_kaam": "گڈ کام میں شامل ہوں",
@@ -1284,6 +1456,93 @@ i18n
           "logout_confirm_message": "ڇا توهان پڪ آهيو ته توهان لاگ آئوٽ ڪرڻ چاهيو ٿا؟",
           "logout_cancel_btn": "نه، رد ڪريو",
           "logout_confirm_btn": "ها، لاگ آئوٽ ڪريو",
+          "app_name": "گڏ ڪم",
+
+      // Navbar
+      "navbar_home": "هوم",
+      "navbar_marketplace": "مارڪيٽ پليس",
+      "navbar_women_zone": "عورتن جو زون",
+      "navbar_about_us": "اسان جي باري ۾",
+      "navbar_contact": "رابطو ڪريو",
+      "navbar_helpline": "مدد مرڪز",
+      "navbar_dashboard": "منهنجو ڊيش بورڊ",
+      "navbar_logout": "لاگ آئوٽ",
+      "navbar_login_btn": "لاگ ان",
+      "navbar_signup_btn": "سائن اپ",
+
+      // Hero
+      "hero_headline_prefix": "مهارتن جو واپار، اڏيو",
+      "hero_subtext": "پاڪستان ۾ مهارتن ۽ خدمتن جي واپار لاءِ سڀ کان وڌيڪ قابل اعتماد پليٽ فارم.",
+      "hero_offer_skill_btn": "هڪ مهارت پيش ڪريو",
+      "hero_find_skill_btn": "هڪ مهارت ڳولهيو",
+
+      // How It Works
+      "how_it_works_title": "هي ڪيئن ڪم ڪري ٿو",
+      "how_it_works_subtitle": "شروع ڪرڻ لاءِ ٽي سادي مرحلا.",
+      "step1_title": "پروفائل ٺاهيو",
+      "step1_description": "سائن اپ ڪريو، پنهنجي سڃاڻپ جي تصديق ڪريو ۽ پورٽ فوليو ٺاهيو.",
+      "step2_title": "ڳولا يا آڇ",
+      "step2_description": "دستياب مهارتون ڏسو يا پنهنجون خدمتون لسٽ ڪريو.",
+      "step3_title": "رابطو ۽ واپار",
+      "step3_description": "ڳالهايو، شرطن تي اتفاق ڪريو، ۽ محفوظ طريقي سان مهارت مٽايو.",
+
+      // Featured Skills
+      "featured_skills_title": "نمويان مهارتون",
+      "view_all_link": "سڀ ڏسو",
+      "view_details_link": "تفصيل ڏسو",
+
+      // Women's Zone
+      "women_only_zone_tag": "صرف عورتن لاء",
+      "women_zone_description": "عورتن لاءِ مهارتن جي واپار لاءِ هڪ محفوظ ۽ پرامن ماحول.",
+      "women_zone_button": "زون ۾ داخل ٿيو",
+
+      // Testimonials
+      "testimonials_title": "اسان جي ڪميونٽي ڇا ٿي چوي",
+
+      // Login Page
+      "login_welcome_back": "ڀليڪار!",
+      "login_access_account": "مهارتن ۽ درخواستن کي منظم ڪرڻ لاءِ پنهنجي اڪائونٽ تائين رسائي ڪريو.",
+      "login_credential_label": "اي ميل، يوزر نيم، يا سڃاڻپ ڪارڊ",
+      "login_credential_placeholder": "اي ميل، يوزر نيم، يا سڃاڻپ ڪارڊ داخل ڪريو",
+      "login_password_placeholder": "پنهنجو پاسورڊ داخل ڪريو",
+      "login_forgot_password": "پاسورڊ وساري ويٺا؟",
+      "login_logging_in": "لاگ ان ٿي رهيو آهي...",
+      "login_no_account_prompt": "اڪائونٽ ناهي؟",
+      "login_success_title": "ڀليڪار!",
+      "login_success_message": "لاگ ان ڪامياب. ريڊائريڪٽ ٿي رهيو آهي...",
+      "login_unexpected_error": "لاگ ان ناڪام. مહેરٻاني ڪري پنهنجي معلومات چيڪ ڪريو.",
+
+      // Signup Page
+      "signup_join_gadd_kaam": "گڏ ڪم ۾ شامل ٿيو",
+      "signup_start_offering_finding": "اڄ ئي پنهنجي مهارتون پيش ڪرڻ شروع ڪريو يا مدد ڳولهيو.",
+      "signup_firstName_label": "پهريون نالو",
+      "signup_firstName_placeholder": "پنهنجو پهريون نالو داخل ڪريو",
+      "signup_lastName_label": "آخري نالو",
+      "signup_lastName_placeholder": "پنهنجو آخري نالو داخل ڪريو",
+      "signup_profilePicture_label": "پروفائل تصوير",
+      "signup_username_label": "يوزر نيم",
+      "signup_username_placeholder": "ڪو يوزر نيم چونڊيو",
+      "signup_phoneNumber_label": "فون نمبر",
+      "signup_email_label": "اي ميل ايڊريس",
+      "signup_dateOfBirth_label": "پيدائش جي تاريخ",
+      "signup_cnicNumber_label": "سڃاڻپ ڪارڊ نمبر",
+      "signup_gender_label": "جنس",
+      "signup_gender_male": "مرد",
+      "signup_gender_female": "عورت",
+      "signup_cnicFrontPic_label": "سڃاڻپ ڪارڊ جي اڳيان واري تصوير",
+      "signup_cnicBackPic_label": "سڃاڻپ ڪارڊ جي پوئين تصوير",
+      "signup_password_label": "پاسورڊ",
+      "signup_confirmPassword_label": "پاسورڊ جي تصديق ڪريو",
+      "signup_creating_account": "اڪائونٽ ٺهي رهيو آهي...",
+      "signup_create_account_btn": "اڪائونٽ ٺاهيو",
+      "signup_already_have_account": "اڳ ۾ ئي اڪائونٽ آهي؟",
+      "signup_login_link": "لاگ ان ٿيو",
+      "signup_error_passwords_mismatch": "پاسورڊ ميچ نه پيا ڪن.",
+      "signup_error_gender_required": "مھرباني ڪري جنس چونڊيو.",
+      "signup_success_message": "اڪائونٽ ڪاميابي سان ٺهي ويو! ريڊائريڪٽ ٿي رهيو آهي...",
+      "signup_success_modal_title": "ڪاميابي",
+      "signup_unexpected_error": "هڪ اڻڄاتل خرابي پيش آئي. مھرباني ڪري ٻيهر ڪوشش ڪريو."
+          
            
         },
       },

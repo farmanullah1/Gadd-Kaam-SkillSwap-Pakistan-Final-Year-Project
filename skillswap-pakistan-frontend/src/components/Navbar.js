@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { Bell, Menu, X, Globe, Moon, Sun, Phone, LogOut, LayoutDashboard, User } from 'lucide-react'; 
+import { 
+  Bell, Menu, X, Globe, Moon, Sun, Phone, LogOut, LayoutDashboard, User, ChevronDown, LifeBuoy 
+} from 'lucide-react'; 
 import LogoutConfirmationModal from './LogoutConfirmationModal';
 import NotificationDropdown from './NotificationDropdown';
 import '../styles/navbar.css';
@@ -12,10 +14,11 @@ import '../styles/notifications.css';
 function Navbar(props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation(); // Used to highlight active link
   
   // State
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSticky, setIsSticky] = useState(false); // New State for Sticky
+  const [isSticky, setIsSticky] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedMode = localStorage.getItem('darkMode');
     return savedMode ? JSON.parse(savedMode) : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -35,7 +38,6 @@ function Navbar(props) {
   // --- SCROLL HANDLER FOR STICKY NAVBAR ---
   useEffect(() => {
     const handleScroll = () => {
-      // If user scrolls past 40px (height of utility bar), make navbar sticky
       if (window.scrollY > 40) {
         setIsSticky(true);
       } else {
@@ -100,7 +102,7 @@ function Navbar(props) {
   const handleWomenZoneClick = (e) => {
     if (props.user && props.user.gender !== 'Female') {
         e.preventDefault();
-        alert("This is a women-only zone. You must be a female user to access it.");
+        alert("Access Restricted: This zone is exclusively for female users.");
     } else if (!props.user) {
         e.preventDefault();
         navigate('/login');
@@ -124,23 +126,30 @@ function Navbar(props) {
     backgroundPosition: 'center',
   } : {};
 
+  // Helper to check active state
+  const isActive = (path) => location.pathname === path ? 'active' : '';
+
   return (
     <>
       {/* 1. TOP UTILITY BAR (Scrolls Away) */}
       <div className="top-utility-bar">
         <div className="top-utility-content">
+          <div className="utility-left">
+             <span className="welcome-msg">Welcome to Pakistan's Top Skill Marketplace</span>
+          </div>
           <div className="utility-actions">
-            <button className="utility-btn" onClick={toggleDarkMode} title="Toggle Theme">
-              {isDarkMode ? <Moon size={16} /> : <Sun size={16} />}
+            <button className="utility-btn" onClick={toggleDarkMode} title={isDarkMode ? "Light Mode" : "Dark Mode"}>
+              {isDarkMode ? <Sun size={15} className="spin-icon" /> : <Moon size={15} className="spin-icon" />}
             </button>
 
             <div className="language-wrapper" ref={languageRef}>
               <button className="utility-btn lang-btn" onClick={() => setShowLanguageOptions(!showLanguageOptions)}>
-                <Globe size={16} />
+                <Globe size={15} />
                 <span>{i18n.language.toUpperCase()}</span>
+                <ChevronDown size={12} />
               </button>
               {showLanguageOptions && (
-                <div className="language-dropdown">
+                <div className="language-dropdown slide-in-down">
                   <button onClick={() => selectLanguage('en')}>English</button>
                   <button onClick={() => selectLanguage('ur')}>Urdu</button>
                   <button onClick={() => selectLanguage('sd')}>Sindhi</button>
@@ -148,83 +157,90 @@ function Navbar(props) {
               )}
             </div>
 
-            <button className="utility-btn helpline-btn" onClick={props.onHelplineClick} title="Helpline">
-              <Phone size={16} />
-              <span>Helpline</span>
+            <button className="utility-btn helpline-btn" onClick={props.onHelplineClick} title="Support">
+              <LifeBuoy size={15} />
+              <span>Support</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Placeholder div to prevent content jumping when navbar becomes fixed 
-         It only renders height when isSticky is true
-      */}
-      <div style={{ height: isSticky ? '70px' : '0' }}></div>
+      {/* Placeholder to prevent layout shift */}
+      <div style={{ height: isSticky ? '70px' : '0', transition: 'height 0.3s' }}></div>
 
-      {/* 2. MAIN NAVBAR (Becomes Fixed on Scroll) */}
+      {/* 2. MAIN NAVBAR (Becomes Sticky) */}
       <nav 
         className={`main-navbar ${isSticky ? 'fixed-nav' : ''} ${isSindhiMode ? 'sindhi-mode' : ''}`} 
         style={sindhiNavbarStyle}
       >
         <div className="navbar-container">
           
-          {/* Logo */}
+          {/* Logo with Hover Animation */}
           <Link to="/" className="navbar-brand" onClick={() => setIsMenuOpen(false)}>
-            <img src="/Gadd_Kaam.jpg" alt="Gadd Kaam" className="brand-logo" onError={(e) => {e.target.onerror=null; e.target.src="https://placehold.co/40x40?text=GK";}} />
-            <span className="brand-text">Gadd Kaam</span>
+            <div className="logo-wrapper">
+                <img src="/Gadd_Kaam.png" alt="Gadd Kaam" className="brand-logo" onError={(e) => {e.target.onerror=null; e.target.src="https://placehold.co/40x40?text=GK";}} />
+            </div>
+            <span className="brand-text">Gadd <span className="highlight-text">Kaam</span></span>
           </Link>
 
-          {/* Mobile Menu Button */}
-          <div className="navbar-mobile-toggle">
-            {props.user && (
-               <Link to="/dashboard/profile" className="mobile-profile-icon">
-                  <img src={getProfileUrl()} alt="Profile" />
+          {/* Desktop Navigation Links */}
+          <div className="navbar-menu-desktop">
+            <Link to="/marketplace" className={`nav-item ${isActive('/marketplace')}`}>
+                {t("navbar_marketplace")}
+            </Link>
+            
+            {shouldShowWomenZone && (
+               <Link to="/women-zone" className={`nav-item pink-zone ${isActive('/women-zone')}`} onClick={handleWomenZoneClick}>
+                   {t("navbar_women_zone")}
                </Link>
             )}
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="menu-button">
-              {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
-            </button>
+            
+            <Link to="/about" className={`nav-item ${isActive('/about')}`}>
+                {t("navbar_about_us")}
+            </Link>
+            
+            <Link to="/contact" className={`nav-item ${isActive('/contact')}`}>
+                {t("navbar_contact")}
+            </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="navbar-menu-desktop">
-            <Link to="/marketplace" className="nav-item">{t("navbar_marketplace")}</Link>
-            {shouldShowWomenZone && (
-               <Link to="/women-zone" className="nav-item" onClick={handleWomenZoneClick}>{t("navbar_women_zone")}</Link>
-            )}
-            <Link to="/about" className="nav-item">{t("navbar_about_us")}</Link>
-            <Link to="/contact" className="nav-item">{t("navbar_contact")}</Link>
-          </div>
-
-          {/* Desktop Actions */}
+          {/* Desktop Actions (Auth/Profile) */}
           <div className="navbar-actions-desktop">
             {props.user ? (
               <>
+                {/* Notifications */}
                 <div className="notification-container" ref={notificationRef}>
-                  <button className="icon-btn" onClick={() => setShowNotifications(!showNotifications)}>
-                    <Bell size={22} />
+                  <button className="icon-btn bell-btn" onClick={() => setShowNotifications(!showNotifications)}>
+                    <Bell size={22} className={unreadCount > 0 ? 'bell-ring' : ''} />
                     {unreadCount > 0 && <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>}
                   </button>
-                  {showNotifications && <NotificationDropdown onClose={() => setShowNotifications(false)} />}
+                  {showNotifications && (
+                      <div className="dropdown-wrapper">
+                          <NotificationDropdown onClose={() => setShowNotifications(false)} />
+                      </div>
+                  )}
                 </div>
 
+                {/* Profile Dropdown */}
                 <div className="profile-container" ref={profileMenuRef}>
                   <button className="profile-btn" onClick={handleProfileClick}>
-                    <img src={getProfileUrl()} alt="Profile" />
+                    <img src={getProfileUrl()} alt="Profile" className="profile-img-anim" />
                   </button>
+                  
                   {showProfileMenu && (
-                    <div className="dropdown-menu">
+                    <div className="dropdown-menu scale-in-tr">
                       <div className="dropdown-header">
-                        <span className="user-name">Hi, {props.user.firstName}</span>
+                        <span className="user-greeting">Hello,</span>
+                        <span className="user-name">{props.user.firstName}</span>
                       </div>
                       <Link to="/dashboard" className="dropdown-link" onClick={() => setShowProfileMenu(false)}>
-                        <LayoutDashboard size={16}/> Dashboard
+                        <LayoutDashboard size={18}/> My Dashboard
                       </Link>
                       <Link to="/dashboard/profile" className="dropdown-link" onClick={() => setShowProfileMenu(false)}>
-                        <User size={16}/> My Profile
+                        <User size={18}/> Account Settings
                       </Link>
                       <button onClick={handleLogoutClick} className="dropdown-link logout">
-                        <LogOut size={16}/> Log Out
+                        <LogOut size={18}/> Sign Out
                       </button>
                     </div>
                   )}
@@ -237,14 +253,26 @@ function Navbar(props) {
               </div>
             )}
           </div>
+
+          {/* Mobile Menu Button */}
+          <div className="navbar-mobile-toggle">
+            {props.user && (
+               <Link to="/dashboard/profile" className="mobile-profile-icon">
+                  <img src={getProfileUrl()} alt="Profile" />
+               </Link>
+            )}
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="menu-button">
+              {isMenuOpen ? <X size={28} className="rotate-icon" /> : <Menu size={28} className="rotate-icon" />}
+            </button>
+          </div>
         </div>
 
-        {/* 3. MOBILE MENU OVERLAY */}
+        {/* 3. MOBILE MENU OVERLAY (Slide Down) */}
         <div className={`mobile-menu-overlay ${isMenuOpen ? 'open' : ''}`}>
           <div className="mobile-menu-content">
             <Link to="/marketplace" className="mobile-link" onClick={() => setIsMenuOpen(false)}>{t("navbar_marketplace")}</Link>
             {shouldShowWomenZone && (
-               <Link to="/women-zone" className="mobile-link" onClick={(e) => {handleWomenZoneClick(e); setIsMenuOpen(false);}}>{t("navbar_women_zone")}</Link>
+               <Link to="/women-zone" className="mobile-link pink-mobile" onClick={(e) => {handleWomenZoneClick(e); setIsMenuOpen(false);}}>{t("navbar_women_zone")}</Link>
             )}
             <Link to="/about" className="mobile-link" onClick={() => setIsMenuOpen(false)}>{t("navbar_about_us")}</Link>
             <Link to="/contact" className="mobile-link" onClick={() => setIsMenuOpen(false)}>{t("navbar_contact")}</Link>
@@ -253,9 +281,15 @@ function Navbar(props) {
 
             {props.user ? (
               <>
-                <Link to="/dashboard" className="mobile-link highlight" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
-                <Link to="/dashboard/profile" className="mobile-link" onClick={() => setIsMenuOpen(false)}>My Profile</Link>
-                <button className="mobile-link logout" onClick={handleLogoutClick}>Log Out</button>
+                <Link to="/dashboard" className="mobile-link highlight" onClick={() => setIsMenuOpen(false)}>
+                    <LayoutDashboard size={18}/> My Dashboard
+                </Link>
+                <Link to="/dashboard/profile" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+                    <User size={18}/> Account Settings
+                </Link>
+                <button className="mobile-link logout" onClick={handleLogoutClick}>
+                    <LogOut size={18}/> Sign Out
+                </button>
               </>
             ) : (
               <div className="mobile-auth">

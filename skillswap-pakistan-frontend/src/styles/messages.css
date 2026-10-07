@@ -21,9 +21,11 @@ body.dark-mode .messages-page-wrapper {
 .messages-list-sidebar {
     flex: 0 0 320px;
     background-color: var(--card-background);
-    border-right: 1px solid var(--border-color);
+    border-right: 2px solid var(--border-color);
     display: flex;
     flex-direction: column;
+    
+    
 }
 
 .messages-header {
@@ -71,6 +73,7 @@ body.dark-mode .messages-page-wrapper {
 .messages-list {
     flex-grow: 1;
     overflow-y: auto;
+    
 }
 
 /* Custom Scrollbar */

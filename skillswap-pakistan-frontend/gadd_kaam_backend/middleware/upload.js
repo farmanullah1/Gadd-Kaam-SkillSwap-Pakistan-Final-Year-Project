@@ -9,27 +9,24 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
 }
 
-// Set up storage for uploaded files
+// Set up storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Files will be stored in the 'uploads/' directory
+    cb(null, 'uploads/');
   },
   filename: (req, file, cb) => {
-    // Keep it simple: fieldname-timestamp.ext for initial unique save
-    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+    // Sanitize filename to remove spaces
+    const cleanName = file.originalname.replace(/\s+/g, '_');
+    cb(null, `${file.fieldname}-${Date.now()}-${cleanName}`);
   },
 });
 
-// File filter to allow only images
+// ✅ UPDATE: File filter to allow ANY image mimetype
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|gif/;
-  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = allowedTypes.test(file.mimetype);
-
-  if (extname && mimetype) {
+  if (file.mimetype.startsWith('image/')) {
     cb(null, true);
   } else {
-    cb(new Error('Only image files (jpeg, jpg, png, gif) are allowed!'), false);
+    cb(new Error('Only image files are allowed!'), false);
   }
 };
 
@@ -37,11 +34,10 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 1024 * 1024 * 5, // 5MB limit
+    fileSize: 10 * 1024 * 1024, // ✅ Global Max Limit: 10MB (We enforce stricter 6MB for CNIC in routes)
   },
 });
 
-// Export a configured multer instance for multiple files
 module.exports = upload.fields([
   { name: 'profilePicture', maxCount: 1 },
   { name: 'cnicFrontPicture', maxCount: 1 },
