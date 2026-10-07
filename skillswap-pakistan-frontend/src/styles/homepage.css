@@ -216,6 +216,11 @@ body.dark-mode .shape { opacity: 0.1; } /* Subtler shapes in dark mode */
   display: inline-block;
   transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
+.dynamic-text-pink2 {
+  color: #ffbad9; /* Pink for women zone */
+  display: inline-block;
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
 
 body.dark-mode .dynamic-text-pink {
     color: #fbcfe8; 
@@ -660,7 +665,7 @@ body.dark-mode .women-zone-banner {
 }
 
 .women-zone-title {
-  font-size: 2.8rem;
+  font-size: 3.2rem;
   font-weight: 800;
   color: #831843;
   margin-bottom: 15px;

@@ -417,7 +417,7 @@ i18n
       // --- Women's Zone ---
       "women_only_zone_tag": "Women Only Zone",
       "women_zone_description": "A safe, secure, and exclusive environment for women to trade skills comfortably.",
-      "women_zone_button": "Enter Zone",
+      "women_zone_button": "Enter Zone For",
 
       // --- Testimonials ---
       "testimonials_title": "What Our Community Says",
@@ -1214,7 +1214,7 @@ i18n
           // Women's Zone Section (Sindhi)
           "women_zone_title": "خاتونن لاءِ هڪ محفوظ جاءِ",
           "women_zone_description": "اسان جو عورتن لاءِ مخصوص اسڪل زون عورتن کي اعتماد سان شيئر ڪرڻ، سکڻ ۽ مهارتن جو تبادلو ڪرڻ لاءِ هڪ محفوظ ۽ مددگار ماحول فراهم ڪري ٿو.",
-          "women_zone_button": "خاتونن جي زون کي ڳوليو",
+          "women_zone_button": " جي زون کي ڳوليو",
 
           // Footer (Sindhi)
           "footer_tagline": "مهارتن کي ڳنڍڻ، بغير نقد، جي ذريعي ڪميونٽين کي بااختيار بڻائڻ.",

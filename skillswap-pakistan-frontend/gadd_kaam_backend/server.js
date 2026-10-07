@@ -33,11 +33,12 @@ app.use('/api/skill-suggestions', require('./routes/skillSuggestionRoutes'));
 app.use('/api/requests', require('./routes/requestRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes')); 
 app.use('/api/badges', require('./routes/badgeRoutes')); 
-app.use('/api/notifications', require('./routes/notificationRoutes')); // ✅ Fixes 404
-app.use('/api/chat', require('./routes/chatRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes')); 
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
 
+// ✅ CRITICAL FIX: Register Chat Route correctly
+app.use('/api/chat', require('./routes/chatRoutes'));
 
 app.get('/', (req, res) => res.send('API Running'));
 

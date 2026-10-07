@@ -18,13 +18,70 @@ function HomePage({ onChatbotToggle }) {
 
   // --- 1. Hero Dynamic Text State (Typewriter Effect) ---
   const [heroIndex, setHeroIndex] = useState(0);
-  const heroWords = [
-    "Futures", "Community", "Trust", "Careers", "Dreams", 
-    "Connections", "Opportunities", "Friendships", "Confidence", 
-    "Networks", "Success", "Pathways", "Independence", 
-    "Experience", "Hope", "Stability", "Expertise", 
-    "Reputation", "Livelihoods", "Unity"
-  ];
+ const heroWords = [
+  // Original words
+  "Futures", "Community", "Trust", "Careers", "Dreams", 
+  "Connections", "Opportunities", "Friendships", "Confidence", 
+  "Networks", "Success", "Pathways", "Independence", 
+  "Experience", "Hope", "Stability", "Expertise", 
+  "Reputation", "Livelihoods", "Unity",
+
+  // Additional English motivational words
+  "Growth", "Progress", "Skills", "Empowerment", "Journey", 
+  "Achievement", "Belonging", "Aspiration", "Potential", 
+  "Support", "Collaboration", "Innovation", "Security", 
+  "Prosperity", "Vision", "Strength", "Partnership", 
+  "Motivation", "Legacy", "Harmony",
+
+  // Sindhi words (script + Roman transliteration)
+  "مستقبل",          // Mustaqbil (Futures)
+  "برادري",          // Bradari (Community)
+  "ڀرواسو",          // Bharoso (Trust)
+  "روزگار",          // Rozgar (Careers/Livelihoods)
+  "خواب",            // Khwab (Dreams)
+  "رابطا",           // Rabta (Connections)
+  "موقعا",           // Moqa (Opportunities)
+  "دوستي",           // Dosti (Friendships)
+  "اعتماد",          // Aitmaad (Confidence)
+  "نيٽ ورڪ",         // Network (Networks)
+  "ڪاميابي",         // Kamyabi (Success)
+  "رستا",            // Rasta (Pathways)
+  "آزادي",           // Azadi (Independence)
+  "تجربو",           // Tajurbo (Experience)
+  "اميد",            // Umeed (Hope)
+  "استحڪام",         // Istehkam (Stability)
+  "ماهريت",          // Maharat (Expertise)
+  "ساک",             // Saak (Reputation)
+  "اتحاد",           // Ittehad (Unity)
+
+  // Urdu words (script)
+  "مستقبل",          // Mustaqbil (Futures)
+  "برادری",          // Baradari (Community)
+  "بھروسہ",          // Bharosa (Trust)
+  "روزگار",          // Rozgar (Careers)
+  "خواب",            // Khwab (Dreams)
+  "رابطے",           // Rabte (Connections)
+  "مواقع",           // Moaqe (Opportunities)
+  "دوستی",           // Dosti (Friendships)
+  "اعتماد",          // Aitmaad (Confidence)
+  "نیٹ ورک",         // Network (Networks)
+  "کامیابی",         // Kamyabi (Success)
+  "راستے",           // Raaste (Pathways)
+  "آزادی",           // Azadi (Independence)
+  "تجربہ",           // Tajurba (Experience)
+  "امید",            // Umeed (Hope)
+  "استحکام",         // Istehkam (Stability)
+  "ماہریت",          // Maharat (Expertise)
+  "ساکھ",            // Saakh (Reputation)
+  "روزگار",          // Rozgar (Livelihoods)
+  "اتحاد",           // Ittehad (Unity)
+
+  // Roman Urdu (for easy use in code / search / UI)
+  "Mustaqbil", "Baradari", "Bharosa", "Rozgar", "Khwab", 
+  "Rabte", "Moaqe", "Dosti", "Aitmaad", "Network", 
+  "Kamyabi", "Raaste", "Azadi", "Tajurba", "Umeed", 
+  "Istehkam", "Maharat", "Saakh", "Ittehad", "Taraqqi"
+];
   const [typingClass, setTypingClass] = useState('typing');
 
   useEffect(() => {
@@ -46,7 +103,59 @@ function HomePage({ onChatbotToggle }) {
 
   // --- 2. Women's Zone Dynamic Text State (Fade Effect) ---
   const [womenIndex, setWomenIndex] = useState(0);
-  const womenWords = ["Women", "Sisters", "Growth", "Empowerment", "Safety"];
+  const womenWords = [// Original English
+  "Women", "Sisters", "Growth", "Empowerment", "Safety",
+
+  // More English positive/empowering words
+  "Strength", "Progress", "Equality", "Rights", "Confidence", "Independence", 
+  "Leadership", "Resilience", "Dignity", "Freedom", "Success", "Unity", 
+  "Courage", "Inspiration", "Achievement", "SelfRespect", "Opportunity", 
+  "Education", "Power", "Voice", "Solidarity", "Hope", "Bravery", "Rise",
+
+  // Sindhi words (script + Roman transliteration in comment)
+  "عورتون",          // Auratoon (Women)
+  "ڀينر",             // Bhenar (Sisters)
+  "ترقي",             // Taraqqi (Progress/Growth)
+  "بااختيار بڻائڻ",   // Ba-ikhtiyar Banain (Empowerment)
+  "حفاظت",           // Hifazat (Safety)
+  "طاقت",             // Taqat (Strength)
+  "برابري",           // Barabari (Equality)
+  "حقوق",             // Huqooq (Rights)
+  "آزادي",            // Azadi (Freedom/Independence)
+  "اعتماد",           // Aitmaad (Confidence)
+  "رهنمائي",          // Rehnumai (Leadership/Guidance)
+  "عزت",              // Izzat (Dignity)
+  "تعلیم",            // Taleem (Education)
+  "همت",              // Himmat (Courage)
+  "اتحاد",            // Ittehad (Unity)
+
+  // Urdu words (script)
+  "خواتین",           // Khawateen (Women)
+  "بہنیں",            // Behenain (Sisters)
+  "ترقی",             // Taraqqi (Growth/Progress)
+  "بااختیار بنانا",   // Ba-ikhtiyar Banana (Empowerment)
+  "حفاظت",           // Hifazat (Safety/Security)
+  "طاقت",             // Taqat (Strength/Power)
+  "برابری",           // Barabari (Equality)
+  "حقوق",             // Huqooq (Rights)
+  "آزادی",            // Azadi (Freedom)
+  "اعتماد",           // Aitmaad (Confidence)
+  "قیادت",            // Qayadat (Leadership)
+  "عزت نفس",          // Izzat-e-Nafs (Self-respect/Dignity)
+  "تعلیم",            // Taleem (Education)
+  "ہمت",              // Himmat (Courage)
+  "اتحاد",            // Ittehad (Unity/Solidarity)
+  "کامیابی",          // Kamyabi (Success)
+  "حوصلہ",            // Hausla (Inspiration/Motivation)
+  "خود مختاری",       // Khud Mukhtari (Independence)
+  "امید",             // Umeed (Hope)
+  "بہادری",           // Bahaduri (Bravery)
+
+  // Roman Urdu (for easy use in code/UI/search)
+  "Khawateen", "Behenain", "Taraqqi", "Ba-ikhtiyar", "Hifazat", 
+  "Taqat", "Barabari", "Huqooq", "Azadi", "Aitmaad", 
+  "Qayadat", "Izzat-e-Nafs", "Taleem", "Himmat", "Ittehad", 
+  "Kamyabi", "Hausla", "Khud Mukhtari", "Umeed", "Bahaduri"];
   const [womenFade, setWomenFade] = useState('fade-in');
 
   useEffect(() => {
@@ -473,7 +582,7 @@ function HomePage({ onChatbotToggle }) {
               </h2>
               <p className="women-zone-description">{t("women_zone_description")}</p>
               <button className="btn btn-primary-pink" onClick={handleWomenZoneClick}>
-                {t("women_zone_button")}
+                {t("women_zone_button")}<span className={`dynamic-text-pink2 ${womenFade}`}>{womenWords[womenIndex]}</span>.
               </button>
             </div>
             <div className="women-zone-visual">

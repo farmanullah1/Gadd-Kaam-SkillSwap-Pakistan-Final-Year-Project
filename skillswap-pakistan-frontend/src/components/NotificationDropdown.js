@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Bell } from 'lucide-react';
+import { Bell, Check, Clock, X } from 'lucide-react'; // Added icons
 import { useTranslation } from 'react-i18next';
 import '../styles/notifications.css';
 
@@ -24,6 +24,7 @@ const NotificationDropdown = ({ onClose }) => {
 
   useEffect(() => {
     fetchNotifications(1, true);
+    // eslint-disable-next-line
   }, []);
 
   const fetchNotifications = async (pageNum, reset = false) => {
@@ -95,27 +96,47 @@ const NotificationDropdown = ({ onClose }) => {
   };
 
   return (
-    <div className="notification-dropdown" ref={dropdownRef}>
+    <div className="notification-dropdown glass-effect" ref={dropdownRef}>
       <div className="notif-header">
-        <h3>{t('navbar_notifications', 'Notifications')}</h3>
-        <button onClick={markAllRead} className="mark-read-btn">Mark all read</button>
+        <h3>
+          <Bell size={18} style={{marginRight: 8}} /> 
+          {t('navbar_notifications', 'Notifications')}
+        </h3>
+        <button onClick={markAllRead} className="mark-read-btn" title="Mark all as read">
+          <Check size={16} /> <span>Mark all</span>
+        </button>
       </div>
-      <div className="notif-list">
+      
+      <div className="notif-list custom-scrollbar">
         {notifications.length === 0 && !loading && (
-          <div className="no-notifs"><Bell size={24} className="muted-icon" /><p>No notifications yet.</p></div>
+          <div className="no-notifs">
+            <div className="empty-icon-circle">
+              <Bell size={32} className="muted-icon" />
+            </div>
+            <p>You're all caught up!</p>
+          </div>
         )}
+        
         {notifications.map(n => (
           <div key={n._id} className={`notif-item ${!n.isRead ? 'unread' : ''}`} onClick={() => handleNotificationClick(n)}>
-            <img src={getProfileImageUrl(n.sender?.profilePicture)} alt="User" className="notif-avatar" onError={(e)=>{e.target.onerror=null; e.target.src='https://placehold.co/40x40?text=U'}}/>
+            <div className="notif-avatar-container">
+              <img src={getProfileImageUrl(n.sender?.profilePicture)} alt="User" className="notif-avatar" onError={(e)=>{e.target.onerror=null; e.target.src='https://placehold.co/40x40?text=U'}}/>
+              {!n.isRead && <div className="status-indicator"></div>}
+            </div>
             <div className="notif-content">
               <p className="notif-text">{n.text}</p>
-              <span className="notif-time">{getTimeAgo(n.createdAt)}</span>
+              <span className="notif-time"><Clock size={10} style={{marginRight:3}}/> {getTimeAgo(n.createdAt)}</span>
             </div>
-            {!n.isRead && <div className="unread-dot"></div>}
           </div>
         ))}
-        {loading && <div className="notif-loading">Loading...</div>}
-        {!loading && hasMore && <button className="load-more-notifs" onClick={handleLoadMore}>Load More</button>}
+        
+        {loading && <div className="notif-loading"><div className="spinner"></div></div>}
+        
+        {!loading && hasMore && (
+          <button className="load-more-notifs" onClick={handleLoadMore}>
+            Load Older Notifications
+          </button>
+        )}
       </div>
     </div>
   );

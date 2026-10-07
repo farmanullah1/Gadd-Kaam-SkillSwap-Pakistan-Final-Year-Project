@@ -16,12 +16,97 @@ function Footer({ user, onChatbotToggle }) {
   const [typingClass, setTypingClass] = useState('typing');
 
   // The rotating taglines
-  const taglines = [
-    "Empowering communities by connecting skills, cash-free.",
-    "Trade your talents, save money, and grow together.",
-    "Building trust and connections through skill sharing.",
-    "Your #1 platform for secure, moneyless exchanges."
-  ];
+ const taglines = [
+  // Original English
+  "Empowering communities by connecting skills, cash-free.",
+  "Trade your talents, save money, and grow together.",
+  "Building trust and connections through skill sharing.",
+  "Your #1 platform for secure, moneyless exchanges.",
+
+  // More English taglines (positive, community-focused)
+  "Skills for skills – no cash needed, just community.",
+  "Unlock potential through barter and brotherhood.",
+  "Share what you know, gain what you need.",
+  "Cash-free skills exchange: stronger together.",
+  "From one hand to another – skills that matter.",
+  "Connect, share, thrive – without money in between.",
+  "Empower each other with talent, not transactions.",
+  "Barter your way to a better tomorrow.",
+  "Community-powered growth, zero cost.",
+  "Exchange expertise, build lasting bonds.",
+  "No money, no problem – just pure skill sharing.",
+  "Rise together through mutual help and trust.",
+  "Your skills, my skills, our community wins.",
+  "Moneyless magic: skills that unite us.",
+  "Trade time and talent for real change.",
+  "Stronger neighborhoods, skill by skill.",
+  "Help today, grow forever – cash-free.",
+  "Where skills meet hearts, not wallets.",
+  "Barter brilliance, build belonging.",
+
+  // Urdu taglines (script)
+  "ہنر کا تبادلہ، بغیر پیسے کے کمیونٹی مضبوط کریں۔",
+  "اپنے ہنر بیچیں، پیسے بچائیں، ساتھ بڑھیں۔",
+  "اعتماد اور رابطوں کی تعمیر ہنر شیئرنگ سے۔",
+  "محفوظ، بغیر رقم کے تبادلے کا نمبر 1 پلیٹ فارم۔",
+  "ہنر سے ہنر – کوئی نقد نہیں، صرف کمیونٹی۔",
+  "صلاحیتوں کا سودا، پیسوں کے بغیر ترقی۔",
+  "جو جانتے ہو شیئر کرو، جو چاہیے حاصل کرو۔",
+  "بغیر نقد کے ہنر کا تبادلہ: ساتھ مضبوط بنیں۔",
+  "ایک ہاتھ سے دوسرے تک – ہنر جو اہم ہیں۔",
+  "رابطہ کرو، شیئر کرو، ترقی کرو – بغیر پیسے۔",
+  "ایک دوسرے کو بااختیار بنائیں ہنر سے، نہ لین دین سے۔",
+  "بارٹر سے بہتر کل بنائیں۔",
+  "کمیونٹی کی طاقت، زیرو لاگت۔",
+  "ماہریت کا تبادلہ، دیرپا رشتے بنائیں۔",
+  "پیسہ نہیں، مسئلہ نہیں – خالص ہنر شیئرنگ۔",
+  "ساتھ مل کر اٹھیں، باہمی مدد سے۔",
+  "آپ کا ہنر، میرا ہنر، ہماری کمیونٹی جیتے۔",
+  "بغیر پیسے کے جادو: ہنر جو ہمیں جوڑتے ہیں۔",
+  "وقت اور ہنر کا تبادلہ، حقیقی تبدیلی کے لیے۔",
+  "مضبوط محلے، ہنر بہ ہنر۔",
+
+  // Roman Urdu (for code/UI/search)
+  "Hunr ka tabadla, baghair paise ke community mazboot karen.",
+  "Apne hunr bechein, paise bachayein, saath barhein.",
+  "Aitmaad aur rabton ki tameer hunr sharing se.",
+  "Mehfooz, baghair raqam ke tabadlay ka number 1 platform.",
+  "Hunr se hunr – koi naqd nahi, sirf community.",
+  "Salahiyaton ka sauda, paison ke baghair taraqqi.",
+  "Jo jante ho share karo, jo chahiye haasil karo.",
+  "Baghair naqd ke hunr ka tabadla: saath mazboot banein.",
+  "Ek haath se doosre tak – hunr jo ahem hain.",
+  "Rabita karo, share karo, taraqqi karo – baghair paise.",
+  "Ek doosre ko ba-ikhtiyar banayein hunr se, na len den se.",
+  "Barter se behtar kal banayein.",
+  "Community ki taqat, zero cost.",
+  "Maharat ka tabadla, derpa rishte banayein.",
+  "Paisa nahi, masla nahi – khalis hunr sharing.",
+  "Saath mil kar uthein, baahmi madad se.",
+  "Aap ka hunr, mera hunr, hamari community jeete.",
+  "Baghair paise ke jadu: hunr jo humein jorte hain.",
+
+  // Sindhi taglines (script + Roman transliteration in comment)
+  "هنر جو بدلاء، بغير پئسن جي ڪميونٽي مضبوط ڪريو۔",          // Hunr jo badlao, baghair paisan ji community mazboot kariyo.
+  "پنهنجو هنـر وڪڻو، پئسا بچايو، گڏجي وڌو۔",                    // Panhanjo hunr vikyo, paisa bachayo, gadji vadho.
+  "ڀرواسو ۽ رابطن جي تعمير هنـر شيئرنگ سان۔",                 // Bharoso ain rabtan ji tameer hunr sharing saan.
+  "محفوظ، بغير رقم جي بدلن جو نمبر 1 پليٽ فارم۔",              // Mehfooz, baghair raqam ji badlan jo number 1 platform.
+  "هنـر کان هنـر – ڪوبه نقد نه، رڳو ڪميونٽي۔",                  // Hunr kan hunr – koi naqd na, ragho community.
+  "صلاحيتن جو سودو، پئسن کان سواءِ ترقي۔",                     // Salahiyatan jo saudo, paisan kan sawa taraqqi.
+  "جيڪي ڄاڻو شيئر ڪريو، جيڪي گهرجي حاصل ڪريو۔",               // Je ki jaano share kariyo, je ki gharji hasil kariyo.
+  "بغير نقد جي هنـر جو بدلاءُ: گڏجي مضبوط ٿيو۔",                // Baghair naqd ji hunr jo badlao: gadji mazboot thiyo.
+  "هڪ هٿ کان ٻئي تائين – هنـر جيڪي اهم آهن۔",                   // Hik hath kan biyan tain – hunr je ahem aahin.
+  "رابطو ڪريو، شيئر ڪريو، ترقي ڪريو – بغير پئسن۔",             // Rabto kariyo, share kariyo, taraqqi kariyo – baghair paisan.
+  "هڪ ٻئي کي بااختيار بڻايو هنـر سان، نه لين ڏين سان۔",         // Hik biyi khe ba-ikhtiyar banayo hunr saan, na len den saan.
+  "بارٽر سان بهتر ڪل بڻايو۔",                                   // Barter saan behtar kal banayo.
+  "ڪميونٽي جي طاقت، زيرو خرچ۔",                                 // Community ji taqat, zero kharch.
+  "ماهريت جو بدلاءُ، ديرپا رشتا بڻايو۔",                        // Maharat jo badlao, derpa rishta banayo.
+  "پئسو نه، مسئلو نه – خالص هنـر شيئرنگ۔",                      // Paiso na, maslo na – khalis hunr sharing.
+  "گڏجي اٿو، باہمي مدد سان۔",                                   // Gadji utho, baahmi madad saan.
+  "توهان جو هنـر، منهنجو هنـر، اسان جي ڪميونٽي کٽي۔",            // Tawhan jo hunr, munhijo hunr, asaan ji community khati.
+  "بغير پئسن جي جادو: هنـر جيڪي اسان کي جوڙين ٿا۔"               // Baghair paisan ji jadu: hunr je asaan khe jorain tha.
+];
+
 
   // --- Typewriter Effect Logic ---
   useEffect(() => {

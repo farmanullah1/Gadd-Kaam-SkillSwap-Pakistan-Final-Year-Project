@@ -1,88 +1,152 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { X, Send, Bot, User } from 'lucide-react';
+import { X, Send, Bot, User, Sparkles, RefreshCw } from 'lucide-react';
 import '../styles/chatbot-modal.css';
 
 const ChatbotModal = ({ onClose }) => {
   const [messages, setMessages] = useState([
-    { text: "Hi! I'm the Gadd Kaam assistant. Ask me how to swap skills or use the Women Zone!", sender: 'bot' }
+    { text: "Hello! I'm Gadd Kaam AI. I know everything about the Marketplace, Women's Zone, and swapping skills. Ask me anything!", sender: 'bot' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // ✅ Expanded Suggestion Pool
+  const allSuggestions = [
+    "How do I post a skill?",
+    "Is the Women Zone safe?",
+    "How does swapping work?",
+    "I need Tractor Repair help",
+    "Can I swap cooking for coding?",
+    "Where is my Dashboard?",
+    "Contact Support",
+    "Is this platform free?"
+  ];
+
+  // Show random 4 suggestions initially
+  const [suggestions, setSuggestions] = useState(allSuggestions.slice(0, 4));
+  
   const scrollRef = useRef(null);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/chat/history`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+          setMessages(res.data);
+        }
+      } catch (err) {
+        console.warn("Chat history silent fail");
+      }
+    };
+    fetchHistory();
+  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  const handleSend = async (textToSend) => {
+    const messageText = textToSend || input;
+    if (!messageText.trim()) return;
 
-    const userMsg = { text: input, sender: 'user' };
+    const userMsg = { text: messageText, sender: 'user' };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setLoading(true);
+    
+    // Rotate suggestions after asking
+    const randomStart = Math.floor(Math.random() * (allSuggestions.length - 3));
+    setSuggestions(allSuggestions.slice(randomStart, randomStart + 3));
 
     try {
-      // ✅ FIX: Use the environment variable for the API URL
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-      const res = await axios.post(`${apiUrl}/api/chat`, { message: userMsg.text });
+      const token = localStorage.getItem('token');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/chat`, 
+        { message: messageText },
+        { headers }
+      );
       
       setMessages(prev => [...prev, { text: res.data.reply, sender: 'bot' }]);
     } catch (err) {
-      console.error("Chat Error:", err);
-      setMessages(prev => [...prev, { text: "Sorry, I'm offline right now.", sender: 'bot' }]);
+      // Even if backend fails completely, show a friendly local message
+      setMessages(prev => [...prev, { text: "I'm having trouble connecting to the server, but I'm here! Try asking about 'Women Zone' or 'Marketplace'.", sender: 'bot' }]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="chatbot-overlay">
-      <div className="chatbot-container">
-        {/* Header */}
+    <div className="chatbot-overlay glass-entrance">
+      <div className="chatbot-container glass-panel">
+        
         <div className="chatbot-header">
-          <div className="header-info">
-            <div className="bot-icon-circle"><Bot size={20} /></div>
-            <div>
+          <div className="header-content">
+            <div className="bot-avatar-glow">
+              <Bot size={24} className="bot-icon-anim" />
+              <span className="status-dot"></span>
+            </div>
+            <div className="header-text">
               <h4>Gadd Kaam AI</h4>
-              <span className="online-status">● Online</span>
+              <span className="status-text">Online & Ready</span>
             </div>
           </div>
-          <button onClick={onClose} className="close-btn"><X size={20} /></button>
+          <div className="header-actions">
+            <button onClick={() => setMessages([{ text: "How can I help you with Gadd Kaam today?", sender: 'bot' }])} className="action-btn" title="Clear Chat"><RefreshCw size={16} /></button>
+            <button onClick={onClose} className="action-btn close"><X size={20} /></button>
+          </div>
         </div>
 
-        {/* Messages */}
-        <div className="chatbot-messages">
+        <div className="chatbot-messages custom-scrollbar">
+          <div className="chat-start-time">Today</div>
+          
           {messages.map((msg, idx) => (
-            <div key={idx} className={`chat-bubble ${msg.sender}`}>
-              {msg.sender === 'bot' && <div className="bubble-icon"><Bot size={14} /></div>}
-              <div className="bubble-text">{msg.text}</div>
-              {msg.sender === 'user' && <div className="bubble-icon"><User size={14} /></div>}
+            <div key={idx} className={`chat-row ${msg.sender}`}>
+              {msg.sender === 'bot' && <div className="chat-icon bot"><Bot size={16} /></div>}
+              <div className={`chat-bubble ${msg.sender}`}>
+                {msg.text}
+              </div>
+              {msg.sender === 'user' && <div className="chat-icon user"><User size={16} /></div>}
             </div>
           ))}
-          
+
           {loading && (
-            <div className="chat-bubble bot">
-              <div className="bubble-icon"><Bot size={14} /></div>
-              <div className="typing-indicator">
-                <span></span><span></span><span></span>
+            <div className="chat-row bot">
+              <div className="chat-icon bot"><Bot size={16} /></div>
+              <div className="chat-bubble bot loading-bubble">
+                <div className="typing-dots"><span></span><span></span><span></span></div>
               </div>
             </div>
           )}
           <div ref={scrollRef} />
         </div>
 
-        {/* Input */}
-        <form className="chatbot-input-area" onSubmit={handleSend}>
+        {/* Suggestion Chips */}
+        {!loading && (
+          <div className="suggestions-container">
+            {suggestions.map((s, i) => (
+              <button key={i} className="suggestion-chip" onClick={() => handleSend(s)}>
+                <Sparkles size={12} className="chip-icon"/> {s}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <form className="chatbot-input-area" onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
           <input 
             type="text" 
-            placeholder="Ask a question..." 
+            placeholder="Ask about skills, safety, etc..." 
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            disabled={loading}
           />
-          <button type="submit" disabled={loading || !input.trim()}>
+          <button type="submit" className={`send-btn ${input.trim() ? 'active' : ''}`} disabled={loading || !input.trim()}>
             <Send size={18} />
           </button>
         </form>

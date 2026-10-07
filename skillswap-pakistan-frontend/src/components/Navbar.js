@@ -14,7 +14,7 @@ import '../styles/notifications.css';
 function Navbar(props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation(); // Used to highlight active link
+  const location = useLocation(); 
   
   // State
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -31,8 +31,10 @@ function Navbar(props) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // Refs for click outside detection
   const profileMenuRef = useRef(null);
   const notificationRef = useRef(null);
+  const mobileNotificationRef = useRef(null); // ✅ Added for Mobile
   const languageRef = useRef(null);
 
   // --- SCROLL HANDLER FOR STICKY NAVBAR ---
@@ -82,10 +84,19 @@ function Navbar(props) {
     return () => i18n.off('languageChanged', handleLanguageChange);
   }, []);
 
+  // ✅ Updated Click Outside Logic to include Mobile Notification Ref
   useEffect(() => {
     function handleClickOutside(event) {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) setShowProfileMenu(false);
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) setShowNotifications(false);
+      
+      // Check both desktop and mobile notification refs
+      const clickedDesktopNotif = notificationRef.current && notificationRef.current.contains(event.target);
+      const clickedMobileNotif = mobileNotificationRef.current && mobileNotificationRef.current.contains(event.target);
+      
+      if (!clickedDesktopNotif && !clickedMobileNotif) {
+        setShowNotifications(false);
+      }
+
       if (languageRef.current && !languageRef.current.contains(event.target)) setShowLanguageOptions(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -131,7 +142,7 @@ function Navbar(props) {
 
   return (
     <>
-      {/* 1. TOP UTILITY BAR (Scrolls Away) */}
+      {/* 1. TOP UTILITY BAR */}
       <div className="top-utility-bar">
         <div className="top-utility-content">
           <div className="utility-left">
@@ -165,17 +176,16 @@ function Navbar(props) {
         </div>
       </div>
 
-      {/* Placeholder to prevent layout shift */}
       <div style={{ height: isSticky ? '70px' : '0', transition: 'height 0.3s' }}></div>
 
-      {/* 2. MAIN NAVBAR (Becomes Sticky) */}
+      {/* 2. MAIN NAVBAR */}
       <nav 
         className={`main-navbar ${isSticky ? 'fixed-nav' : ''} ${isSindhiMode ? 'sindhi-mode' : ''}`} 
         style={sindhiNavbarStyle}
       >
         <div className="navbar-container">
           
-          {/* Logo with Hover Animation */}
+          {/* Logo */}
           <Link to="/" className="navbar-brand" onClick={() => setIsMenuOpen(false)}>
             <div className="logo-wrapper">
                 <img src="/Gadd_Kaam.png" alt="Gadd Kaam" className="brand-logo" onError={(e) => {e.target.onerror=null; e.target.src="https://placehold.co/40x40?text=GK";}} />
@@ -202,13 +212,16 @@ function Navbar(props) {
             <Link to="/contact" className={`nav-item ${isActive('/contact')}`}>
                 {t("navbar_contact")}
             </Link>
+            <Link to="/contact" className={`nav-item ${isActive('/contact')}`}>
+                {t("navbar_contact")}
+            </Link>
           </div>
 
-          {/* Desktop Actions (Auth/Profile) */}
+          {/* Desktop Actions (Hidden on Mobile) */}
           <div className="navbar-actions-desktop">
             {props.user ? (
               <>
-                {/* Notifications */}
+                {/* Desktop Notification */}
                 <div className="notification-container" ref={notificationRef}>
                   <button className="icon-btn bell-btn" onClick={() => setShowNotifications(!showNotifications)}>
                     <Bell size={22} className={unreadCount > 0 ? 'bell-ring' : ''} />
@@ -254,8 +267,23 @@ function Navbar(props) {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Actions & Toggle (Visible on Mobile) */}
           <div className="navbar-mobile-toggle">
+            
+            {/* ✅ MOBILE NOTIFICATION BELL (Added here) */}
+            {props.user && (
+               <div className="mobile-notification-wrapper" ref={mobileNotificationRef}>
+                  <button className="icon-btn bell-btn mobile-bell" onClick={() => setShowNotifications(!showNotifications)}>
+                    <Bell size={22} />
+                    {unreadCount > 0 && <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>}
+                  </button>
+                  {/* Show dropdown on mobile if toggled */}
+                  {showNotifications && (
+                      <NotificationDropdown onClose={() => setShowNotifications(false)} />
+                  )}
+               </div>
+            )}
+
             {props.user && (
                <Link to="/dashboard/profile" className="mobile-profile-icon">
                   <img src={getProfileUrl()} alt="Profile" />
@@ -267,7 +295,7 @@ function Navbar(props) {
           </div>
         </div>
 
-        {/* 3. MOBILE MENU OVERLAY (Slide Down) */}
+        {/* 3. MOBILE MENU OVERLAY */}
         <div className={`mobile-menu-overlay ${isMenuOpen ? 'open' : ''}`}>
           <div className="mobile-menu-content">
             <Link to="/marketplace" className="mobile-link" onClick={() => setIsMenuOpen(false)}>{t("navbar_marketplace")}</Link>
