@@ -1,3 +1,4 @@
+// gadd_kaam_backend/server.js
 const express = require('express');
 const connectDB = require('./config/db');
 const dotenv = require('dotenv');
@@ -34,6 +35,8 @@ app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/badges', require('./routes/badgeRoutes')); 
 app.use('/api/notifications', require('./routes/notificationRoutes')); // ✅ Fixes 404
 app.use('/api/chat', require('./routes/chatRoutes'));
+app.use('/api/dashboard', require('./routes/dashboardRoutes'));
+
 
 app.get('/', (req, res) => res.send('API Running'));
 

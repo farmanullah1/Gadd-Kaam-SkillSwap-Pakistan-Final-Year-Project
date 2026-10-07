@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import Navbar from './Navbar';
+import Footer from './Footer';
 import HelplinePopup from './HelplinePopup';
 import { useNavigate } from 'react-router-dom';
+import '../styles/homepage.css'; 
 
+import { 
+  Star, Shield, ArrowRight, User, CheckCircle, Search, Zap 
+} from 'lucide-react';
 
-// IMPORTANT: HomePage must accept onChatbotToggle as a prop
-function HomePage({ onChatbotToggle }) { // <-- ADD onChatbotToggle here
+function HomePage({ onChatbotToggle }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [showHelplinePopup, setShowHelplinePopup] = useState(false);
@@ -20,13 +23,8 @@ function HomePage({ onChatbotToggle }) { // <-- ADD onChatbotToggle here
     }
   }, []);
 
-  const openHelplinePopup = () => {
-    setShowHelplinePopup(true);
-  };
-
-  const closeHelplinePopup = () => {
-    setShowHelplinePopup(false);
-  };
+  const openHelplinePopup = () => setShowHelplinePopup(true);
+  const closeHelplinePopup = () => setShowHelplinePopup(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -36,26 +34,19 @@ function HomePage({ onChatbotToggle }) { // <-- ADD onChatbotToggle here
   };
 
   const handleOfferSkillClick = () => {
-    if (user) {
-      navigate('/offer-skill');
-    } else {
-      navigate('/login');
-    }
+    user ? navigate('/offer-skill') : navigate('/login');
   };
 
   const handleFindSkillClick = () => {
     navigate('/marketplace');
   };
 
-  // Handler for the "Explore the Women Zone" button
   const handleWomenZoneClick = () => {
     if (user) {
-      // Check if the user is female
       if (user.gender === 'Female') {
         navigate('/women-zone');
       } else {
-        // Optional: show a message that this zone is for women only
-        alert("This is a women-only zone. You must be a female user to access it.");
+        alert("Access Restricted: This zone is for female users only.");
       }
     } else {
       navigate('/login');
@@ -63,149 +54,114 @@ function HomePage({ onChatbotToggle }) { // <-- ADD onChatbotToggle here
   };
 
   const featuredSkills = [
-    {
-      id: 1,
-      title: "Tractor Repair",
-      user: "Ahmed Khan",
-      rating: 4.8,
-      reviews: 23,
-      imageUrl: "/skill_1.jpg"
-    },
-    {
-      id: 2,
-      title: "Tailoring & Dress Making",
-      user: "Fatima Bibi",
-      rating: 4.9,
-      reviews: 41,
-      imageUrl: "/skill_2.jpg"
-    },
-    {
-      id: 3,
-      title: "Basic Computer Skills",
-      user: "Ali Raza",
-      rating: 4.7,
-      reviews: 15,
-      imageUrl: "/skill_3.jpg"
-    },
-    {
-      id: 4,
-      title: "Home Cooking Lessons",
-      user: "Ayesha Malik",
-      rating: 5.0,
-      reviews: 30,
-      imageUrl: "/skill_4.jpg"
-    },
+    { id: 1, title: "Tractor Repair", user: "Ahmed Khan", rating: 4.8, reviews: 23, imageUrl: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=400&q=80" },
+    { id: 2, title: "Tailoring & Dress Making", user: "Fatima Bibi", rating: 4.9, reviews: 41, imageUrl: "https://images.unsplash.com/photo-1528578577235-b963df6db908?auto=format&fit=crop&w=400&q=80" },
+    { id: 3, title: "Basic Computer Skills", user: "Ali Raza", rating: 4.7, reviews: 15, imageUrl: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=400&q=80" },
+    { id: 4, title: "Home Cooking Lessons", user: "Ayesha Malik", rating: 5.0, reviews: 30, imageUrl: "https://images.unsplash.com/photo-1556910103-1c02745a30bf?auto=format&fit=crop&w=400&q=80" },
   ];
 
   const howItWorksSteps = [
-    {
-      id: 1,
-      titleKey: "step1_title",
-      descriptionKey: "step1_description",
-      imageUrl: "/profile.jpg"
-    },
-    {
-      id: 2,
-      titleKey: "step2_title",
-      descriptionKey: "step2_description",
-      imageUrl: "/heart.jpg"
-    },
-    {
-      id: 3,
-      titleKey: "step3_title",
-      descriptionKey: "step3_description",
-      imageUrl: "/shield.jpg"
-    },
+    { id: 1, titleKey: "step1_title", descriptionKey: "step1_description", icon: <User size={32} /> },
+    { id: 2, titleKey: "step2_title", descriptionKey: "step2_description", icon: <Search size={32} /> }, 
+    { id: 3, titleKey: "step3_title", descriptionKey: "step3_description", icon: <Star size={32} /> },
   ];
 
   return (
     <div className="home-page-container">
       <Navbar onHelplineClick={openHelplinePopup} onLogout={handleLogout} user={user} />
 
+      {/* --- HERO SECTION --- */}
       <main className="hero-section">
-        <div className="hero-content-left">
-          <h1 className="hero-headline">
-            {t("hero_headline")}
-          </h1>
-          <p className="hero-subtext">
-            {t("hero_subtext")}
-          </p>
-          <div className="hero-buttons">
-            <button className="btn btn-primary-orange" onClick={handleOfferSkillClick}>
-              {t("hero_offer_skill_btn")}
-            </button>
-            <button className="btn btn-secondary-light" onClick={handleFindSkillClick}>
-              {t("hero_find_skill_btn")}
-            </button>
+        <div className="hero-content">
+          <div className="hero-text-wrapper">
+            <div className="hero-badge">
+              <Zap size={16} fill="currentColor" /> {t('app_name')}
+            </div>
+            <h1 className="hero-headline">{t("hero_headline")}</h1>
+            <p className="hero-subtext">{t("hero_subtext")}</p>
+            <div className="hero-buttons">
+              <button className="btn btn-primary-orange btn-lg" onClick={handleOfferSkillClick}>
+                {t("hero_offer_skill_btn")} <ArrowRight size={20} />
+              </button>
+              <button className="btn btn-secondary-outline btn-lg" onClick={handleFindSkillClick}>
+                {t("hero_find_skill_btn")}
+              </button>
+            </div>
           </div>
-        </div>
-
-        <div className="hero-image-right">
-          <img
-            src="/main Pic.jpg"
-            alt="SkillSwap Illustration"
-            className="hero-image"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = "https://placehold.co/600x400?text=Image+Unavailable";
-            }}
-          />
+          
+          <div className="hero-visual">
+            <div className="image-stack">
+                <img 
+                  src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80" 
+                  alt="Community" 
+                  className="hero-main-image" 
+                />
+            </div>
+            <div className="hero-floating-card card-success">
+              <CheckCircle size={24} className="icon-success" />
+              <div>
+                <strong>Skill Swapped!</strong>
+                <span className="small-text">Just now</span>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
 
+      {/* --- HOW IT WORKS (Redesigned) --- */}
       <section className="section-container how-it-works-section">
-        <h2 className="section-title">{t("how_it_works_title")}</h2>
-        <p className="section-subtitle">{t("how_it_works_subtitle")}</p>
-        <div className="how-it-works-grid">
-          {howItWorksSteps.map((step) => (
-            <div className="how-it-works-card" key={step.id}>
-              <img
-                src={step.imageUrl}
-                alt={t(step.titleKey)}
-                className="step-image"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "https://placehold.co/48x48/cccccc/ffffff?text=Icon";
-                }}
-              />
-              <h3 className="step-title">{t(step.titleKey)}</h3>
-              <p className="step-description">{t(step.descriptionKey)}</p>
+        <div className="section-header text-center">
+          <h2 className="section-title">{t("how_it_works_title")}</h2>
+          <p className="section-subtitle">{t("how_it_works_subtitle")}</p>
+        </div>
+        <div className="steps-grid">
+          {howItWorksSteps.map((step, index) => (
+            <div className="step-card" key={step.id}>
+              {/* Large background number for visual depth */}
+              <div className="step-number-bg">0{index + 1}</div>
+              
+              <div className="step-content">
+                <div className="step-icon-wrapper">
+                  {step.icon}
+                </div>
+                <h3 className="step-title">{t(step.titleKey)}</h3>
+                <p className="step-description">{t(step.descriptionKey)}</p>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Conditionally render Featured Skills section */}
+      {/* --- FEATURED SKILLS --- */}
       {!user && (
         <section className="section-container featured-skills-section">
-          <div className="featured-skills-header">
-            <h2 className="section-title-left">{t("featured_skills_title")}</h2>
-            <a onClick={handleFindSkillClick} className="view-all-link" style={{ cursor: 'pointer' }}>
-              {t("view_all_link")}
-            </a>
+          <div className="section-header flex-between">
+            <div>
+                <h2 className="section-title-left">{t("featured_skills_title")}</h2>
+                <p className="section-subtitle left-align">Discover what's popular in your area.</p>
+            </div>
+            <button onClick={handleFindSkillClick} className="btn-link">
+              {t("view_all_link")} <ArrowRight size={16} />
+            </button>
           </div>
           <div className="skills-grid">
             {featuredSkills.map((skill) => (
-              <div className="skill-card" key={skill.id}>
-                <img
-                  src={skill.imageUrl}
-                  alt={skill.title}
-                  className="skill-image"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "https://placehold.co/400x200/cccccc/ffffff?text=Image+Error";
-                  }}
-                />
+              <div className="home-skill-card" key={skill.id} onClick={handleFindSkillClick}>
+                <div className="skill-image-container">
+                  <img src={skill.imageUrl} alt={skill.title} className="skill-image" />
+                  <div className="skill-overlay">
+                    <span className="view-text">{t("view_details_link")}</span>
+                  </div>
+                </div>
                 <div className="skill-content">
                   <h3 className="skill-title">{skill.title}</h3>
-                  <p className="skill-user">{skill.user}</p>
-                  <div className="skill-rating">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="star-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    <span>{skill.rating} ({skill.reviews} reviews)</span>
+                  <div className="skill-meta">
+                    <span className="skill-user"><User size={14}/> {skill.user}</span>
+                    <div className="skill-rating">
+                      <Star size={14} fill="#e38b40" stroke="#e38b40" />
+                      <span>{skill.rating}</span>
+                    </div>
                   </div>
-                  <a onClick={handleFindSkillClick} className="view-details-link" style={{ cursor: 'pointer' }}>
-                    {t("view_details_link")}
-                  </a>
                 </div>
               </div>
             ))}
@@ -213,50 +169,47 @@ function HomePage({ onChatbotToggle }) { // <-- ADD onChatbotToggle here
         </section>
       )}
 
-      {/* Conditionally render Testimonials section */}
+      {/* --- WOMEN'S ZONE BANNER --- */}
+      {(!user || (user && user.gender === 'Female')) && (
+        <section className="section-container women-zone-section-wrapper">
+          <div className="women-zone-banner">
+            <div className="women-zone-text">
+              <div className="badge-pink"><Shield size={16} /> {t("women_only_zone_tag")}</div>
+              <h2 className="women-zone-title">{t("women_zone_title")}</h2>
+              <p className="women-zone-description">{t("women_zone_description")}</p>
+              <button className="btn btn-primary-pink" onClick={handleWomenZoneClick}>
+                {t("women_zone_button")}
+              </button>
+            </div>
+            <div className="women-zone-visual">
+               <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&w=500&q=80" alt="Women Zone" className="women-zone-img" />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* --- TESTIMONIALS --- */}
       {!user && (
         <section className="section-container testimonials-section">
-          <h2 className="section-title">{t("testimonials_title")}</h2>
+          <h2 className="section-title text-center">{t("testimonials_title")}</h2>
           <div className="testimonials-grid">
-            <div className="testimonial-card" key="testimonial-1">
-              <p className="testimonial-quote">
-                "{t("testimonial1_quote")}"
-              </p>
+            <div className="testimonial-card">
+              <div className="quote-icon">“</div>
+              <p className="testimonial-quote">{t("testimonial1_quote")}</p>
               <div className="testimonial-author">
-                <div className="author-avatar">
-                  <img
-                    src="/person_1.jpg"
-                    alt={t("testimonial1_author_name")}
-                    className="avatar-image"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "https://placehold.co/48x48/cccccc/ffffff?text=P1";
-                    }}
-                  />
-                </div>
-                <div className="author-info">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Author" className="author-avatar" />
+                <div>
                   <p className="author-name">{t("testimonial1_author_name")}</p>
                   <p className="author-details">{t("testimonial1_author_details")}</p>
                 </div>
               </div>
             </div>
-            <div className="testimonial-card" key="testimonial-2">
-              <p className="testimonial-quote">
-                "{t("testimonial2_quote")}"
-              </p>
+            <div className="testimonial-card">
+              <div className="quote-icon">“</div>
+              <p className="testimonial-quote">{t("testimonial2_quote")}</p>
               <div className="testimonial-author">
-                <div className="author-avatar">
-                  <img
-                    src="/person_2.jpg"
-                    alt={t("testimonial2_author_name")}
-                    className="avatar-image"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "https://placehold.co/48x48/cccccc/ffffff?text=P2";
-                    }}
-                  />
-                </div>
-                <div className="author-info">
+                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Author" className="author-avatar" />
+                <div>
                   <p className="author-name">{t("testimonial2_author_name")}</p>
                   <p className="author-details">{t("testimonial2_author_details")}</p>
                 </div>
@@ -266,27 +219,8 @@ function HomePage({ onChatbotToggle }) { // <-- ADD onChatbotToggle here
         </section>
       )}
 
-      {/* UPDATED: Conditionally render the women-zone section */}
-      {(!user || (user && user.gender === 'Female')) && (
-        <section className="section-container women-zone-section">
-          <div className="women-zone-content">
-            <h2 className="women-zone-title">{t("women_zone_title")}</h2>
-            <p className="women-zone-description">
-              {t("women_zone_description")}
-            </p>
-          </div>
-          <button className="btn btn-primary-orange women-zone-button" onClick={handleWomenZoneClick}>
-            {t("women_zone_button")}
-          </button>
-        </section>
-      )}
-
-      {/* IMPORTANT: Pass the onChatbotToggle prop to the Footer component */}
-      <Footer onChatbotToggle={onChatbotToggle} user={user} /> {/* <-- ADDED onChatbotToggle here */}
-
-      {showHelplinePopup && (
-        <HelplinePopup onClose={closeHelplinePopup} />
-      )}
+      <Footer onChatbotToggle={onChatbotToggle} user={user} />
+      {showHelplinePopup && <HelplinePopup onClose={closeHelplinePopup} />}
     </div>
   );
 }

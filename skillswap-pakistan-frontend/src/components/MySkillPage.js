@@ -4,23 +4,26 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import HelplinePopup from './HelplinePopup';
 import LoadingSpinner from './LoadingSpinner';
-import SuccessMessageModal from './SuccessMessageModal'; // Import SuccessMessageModal
+import SuccessMessageModal from './SuccessMessageModal'; 
 import '../styles/my-skills.css';
-import '../styles/marketplace.css';
+// import '../styles/marketplace.css'; // Removed to avoid style conflicts, my-skills.css now handles it all
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
-import { FaTrashAlt, FaEdit, FaTimes } from 'react-icons/fa';
+import { FaTrashAlt, FaTimes } from 'react-icons/fa';
 
-// Import icons from lucide-react for consistent styling
 import {
   Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star
-} from 'lucide-react'; // Added MessageSquare and Star
+} from 'lucide-react';
 
 // Shared SkillCard component
 const SkillCard = ({ skill, onViewDetails, onDeleteOffer }) => {
   const { t } = useTranslation();
-  const placeholderImage = 'https://placehold.co/400x240/e0e0e0/666666?text=No+Image';
-  const imageUrl = skill.photo ? `${process.env.REACT_APP_API_URL}${skill.photo}` : placeholderImage;
+  const placeholderImage = 'https://placehold.co/600x400/e0e0e0/666666?text=Skill+Image';
+  
+  // Ensure photo URL is correct
+  const imageUrl = skill.photo 
+    ? `${process.env.REACT_APP_API_URL}${skill.photo.startsWith('/') ? '' : '/'}${skill.photo}` 
+    : placeholderImage;
 
   return (
     <div className="skill-card">
@@ -33,19 +36,21 @@ const SkillCard = ({ skill, onViewDetails, onDeleteOffer }) => {
         />
       </div>
       <div className="skill-card-content">
+        <div className="skill-card-author">{t('offer_skill_label')}</div>
         <h3 className="skill-card-title">{skill.skills.join(', ')}</h3>
-        <p className="skill-card-author">{t('offer_skill_label')}</p>
         <p className="skill-card-description">{skill.description}</p>
+        
         <div className="skill-card-tags">
           {skill.remotely && <span className="skill-card-tag">{t('remotely_label')}</span>}
           {skill.anonymous && <span className="skill-card-tag">{t('anonymous_label')}</span>}
-          {skill.shareWithWomenZone && <span className="skill-card-tag">{t('step2_women_zone_switch')}</span>}
+          {skill.shareWithWomenZone && <span className="skill-card-tag">{t('women_only_zone_tag')}</span>}
         </div>
+
         <div className="skill-card-actions">
           <button className="btn-view-details" onClick={() => onViewDetails(skill)}>
             {t('view_full_details_btn')}
           </button>
-          <button className="btn-delete-offer" onClick={() => onDeleteOffer(skill._id)}>
+          <button className="btn-delete-offer" onClick={() => onDeleteOffer(skill._id)} title={t('delete_offer_btn')}>
             <FaTrashAlt />
           </button>
         </div>
@@ -58,23 +63,28 @@ const SkillCard = ({ skill, onViewDetails, onDeleteOffer }) => {
 const FullDetailsModal = ({ skill, onClose, onDelete }) => {
   const { t } = useTranslation();
   const placeholderImage = 'https://placehold.co/800x480/e0e0e0/666666?text=No+Image';
-  const imageUrl = skill.photo ? `${process.env.REACT_APP_API_URL}${skill.photo}` : placeholderImage;
+  const imageUrl = skill.photo 
+    ? `${process.env.REACT_APP_API_URL}${skill.photo.startsWith('/') ? '' : '/'}${skill.photo}` 
+    : placeholderImage;
 
   if (!skill) return null;
 
   return (
     <div className="full-details-modal-overlay">
       <div className="full-details-modal-content">
-        <button className="full-details-modal-close-btn" onClick={onClose}><FaTimes /></button>
-        <div className="full-details-header">
-          <h2 className="full-details-title">{skill.skills.join(', ')}</h2>
-        </div>
+        <button className="full-details-modal-close-btn" onClick={onClose}><FaTimes size={18}/></button>
+        
         <img
           src={imageUrl}
           alt={skill.skills.join(', ')}
           className="full-details-image"
           onError={(e) => { e.target.onerror = null; e.target.src = placeholderImage; }}
         />
+
+        <div className="full-details-header">
+          <h2 className="full-details-title">{skill.skills.join(', ')}</h2>
+        </div>
+        
         <div className="full-details-grid">
           <div className="full-details-info-box full-details-description-box">
             <h3 className="full-details-info-label">{t('description_label')}</h3>
@@ -94,7 +104,7 @@ const FullDetailsModal = ({ skill, onClose, onDelete }) => {
           </div>
           {skill.shareWithWomenZone && (
             <div className="full-details-info-box">
-              <h3 className="full-details-info-label">{t('step2_women_zone_switch')}</h3>
+              <h3 className="full-details-info-label">{t('women_only_zone_tag')}</h3>
               <p className="full-details-info-value">{skill.shareWithWomenZone ? t('yes') : t('no')}</p>
             </div>
           )}
@@ -107,9 +117,10 @@ const FullDetailsModal = ({ skill, onClose, onDelete }) => {
             <p className="full-details-info-value">{skill.phoneNumber || t('not_specified')}</p>
           </div>
         </div>
+
         <div className="full-details-actions">
           <button className="btn-delete-offer" onClick={() => onDelete(skill._id)}>
-            <FaTrashAlt style={{ marginRight: '8px' }} />{t('delete_offer_btn')}
+            <FaTrashAlt style={{ marginRight: '8px' }} /> {t('delete_offer_btn')}
           </button>
         </div>
       </div>
@@ -117,7 +128,7 @@ const FullDetailsModal = ({ skill, onClose, onDelete }) => {
   );
 };
 
-// Accept onChatbotToggle as a prop
+// Main Page Component
 function MySkillPage({ onChatbotToggle }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -128,8 +139,8 @@ function MySkillPage({ onChatbotToggle }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSkill, setSelectedSkill] = useState(null);
-  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false); // State for confirmation modal
-  const [skillToDeleteId, setSkillToDeleteId] = useState(null); // State to store ID of skill to delete
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [skillToDeleteId, setSkillToDeleteId] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -164,8 +175,8 @@ function MySkillPage({ onChatbotToggle }) {
   };
 
   const confirmDeleteOffer = async () => {
-    setShowDeleteConfirmModal(false); // Close modal
-    if (!skillToDeleteId) return; // Should not happen if triggered by modal
+    setShowDeleteConfirmModal(false);
+    if (!skillToDeleteId) return;
 
     setLoading(true);
     setError(null);
@@ -174,21 +185,20 @@ function MySkillPage({ onChatbotToggle }) {
       await axios.delete(`${process.env.REACT_APP_API_URL}/api/skill-offers/${skillToDeleteId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log(t('skill_offer_deleted_success')); // Log success
-      fetchMySkills(); // Refresh the list of skills
-      setSelectedSkill(null); // Close the full details modal if it was open
+      fetchMySkills();
+      setSelectedSkill(null);
     } catch (err) {
-      console.error('Failed to delete skill offer:', err); // Log the actual error
+      console.error('Failed to delete skill offer:', err);
       setError(t('failed_to_delete_skill_offer_error'));
     } finally {
       setLoading(false);
-      setSkillToDeleteId(null); // Clear the ID after operation
+      setSkillToDeleteId(null);
     }
   };
 
   const cancelDeleteOffer = () => {
     setShowDeleteConfirmModal(false);
-    setSkillToDeleteId(null); // Clear the ID
+    setSkillToDeleteId(null);
   };
 
   const openHelplinePopup = () => setShowHelplinePopup(true);
@@ -203,9 +213,7 @@ function MySkillPage({ onChatbotToggle }) {
 
   const currentPath = location.pathname;
 
-  if (!user) {
-    return null; // Don't render if user is not logged in
-  }
+  if (!user) return null;
 
   return (
     <div className="dashboard-page-container">
@@ -215,39 +223,30 @@ function MySkillPage({ onChatbotToggle }) {
         <aside className="dashboard-sidebar">
           <nav className="dashboard-nav">
             <Link to="/dashboard" className={`dashboard-nav-item ${currentPath === '/dashboard' ? 'active' : ''}`}>
-              <Home size={20} /> {/* Replaced SVG with Lucide React Home icon */}
-              {t("navbar_dashboard")}
+              <Home size={20} /> {t("navbar_dashboard")}
             </Link>
             <Link to="/dashboard/profile" className={`dashboard-nav-item ${currentPath === '/dashboard/profile' ? 'active' : ''}`}>
-              <User size={20} /> {/* Replaced SVG with Lucide React User icon */}
-              {t("navbar_my_profile")}
+              <User size={20} /> {t("navbar_my_profile")}
             </Link>
             <Link to="/dashboard/my-skills" className={`dashboard-nav-item ${currentPath === '/dashboard/my-skills' ? 'active' : ''}`}>
-              <Settings size={20} /> {/* Replaced SVG with Lucide React Settings icon (wrench) */}
-              {t("navbar_my_skills")}
+              <Settings size={20} /> {t("navbar_my_skills")}
             </Link>
             <Link to="/marketplace" className={`dashboard-nav-item ${currentPath === '/marketplace' ? 'active' : ''}`}>
-              <ShoppingCart size={20} /> {/* Replaced SVG with Lucide React ShoppingCart icon */}
-              {t("navbar_marketplace")}
+              <ShoppingCart size={20} /> {t("navbar_marketplace")}
             </Link>
             {user.gender === 'Female' && (
               <Link to="/women-zone" className={`dashboard-nav-item ${currentPath === '/women-zone' ? 'active' : ''}`}>
-                <Shield size={20} /> {/* Replaced SVG with Lucide React Shield icon */}
-                {t("navbar_women_zone")}
+                <Shield size={20} /> {t("navbar_women_zone")}
               </Link>
             )}
             <Link to="/dashboard/received-requests" className={`dashboard-nav-item ${currentPath === '/dashboard/received-requests' ? 'active' : ''}`}>
-              <Mail size={20} /> {/* Replaced SVG with Lucide React Mail icon */}
-              {t("received_requests_page_title")}
+              <Mail size={20} /> {t("received_requests_page_title")}
             </Link>
-            {/* New Links for Messages and Reviews */}
             <Link to="/dashboard/messages" className={`dashboard-nav-item ${currentPath === '/dashboard/messages' ? 'active' : ''}`}>
-              <MessageSquare size={20} /> {/* Lucide React MessageSquare icon */}
-              {t('Messages')}
+              <MessageSquare size={20} /> {t('Messages')}
             </Link>
             <Link to="/dashboard/reviews" className={`dashboard-nav-item ${currentPath === '/dashboard/reviews' ? 'active' : ''}`}>
-              <Star size={20} /> {/* Lucide React Star icon */}
-              {t('Reviews')}
+              <Star size={20} /> {t('Reviews')}
             </Link>
           </nav>
         </aside>
@@ -272,7 +271,7 @@ function MySkillPage({ onChatbotToggle }) {
                     key={skill._id}
                     skill={skill}
                     onViewDetails={setSelectedSkill}
-                    onDeleteOffer={handleDeleteClick} // Use new handler for confirmation
+                    onDeleteOffer={handleDeleteClick}
                   />
                 ))}
               </div>
@@ -282,27 +281,16 @@ function MySkillPage({ onChatbotToggle }) {
       </div>
 
       <Footer onChatbotToggle={onChatbotToggle} user={user} />
-
-      {showHelplinePopup && (
-        <HelplinePopup onClose={closeHelplinePopup} />
-      )}
-
-      {selectedSkill && (
-        <FullDetailsModal
-          skill={selectedSkill}
-          onClose={() => setSelectedSkill(null)}
-          onDelete={handleDeleteClick} // Use new handler for confirmation
-        />
-      )}
-
+      {showHelplinePopup && <HelplinePopup onClose={closeHelplinePopup} />}
+      {selectedSkill && <FullDetailsModal skill={selectedSkill} onClose={() => setSelectedSkill(null)} onDelete={handleDeleteClick} />}
       {showDeleteConfirmModal && (
         <SuccessMessageModal
           isOpen={showDeleteConfirmModal}
           title={t("delete_confirm_title")}
           message={t("delete_confirm_message")}
-          onClose={cancelDeleteOffer} // Use onClose to cancel
-          onConfirm={confirmDeleteOffer} // Add onConfirm for deletion
-          type="confirm" // New type for confirmation modal
+          onClose={cancelDeleteOffer}
+          onConfirm={confirmDeleteOffer}
+          type="confirm"
         />
       )}
     </div>

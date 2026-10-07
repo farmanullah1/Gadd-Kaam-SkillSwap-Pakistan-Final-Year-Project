@@ -12,17 +12,18 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
 import {
-  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star, Search, Tag, X, Lightbulb, MapPin, Send
+  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star, Search, Tag, X, Lightbulb, MapPin, Send, Globe, Phone, EyeOff
 } from 'lucide-react';
 
-const getPlaceholderImage = (width = 280, height = 180) =>
+const getPlaceholderImage = (width = 400, height = 300) =>
   `https://placehold.co/${width}x${height}/e0e0e0/666666?text=Skill`;
 
-// ✅ SHARED SKILL CARD WITH REVIEW DISPLAY
+// ✅ Reusing the improved SkillCard
 const SkillCard = ({ skillOffer, onViewDetails }) => {
   const { t } = useTranslation();
   const imageUrl = skillOffer.photo ? `${process.env.REACT_APP_API_URL}${skillOffer.photo.replace(/\\/g, '/')}` : getPlaceholderImage();
   const authorName = skillOffer.anonymous ? t('anonymous_label') : (skillOffer.user?.username || t('anonymous_label'));
+  const reviewCount = skillOffer.reviewCount || (skillOffer.latestReview ? 1 : 0);
 
   return (
     <div className="skill-card">
@@ -33,75 +34,65 @@ const SkillCard = ({ skillOffer, onViewDetails }) => {
           className="skill-card-image"
           onError={(e) => { e.target.onerror = null; e.target.src = getPlaceholderImage(); }}
         />
+        {skillOffer.remotely && (
+            <div style={{position:'absolute', top:'10px', right:'10px', background:'rgba(0,0,0,0.6)', color:'white', padding:'4px 8px', borderRadius:'12px', fontSize:'0.7rem', backdropFilter:'blur(4px)', fontWeight:'bold'}}>
+                REMOTE
+            </div>
+        )}
       </div>
       <div className="skill-card-content">
         <h3 className="skill-card-title">{skillOffer.skills.join(', ')}</h3>
         <p className="skill-card-author">
-          {t('offer_skill_label')} {t('by_label')} {authorName}
+          <User size={14} style={{display:'inline', marginRight:'4px'}}/> {authorName}
         </p>
-
-        {/* ✅ REVIEW DISPLAY */}
-        <div className="skill-card-review-section" style={{ 
-            backgroundColor: '#f9f9f9', 
-            padding: '10px', 
-            borderRadius: '8px', 
-            margin: '10px 0', 
-            fontSize: '0.85rem' 
-        }}>
-          {skillOffer.latestReview ? (
+        <div className="skill-card-review-section">
+          <div className="review-header">
+             <div className="rating-badge">
+                <Star size={16} fill="#e38b40" stroke="#e38b40" />
+                <span>{skillOffer.latestReview ? skillOffer.latestReview.rating : 'New'}</span>
+             </div>
+             <span className="review-count-badge">
+                {reviewCount > 0 ? `(${reviewCount} reviews)` : '(No reviews yet)'}
+             </span>
+          </div>
+          {skillOffer.latestReview && (
             <div>
-              <div style={{display:'flex', alignItems:'center', gap:'5px', marginBottom:'4px'}}>
-                 <Star size={14} fill="#e38b40" stroke="#e38b40" /> 
-                 <strong>{skillOffer.latestReview.rating}/5</strong>
+              <p className="review-text">"{skillOffer.latestReview.comment.substring(0, 60)}{skillOffer.latestReview.comment.length > 60 ? '...' : ''}"</p>
+              <div style={{fontSize:'0.75rem', marginTop:'4px', color:'var(--text-light)', textAlign:'right'}}>
+                 - {skillOffer.latestReview.reviewerName}
               </div>
-              <p style={{fontStyle:'italic', margin:0}}>
-                "{skillOffer.latestReview.comment.length > 50 ? skillOffer.latestReview.comment.substring(0, 50) + '...' : skillOffer.latestReview.comment}"
-              </p>
-              <p style={{margin:'4px 0 0', fontWeight:'bold', color:'#666'}}>
-                - {skillOffer.latestReview.reviewerName}
-              </p>
             </div>
-          ) : (
-            <p style={{color: '#999', fontStyle: 'italic', margin:0}}>No review</p>
           )}
         </div>
-
-        <p className="skill-card-description">{skillOffer.description}</p>
         <div className="skill-card-tags">
-          {skillOffer.remotely && <span className="skill-card-tag">{t('remotely_label')}</span>}
-          {skillOffer.anonymous && <span className="skill-card-tag">{t('anonymous_label')}</span>}
-          {skillOffer.shareWithWomenZone && <span className="skill-card-tag">{t('women_only_zone_tag')}</span>}
+          {skillOffer.remotely && <span className="skill-card-tag"><Globe size={12}/> {t('remotely_label')}</span>}
+          {skillOffer.anonymous && <span className="skill-card-tag"><EyeOff size={12}/> {t('anonymous_label')}</span>}
+          {skillOffer.shareWithWomenZone && <span className="skill-card-tag" style={{background:'#fce7f3', color:'#be185d'}}><Shield size={12}/> Women Zone</span>}
         </div>
-        <div className="skill-card-actions">
-          <button className="btn-view-details" onClick={() => onViewDetails(skillOffer)}>
-            {t('view_full_details_btn')}
-          </button>
-        </div>
+        <button className="btn-view-details" onClick={() => onViewDetails(skillOffer)}>
+          {t('view_full_details_btn')}
+        </button>
       </div>
     </div>
   );
 };
 
-// ... (Keep the FullDetailsModal component exactly as it is in your MarketplacePage.js file or copy it here) ...
-// Since it's large and identical, I'll assume you can copy it from MarketplacePage.js to here. 
-// Just ensure FullDetailsModal is defined before WomenOnlyZonePage use it.
-
+// ✅ Reusing the improved FullDetailsModal
 const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuccess }) => {
-  // ... Paste the same FullDetailsModal logic from MarketplacePage.js here ...
-  // For brevity, I'm just including the functional shell. You MUST copy the full logic.
-  
   const { t } = useTranslation();
   const [showRequestForm, setShowRequestForm] = useState(false);
   const [skillRequested, setSkillRequested] = useState('');
-  const [isRemote, setIsRemote] = useState(true);
-  const [location, setLocation] = useState('');
-  const [sendingRequest, setSendingRequest] = useState(false);
+  const [isRemote, setIsRemote] = useState(true); 
+  const [location, setLocation] = useState(''); 
+  const [sendingRequest, setSendingRequest] = useState(false); 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState(''); 
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const imageUrl = skillOffer.photo ? `${process.env.REACT_APP_API_URL}${skillOffer.photo.replace(/\\/g, '/')}` : getPlaceholderImage(750, 350);
+  const imageUrl = skillOffer.photo ? `${process.env.REACT_APP_API_URL}${skillOffer.photo.replace(/\\/g, '/')}` : getPlaceholderImage(800, 400);
+  const authorName = skillOffer.anonymous ? t('anonymous_label') : (skillOffer.user?.username || t('anonymous_label'));
+  const isOwnSkill = currentUserId === skillOffer.user?._id;
 
   const handleSendRequest = async () => {
     if (!skillRequested.trim()) {
@@ -114,38 +105,31 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
       setShowErrorModal(true);
       return;
     }
-
-    setSendingRequest(true);
+    setSendingRequest(true); 
     try {
       const token = localStorage.getItem('token');
       const payload = {
-        receiverId: skillOffer.user._id,
-        skillOfferId: skillOffer._id,
+        receiverId: skillOffer.user._id, 
+        skillOfferId: skillOffer._id, 
         skillRequested: skillRequested,
         message: t('initial_request_message', { skill: skillOffer.skills.join(', ') }),
         isRemote: isRemote,
-        location: isRemote ? '' : location,
+        location: isRemote ? '' : location, 
       };
-
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/requests`, payload, {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/requests`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
-      console.log('Request sent:', response.data);
-      setSuccessMessage(t('request_sent_success_message'));
+      setSuccessMessage(t('request_sent_success_message')); 
       setShowSuccessModal(true);
       onSendRequestSuccess();
     } catch (err) {
-      console.error('Failed to send request:', err.response?.data || err);
-      setErrorMessage(err.response?.data?.msg || err.response?.data?.errors?.[0]?.msg || t('failed_to_send_request_error'));
+      console.error('Failed:', err);
+      setErrorMessage(err.response?.data?.msg || t('failed_to_send_request_error'));
       setShowErrorModal(true);
     } finally {
-      setSendingRequest(false);
+      setSendingRequest(false); 
     }
   };
-
-  const authorName = skillOffer.anonymous ? t('anonymous_label') : (skillOffer.user?.username || t('anonymous_label'));
-  const isOwnSkill = currentUserId === skillOffer.user?._id;
 
   if (!skillOffer) return null;
 
@@ -155,127 +139,94 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
         <button className="full-details-modal-close-btn" onClick={onClose}>
           <X size={24} />
         </button>
-        <div className="full-details-header">
-          <h2 className="full-details-title">{skillOffer.skills.join(', ')}</h2>
-          <p className="full-details-author">
-            {t('offer_skill_label')} {t('by_label')} {authorName}
-          </p>
-        </div>
-        <img
-          src={imageUrl}
-          alt={skillOffer.skills.join(', ')}
-          className="full-details-image"
-          onError={(e) => { e.target.onerror = null; e.target.src = getPlaceholderImage(750, 350); }}
-        />
-        <div className="full-details-grid">
-          <div className="full-details-info-box full-details-description-box">
-            <h3 className="full-details-info-label">{t('description_label')}</h3>
-            <p className="full-details-info-value">{skillOffer.description}</p>
-          </div>
-          {!skillOffer.remotely && (
-            <div className="full-details-info-box">
-              <h3 className="full-details-info-label">{t('location_label')}</h3>
-              <p className="full-details-info-value">{skillOffer.location || t('not_specified')}</p>
-            </div>
-          )}
-          <div className="full-details-info-box">
-            <h3 className="full-details-info-label">{t('remotely_label')}</h3>
-            <p className="full-details-info-value">{skillOffer.remotely ? t('yes') : t('no')}</p>
-          </div>
-          <div className="full-details-info-box">
-            <h3 className="full-details-info-label">{t('anonymous_label')}</h3>
-            <p className="full-details-info-value">{skillOffer.anonymous ? t('yes') : t('no')}</p>
-          </div>
-          {skillOffer.shareWithWomenZone && (
-            <div className="full-details-info-box">
-              <h3 className="full-details-info-label">{t('women_only_zone_tag')}</h3>
-              <p className="full-details-info-value">{t('yes')}</p>
-            </div>
-          )}
-          <div className="full-details-info-box">
-            <h3 className="full-details-info-label">{t('swap_skill_label')}</h3>
-            <p className="full-details-info-value">{skillOffer.skillsToSwap?.join(', ') || t('skill_not_specified')}</p>
-          </div>
-          {!skillOffer.anonymous && skillOffer.user?.phoneNumber && (
-            <div className="full-details-info-box">
-              <h3 className="full-details-info-label">{t('phone_label')}</h3>
-              <p className="full-details-info-value">{skillOffer.user.phoneNumber}</p>
-            </div>
-          )}
-        </div>
-        <div className="full-details-actions">
-          {isOwnSkill ? (
-            <p className="info-message">{t('cannot_request_own_skill')}</p>
-          ) : !showRequestForm ? (
-            <button className="btn-request-offer" onClick={() => setShowRequestForm(true)}>
-              <Lightbulb size={18} style={{ marginRight: '8px' }} /> {t('request_btn')}
-            </button>
-          ) : (
-            <div className="request-form-section">
-              <label htmlFor="requestSkillInput">{t('specify_skill_wanted_label')}</label>
-              <textarea
-                id="requestSkillInput"
-                placeholder={t('request_skill_placeholder')}
-                value={skillRequested}
-                onChange={(e) => setSkillRequested(e.target.value)}
-                rows="4"
-              ></textarea>
-
-              <div className="remote-switch-container">
-                <label className="remote-switch">
-                  <input
-                    type="checkbox"
-                    checked={isRemote}
-                    onChange={(e) => {
-                      setIsRemote(e.target.checked);
-                      if (e.target.checked) setLocation(''); 
-                    }}
-                  />
-                  <span className="slider round"></span>
-                </label>
-                <span>{t('work_can_be_remote_label')}</span>
-              </div>
-
-              {!isRemote && (
-                <div className="location-input-container">
-                  <label htmlFor="locationInput">{t('location_label')}</label>
-                  <input
-                    type="text"
-                    id="locationInput"
-                    placeholder={t('enter_location_placeholder')}
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="input-field" 
-                  />
+        <div className="modal-scroll-content">
+            <img src={imageUrl} alt={skillOffer.skills.join(', ')} className="modal-hero-image" 
+                 onError={(e) => { e.target.onerror = null; e.target.src = getPlaceholderImage(800, 400); }}/>
+            <div className="modal-body">
+                <div className="modal-header-section">
+                    <h2 className="modal-title">{skillOffer.skills.join(', ')}</h2>
+                    <div className="modal-author">
+                        {t('offer_skill_label')} {t('by_label')} <strong>{authorName}</strong>
+                    </div>
                 </div>
-              )}
-
-              <button className="btn-send-request" onClick={handleSendRequest} disabled={sendingRequest}>
-                {sendingRequest ? <LoadingSpinner size={20} color="#fff" /> : <Send size={18} style={{ marginRight: '8px' }} />}
-                {sendingRequest ? t('sending_request_btn') : t('send_request_btn')}
-              </button>
+                <div className="modal-details-grid">
+                    <div className="detail-column-main">
+                        <div className="detail-group">
+                            <div className="detail-label"><Lightbulb size={16}/> {t('description_label')}</div>
+                            <p className="detail-value">{skillOffer.description}</p>
+                        </div>
+                        <div className="detail-group">
+                            <div className="detail-label"><Tag size={16}/> {t('swap_skill_label')}</div>
+                            <p className="detail-value highlight">{skillOffer.skillsToSwap?.join(', ') || t('skill_not_specified')}</p>
+                        </div>
+                        <div className="request-action-area">
+                            {!showRequestForm ? (
+                                isOwnSkill ? (
+                                    <p className="info-message" style={{textAlign:'center'}}>{t('cannot_request_own_skill')}</p>
+                                ) : (
+                                    <button className="initial-request-btn" onClick={() => setShowRequestForm(true)}>
+                                        <Send size={20}/> {t('request_btn')}
+                                    </button>
+                                )
+                            ) : (
+                                <div className="request-form">
+                                    <h3 style={{marginBottom:'10px', fontSize:'1.2rem'}}>{t('specify_skill_wanted_label')}</h3>
+                                    <textarea placeholder={t('request_skill_placeholder')} value={skillRequested} onChange={(e) => setSkillRequested(e.target.value)} />
+                                    <label className="remote-toggle">
+                                        <input type="checkbox" checked={isRemote} onChange={(e) => { setIsRemote(e.target.checked); if (e.target.checked) setLocation(''); }} hidden />
+                                        <div className="toggle-slider"></div>
+                                        <span>{t('work_can_be_remote_label')}</span>
+                                    </label>
+                                    {!isRemote && (
+                                        <div className="location-input-container" style={{marginBottom:'1rem'}}>
+                                            <label style={{display:'block', marginBottom:'5px', fontWeight:'600'}}>{t('location_label')}</label>
+                                            <input type="text" className="input-field" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={t('enter_location_placeholder')} />
+                                        </div>
+                                    )}
+                                    <button className="btn-send-request" onClick={handleSendRequest} disabled={sendingRequest}>
+                                        {sendingRequest ? <LoadingSpinner size={20} color="#fff" /> : <><Send size={18}/> {t('send_request_btn')}</>}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div className="detail-column-side">
+                        <div className="detail-group">
+                            <div className="detail-label"><MapPin size={16}/> {t('location_label')}</div>
+                            <p className="detail-value">{skillOffer.remotely ? "Anywhere (Remote)" : skillOffer.location || t('not_specified')}</p>
+                        </div>
+                        <div className="detail-group">
+                            <div className="detail-label"><Globe size={16}/> {t('remotely_label')}</div>
+                            <p className="detail-value">{skillOffer.remotely ? t('yes') : t('no')}</p>
+                        </div>
+                        <div className="detail-group">
+                            <div className="detail-label"><EyeOff size={16}/> {t('anonymous_label')}</div>
+                            <p className="detail-value">{skillOffer.anonymous ? t('yes') : t('no')}</p>
+                        </div>
+                        {!skillOffer.anonymous && skillOffer.user?.phoneNumber && (
+                            <div className="detail-group">
+                                <div className="detail-label"><Phone size={16}/> {t('phone_label')}</div>
+                                <p className="detail-value">{skillOffer.user.phoneNumber}</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
-          )}
         </div>
       </div>
-
       {showSuccessModal && (
         <SuccessMessageModal
           isOpen={showSuccessModal}
           title={t("request_sent_success_title")}
           message={successMessage}
-          onClose={() => {
-            setShowSuccessModal(false);
-            onClose(); 
-          }}
+          onClose={() => { setShowSuccessModal(false); onClose(); }}
           type="success"
         />
       )}
-
       {showErrorModal && (
         <SuccessMessageModal
           isOpen={showErrorModal}
-          title={t("error_title")} 
+          title={t("error_title")}
           message={errorMessage}
           onClose={() => setShowErrorModal(false)}
           type="error"
@@ -284,7 +235,6 @@ const FullDetailsModal = ({ skillOffer, onClose, currentUserId, onSendRequestSuc
     </div>
   );
 };
-
 
 function WomenOnlyZonePage({ onChatbotToggle }) {
   const { t } = useTranslation();
@@ -300,7 +250,6 @@ function WomenOnlyZonePage({ onChatbotToggle }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [availableCategories, setAvailableCategories] = useState([]);
-
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -322,7 +271,6 @@ function WomenOnlyZonePage({ onChatbotToggle }) {
     applyFilters();
   }, [allSkills, searchTerm, selectedCategories]);
 
-
   const fetchAllSkills = async () => {
     setLoading(true);
     setError(null);
@@ -332,13 +280,11 @@ function WomenOnlyZonePage({ onChatbotToggle }) {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAllSkills(response.data);
-
       const categories = new Set();
       response.data.forEach(offer => {
         offer.skills.forEach(skill => categories.add(skill));
       });
       setAvailableCategories([...categories]);
-
     } catch (err) {
       console.error('Failed to fetch women-only skill offers:', err);
       setError(t('failed_to_load_women_only_skills_error'));
@@ -349,7 +295,6 @@ function WomenOnlyZonePage({ onChatbotToggle }) {
 
   const applyFilters = () => {
     let currentFiltered = allSkills;
-
     if (searchTerm) {
       const lowerCaseSearchTerm = searchTerm.toLowerCase();
       currentFiltered = currentFiltered.filter(offer =>
@@ -358,7 +303,6 @@ function WomenOnlyZonePage({ onChatbotToggle }) {
         (offer.user?.username && offer.user.username.toLowerCase().includes(lowerCaseSearchTerm))
       );
     }
-
     if (selectedCategories.length > 0) {
       currentFiltered = currentFiltered.filter(offer =>
         offer.skills.some(s => selectedCategories.includes(s))
@@ -369,9 +313,7 @@ function WomenOnlyZonePage({ onChatbotToggle }) {
 
   const handleCategoryToggle = (category) => {
     setSelectedCategories(prev =>
-      prev.includes(category)
-        ? prev.filter(cat => cat !== category)
-        : [...prev, category]
+      prev.includes(category) ? prev.filter(cat => cat !== category) : [...prev, category]
     );
   };
 
@@ -382,23 +324,18 @@ function WomenOnlyZonePage({ onChatbotToggle }) {
 
   const openHelplinePopup = () => setShowHelplinePopup(true);
   const closeHelplinePopup = () => setShowHelplinePopup(false);
-
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
     navigate('/login');
   };
-
   const handleSendRequestSuccess = () => {
     setSelectedSkillOffer(null);
     fetchAllSkills();
   };
 
-  if (!user) {
-    return null;
-  }
-
+  if (!user) return null;
   const currentPath = location.pathname;
 
   return (
@@ -409,38 +346,30 @@ function WomenOnlyZonePage({ onChatbotToggle }) {
         <aside className="dashboard-sidebar">
           <nav className="dashboard-nav">
             <Link to="/dashboard" className={`dashboard-nav-item ${currentPath === '/dashboard' ? 'active' : ''}`}>
-              <Home size={20} />
-              {t('navbar_dashboard')}
+              <Home size={20} /> {t('navbar_dashboard')}
             </Link>
             <Link to="/dashboard/profile" className={`dashboard-nav-item ${currentPath === '/dashboard/profile' ? 'active' : ''}`}>
-              <User size={20} />
-              {t('navbar_my_profile')}
+              <User size={20} /> {t('navbar_my_profile')}
             </Link>
             <Link to="/dashboard/my-skills" className={`dashboard-nav-item ${currentPath === '/dashboard/my-skills' ? 'active' : ''}`}>
-              <Settings size={20} />
-              {t('navbar_my_skills')}
+              <Settings size={20} /> {t('navbar_my_skills')}
             </Link>
             <Link to="/marketplace" className={`dashboard-nav-item ${currentPath === '/marketplace' ? 'active' : ''}`}>
-              <ShoppingCart size={20} />
-              {t('navbar_marketplace')}
+              <ShoppingCart size={20} /> {t('navbar_marketplace')}
             </Link>
             {user.gender === 'Female' && (
               <Link to="/women-zone" className={`dashboard-nav-item ${currentPath === '/women-zone' ? 'active' : ''}`}>
-                <Shield size={20} />
-                {t('navbar_women_zone')}
+                <Shield size={20} /> {t('navbar_women_zone')}
               </Link>
             )}
             <Link to="/dashboard/received-requests" className={`dashboard-nav-item ${currentPath === '/dashboard/received-requests' ? 'active' : ''}`}>
-              <Mail size={20} />
-              {t('received_requests_page_title')}
+              <Mail size={20} /> {t('received_requests_page_title')}
             </Link>
             <Link to="/dashboard/messages" className={`dashboard-nav-item ${currentPath === '/dashboard/messages' ? 'active' : ''}`}>
-              <MessageSquare size={20} />
-              {t('navbar_messages')}
+              <MessageSquare size={20} /> {t('navbar_messages')}
             </Link>
             <Link to="/dashboard/reviews" className={`dashboard-nav-item ${currentPath === '/dashboard/reviews' ? 'active' : ''}`}>
-              <Star size={20} />
-              {t('navbar_reviews')}
+              <Star size={20} /> {t('navbar_reviews')}
             </Link>
           </nav>
         </aside>
@@ -492,9 +421,7 @@ function WomenOnlyZonePage({ onChatbotToggle }) {
               <p className="error-message">{error}</p>
             ) : filteredSkills.length === 0 ? (
               <p className="no-skills-message">
-                {allSkills.length === 0
-                  ? t('no_skills_available_women_zone')
-                  : t('no_skills_match_filters')}
+                {allSkills.length === 0 ? t('no_skills_available_women_zone') : t('no_skills_match_filters')}
               </p>
             ) : (
               <div className="skill-card-container women-only-skill-card-container">
@@ -512,11 +439,7 @@ function WomenOnlyZonePage({ onChatbotToggle }) {
       </div>
 
       <Footer onChatbotToggle={onChatbotToggle} user={user} />
-
-      {showHelplinePopup && (
-        <HelplinePopup onClose={closeHelplinePopup} />
-      )}
-
+      {showHelplinePopup && <HelplinePopup onClose={closeHelplinePopup} />}
       {selectedSkillOffer && (
         <FullDetailsModal
           skillOffer={selectedSkillOffer}
