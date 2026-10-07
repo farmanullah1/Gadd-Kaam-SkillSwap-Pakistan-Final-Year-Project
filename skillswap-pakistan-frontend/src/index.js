@@ -1,7 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css'; // Your global CSS
-import './App.css'; // Your main CSS
+import './styles/global.css';
+import './styles/navbar.css';
+import './styles/homepage.css';
+import './styles/signup.css';
+import './styles/footer.css';
+import './styles/popup.css';
 import HomePage from './components/HomePage';
 import SignupPage from './components/SignupPage'; // Import the new SignupPage
 import './i18n'; // Import your i18n configuration

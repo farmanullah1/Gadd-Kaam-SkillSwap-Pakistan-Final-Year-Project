@@ -1,0 +1,122 @@
+/* src/styles/global.css */
+
+/* Define CSS Variables for your colors */
+:root {
+  --logo-orange: rgb(227, 139, 64);
+  --background-beige: rgb(245, 245, 220);
+  --text-dark: rgb(50, 50, 50);
+  --text-light-gray: rgb(100, 100, 100);
+  --card-background: rgb(255, 255, 255); /* White background for cards */
+  --star-gold: #FFD700; /* Gold color for stars */
+  --footer-dark-bg: rgb(235, 235, 210); /* Slightly darker beige for footer sections */
+  --footer-heading-color: rgb(70, 70, 70); /* Darker heading for footer columns */
+  --top-bar-bg: rgb(230, 230, 210); /* Slightly lighter for the very top bar */
+  --border-color: rgba(0, 0, 0, 0.08); /* General border color */
+}
+
+/* Dark Mode Variables */
+body.dark-mode {
+  --background-beige: rgb(30, 30, 30);
+  --text-dark: rgb(220, 220, 220);
+  --text-light-gray: rgb(180, 180, 180);
+  --card-background: rgb(45, 45, 45);
+  --footer-dark-bg: rgb(40, 40, 40);
+  --footer-heading-color: rgb(200, 200, 200);
+  --top-bar-bg: rgb(25, 25, 25);
+  --border-color: rgba(255, 255, 255, 0.1);
+  color-scheme: dark; /* Helps browser apply dark scrollbars etc. */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background-beige);
+  color: var(--text-dark);
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for dark mode */
+}
+
+/* Base styles for the main container */
+.home-page-container,
+.signup-page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* General Button Styles */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  text-decoration: none; /* For react-router-dom Link */
+  display: inline-block; /* Make Link behave like a button */
+  text-align: center; /* Center text if link is wider */
+}
+
+.btn-primary-orange {
+  background-color: var(--logo-orange);
+  color: white;
+  border: 1px solid var(--logo-orange);
+}
+
+.btn-primary-orange:hover {
+  background-color: rgba(227, 139, 64, 0.9);
+}
+
+.btn-secondary-light {
+  background-color: var(--background-beige);
+  color: var(--logo-orange);
+  border: 1px solid var(--logo-orange);
+}
+
+.btn-secondary-light:hover {
+  background-color: var(--logo-orange);
+  color: white;
+}
+
+/* Section General Styles */
+.section-container {
+  max-width: 1280px;
+  margin: 4rem auto;
+  padding: 0 1.5rem;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.section-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-dark);
+  text-align: center;
+  margin-bottom: 2.5rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-title-left {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  text-align: left;
+  margin-bottom: 0;
+}
+
+/* General Responsive Adjustments (for global elements) */
+@media (min-width: 640px) { /* Small devices, tablets */
+  .btn-primary-orange,
+  .btn-secondary-light {
+    width: auto; /* Remove 100% width on smaller screens */
+  }
+}

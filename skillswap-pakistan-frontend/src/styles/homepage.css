@@ -1,0 +1,439 @@
+/* src/styles/homepage.css */
+
+/* Hero Section */
+.hero-section {
+  flex-grow: 1;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 3rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.hero-content-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 32rem;
+}
+
+.hero-headline {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--logo-orange);
+  line-height: 1.25;
+  margin-bottom: 1rem;
+}
+
+.hero-subtext {
+  font-size: 1.125rem;
+  color: var(--text-dark);
+  margin-bottom: 2rem;
+}
+
+.hero-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.hero-image-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.hero-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* What Our Community Says Section */
+.testimonials-section {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+}
+
+.testimonials-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.testimonial-card {
+  background-color: var(--card-background);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  max-width: 550px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.testimonial-quote {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-dark);
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.author-avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 1px solid var(--logo-orange);
+  overflow: hidden;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.author-name {
+  font-weight: 600;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.author-details {
+  font-size: 0.875rem;
+  color: var(--text-light-gray);
+  margin: 0;
+}
+
+/* Featured Skills Section */
+.featured-skills-section {
+    background-color: var(--background-beige);
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+}
+
+.featured-skills-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2.5rem;
+  padding: 0 1rem;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  justify-items: center;
+}
+
+.skill-card {
+  background-color: var(--card-background);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 300px;
+}
+
+.skill-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.skill-content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.skill-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.skill-user {
+  font-size: 0.95rem;
+  color: var(--text-light-gray);
+  margin-bottom: 0.75rem;
+}
+
+.skill-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  color: var(--text-light-gray);
+  margin-bottom: 1rem;
+}
+
+.star-icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--star-gold);
+  fill: var(--star-gold);
+  stroke: var(--star-gold);
+}
+
+.view-details-link {
+  color: var(--logo-orange);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-top: auto;
+  align-self: flex-start;
+  transition: color 0.2s ease-in-out;
+}
+
+.view-details-link:hover {
+  text-decoration: underline;
+}
+
+.view-all-link {
+  color: var(--logo-orange);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease-in-out;
+}
+
+.view-all-link:hover {
+  text-decoration: underline;
+}
+
+/* A Safe Space for Women Section */
+.women-zone-section {
+  background-color: var(--card-background);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem;
+  text-align: center;
+  gap: 1.5rem;
+}
+
+.women-zone-content {
+  max-width: 600px;
+}
+
+.women-zone-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 0.75rem;
+}
+
+.women-zone-description {
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+.women-zone-button {
+  padding: 0.8rem 2rem;
+}
+
+/* How It Works Section */
+.how-it-works-section {
+  background-color: var(--background-beige);
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.how-it-works-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.how-it-works-card {
+  background-color: var(--card-background);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  text-align: center;
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.step-image {
+  width: 4rem;
+  height: 4rem;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 1.5rem;
+}
+
+.step-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+}
+
+.step-description {
+  font-size: 1rem;
+  color: var(--text-dark);
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+/* Sticky Chatbot Button */
+.chatbot-sticky-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background-color: var(--logo-orange);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  z-index: 1000;
+}
+
+.chatbot-sticky-btn:hover {
+  transform: translateY(-3px);
+  background-color: rgba(227, 139, 64, 0.9);
+}
+
+.chatbot-sticky-btn svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+/* Homepage Responsive Adjustments */
+@media (min-width: 640px) { /* Small devices, tablets */
+  .hero-buttons {
+    flex-direction: row;
+    width: auto;
+  }
+
+  .testimonials-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .testimonial-card {
+    width: calc(50% - 1.5rem);
+  }
+
+  .skills-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .women-zone-section {
+    flex-direction: row;
+    text-align: left;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2.5rem 3rem;
+  }
+
+  .women-zone-content {
+    margin-right: 2rem;
+  }
+
+  .how-it-works-grid {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2rem;
+  }
+
+  .how-it-works-card {
+    width: calc(33.333% - 2rem / 3 * 2);
+    max-width: 350px;
+  }
+}
+
+@media (min-width: 768px) { /* Medium devices, desktops */
+  .hero-section {
+    flex-direction: row;
+    padding: 5rem 3rem;
+    gap: 4rem;
+  }
+
+  .hero-content-left {
+    align-items: flex-start;
+    text-align: left;
+    width: 50%;
+  }
+
+  .hero-headline {
+    font-size: 3.75rem;
+  }
+
+  .hero-subtext {
+    font-size: 1.25rem;
+  }
+
+  .hero-buttons {
+    justify-content: flex-start;
+  }
+
+  .hero-image-right {
+    width: 50%;
+  }
+
+  .skills-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .testimonial-card {
+    width: calc(50% - 1.5rem);
+  }
+
+  .how-it-works-card {
+    width: calc(33.333% - 2rem / 3 * 2);
+  }
+}
