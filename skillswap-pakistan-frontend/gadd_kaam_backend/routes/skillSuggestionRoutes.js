@@ -1,6 +1,6 @@
 // routes/skillSuggestionRoutes.js
 const express = require('express');
-const router = express.Router();
+const router = express.Router(); // CORRECTED: This line must be 'const router = express.Router();'
 const { check, validationResult } = require('express-validator');
 const SkillSuggestion = require('../models/SkillSuggestion');
 const auth = require('../middleware/auth'); // Assuming skill suggestions require auth

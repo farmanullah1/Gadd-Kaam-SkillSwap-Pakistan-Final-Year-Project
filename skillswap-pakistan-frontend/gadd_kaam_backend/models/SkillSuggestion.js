@@ -1,6 +1,7 @@
 // models/SkillSuggestion.js
 const mongoose = require('mongoose');
 
+// Check if the model already exists before defining it
 const SkillSuggestionSchema = new mongoose.Schema({
   skillName: {
     type: String,
@@ -19,4 +20,4 @@ const SkillSuggestionSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('SkillSuggestion', SkillSuggestionSchema);
+module.exports = mongoose.models.SkillSuggestion || mongoose.model('SkillSuggestion', SkillSuggestionSchema);

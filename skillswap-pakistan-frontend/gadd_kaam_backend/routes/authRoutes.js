@@ -9,14 +9,10 @@ const keys = require('../config/keys');
 const path = require('path');
 const fs = require('fs');
 
-// Helper function to generate JWT
 const generateToken = (id) => {
   return jwt.sign({ user: { id: id } }, keys.jwtSecret, { expiresIn: '1d' });
 };
 
-// @route   POST /api/auth/register
-// @desc    Register user & handle file uploads
-// @access  Public
 router.post(
   '/register',
   upload,
@@ -185,9 +181,6 @@ router.post(
   }
 );
 
-// @route   POST /api/auth/login
-// @desc    Authenticate user & get token
-// @access  Public
 router.post(
   '/login',
   [

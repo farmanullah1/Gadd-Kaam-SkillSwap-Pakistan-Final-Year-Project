@@ -8,6 +8,8 @@ const Step2 = ({ onNext, onBack, data, user }) => {
   const fileInputRef = useRef(null);
   
   const [description, setDescription] = useState(data.description || '');
+  const [username, setUsername] = useState(data.username || '');
+  const [phoneNumber, setPhoneNumber] = useState(data.phoneNumber || '');
   const [location, setLocation] = useState(data.location || '');
   const [photo, setPhoto] = useState(data.photo || null);
   const [isAnonymous, setIsAnonymous] = useState(data.anonymous || false);
@@ -36,6 +38,8 @@ const Step2 = ({ onNext, onBack, data, user }) => {
     onNext({
       description,
       location,
+      username,
+      phoneNumber,
       photo,
       anonymous: isAnonymous,
       remotely: isRemote,
@@ -85,6 +89,32 @@ const Step2 = ({ onNext, onBack, data, user }) => {
           className="form-input"
           required
         ></textarea>
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Your username"
+          className="form-input"
+          required
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="phoneNumber"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+          placeholder="Your phone number"
+          className="form-input"
+          required
+        />
       </div>
 
       <div className="form-group">

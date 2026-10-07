@@ -1,26 +1,26 @@
-// models/SkillOffer.js
 const mongoose = require('mongoose');
 
+// Check if the model already exists before defining it
 const SkillOfferSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Links this offer to a User model
+    ref: 'User',
     required: true,
   },
   skills: {
-    type: [String], // Array of strings for skills offered
+    type: [String],
     required: true,
   },
   photo: {
-    type: String, // Path to the uploaded photo
-    required: false, // Optional photo
+    type: String,
+    required: false,
   },
   description: {
     type: String,
     required: true,
     maxlength: 1000,
   },
-  username: { // Storing username for easy access, but linking to user ID is the source of truth
+  username: {
     type: String,
     required: true,
   },
@@ -40,13 +40,13 @@ const SkillOfferSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  shareWithWomenZone: { // New field for women-only zone
+  shareWithWomenZone: {
     type: Boolean,
     default: false,
   },
   skillsToSwap: {
-    type: [String], // Array of strings for skills user wants to learn
-    required: false, // Optional
+    type: [String],
+    required: false,
   },
   date: {
     type: Date,
@@ -54,4 +54,4 @@ const SkillOfferSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('SkillOffer', SkillOfferSchema);
+module.exports = mongoose.models.SkillOffer || mongoose.model('SkillOffer', SkillOfferSchema);

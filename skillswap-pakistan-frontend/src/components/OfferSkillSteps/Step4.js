@@ -24,10 +24,6 @@ const Step4 = ({ onBack, onPublish, data }) => {
           </div>
         )}
         <div className="review-info">
-          <span className="review-info-label">{t('location_label')}:</span>
-          <span className="review-info-value">{data.location}</span>
-        </div>
-        <div className="review-info">
           <span className="review-info-label">{t('remotely_label')}:</span>
           <span className="review-info-value">{data.remotely ? t('yes') : t('no')}</span>
         </div>
@@ -40,6 +36,30 @@ const Step4 = ({ onBack, onPublish, data }) => {
             <span className="review-info-label">{t('step2_women_zone_switch')}:</span>
             <span className="review-info-value">{data.shareWithWomenZone ? t('yes') : t('no')}</span>
           </div>
+        )}
+      </div>
+
+      <div className="review-section">
+        <div className="review-section-header">Contact Information</div>
+        {data.anonymous ? (
+          <p className="review-info-value" style={{ fontStyle: 'italic' }}>
+            Contact information is hidden.
+          </p>
+        ) : (
+          <>
+            <div className="review-info">
+              <span className="review-info-label">Username:</span>
+              <span className="review-info-value">{data.username}</span>
+            </div>
+            <div className="review-info">
+              <span className="review-info-label">Phone Number:</span>
+              <span className="review-info-value">{data.phoneNumber}</span>
+            </div>
+            <div className="review-info">
+              <span className="review-info-label">{t('location_label')}:</span>
+              <span className="review-info-value">{data.location}</span>
+            </div>
+          </>
         )}
       </div>
 

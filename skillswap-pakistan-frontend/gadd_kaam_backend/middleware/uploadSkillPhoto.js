@@ -1,44 +1,57 @@
-// middleware/uploadSkillPhoto.js
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+// models/SkillOffer.js
+const mongoose = require('mongoose');
 
-// Create 'uploads/skill_photos' directory if it doesn't exist
-const uploadsDir = path.join(__dirname, '..', 'uploads', 'skill_photos');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-// Set up storage for uploaded files
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir); // Files will be stored in a dedicated directory
+const SkillOfferSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // Links this offer to a User model
+    required: true,
   },
-  filename: (req, file, cb) => {
-    // Generate a unique filename: fieldname-timestamp-userId.ext
-    cb(null, `${file.fieldname}-${Date.now()}-${req.user.id}${path.extname(file.originalname)}`);
+  skills: {
+    type: [String], // Array of strings for skills offered
+    required: true,
+  },
+  photo: {
+    type: String, // Path to the uploaded photo
+    required: false, // Optional photo
+  },
+  description: {
+    type: String,
+    required: true,
+    maxlength: 1000,
+  },
+  username: { // Added username to the schema
+    type: String,
+    required: true,
+  },
+  phoneNumber: { // Added phoneNumber to the schema
+    type: String,
+    required: true,
+  },
+  location: {
+    type: String,
+    required: true,
+  },
+  remotely: {
+    type: Boolean,
+    default: false,
+  },
+  anonymous: {
+    type: Boolean,
+    default: false,
+  },
+  shareWithWomenZone: { // New field for women-only zone
+    type: Boolean,
+    default: false,
+  },
+  skillsToSwap: {
+    type: [String], // Array of strings for skills user wants to learn
+    required: false, // Optional
+  },
+  date: {
+    type: Date,
+    default: Date.now,
   },
 });
 
-// File filter to allow only images
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|gif/;
-  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = allowedTypes.test(file.mimetype);
-
-  if (extname && mimetype) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only image files (jpeg, jpg, png, gif) are allowed!'), false);
-  }
-};
-
-const uploadSkillPhoto = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 1024 * 1024 * 5, // 5MB limit
-  },
-}).single('photo'); // 'photo' is the name of the form field for the file
-
-module.exports = uploadSkillPhoto;
+module.exports = mongoose.model('SkillOffer', SkillOfferSchema);

@@ -1,23 +1,46 @@
-// routes/skillOfferRoutes.js
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const uploadSkillPhoto = require('../middleware/uploadSkillPhoto');
 const SkillOffer = require('../models/SkillOffer');
 const User = require('../models/User');
 const { check, validationResult } = require('express-validator');
 const fs = require('fs');
 const path = require('path');
+const multer = require('multer');
+
+// Configure multer storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, '..', 'uploads', 'skill_photos');
+    fs.mkdirSync(uploadPath, { recursive: true });
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+// Create the multer upload middleware
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1000000 }, // 1MB file size limit
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only images are allowed!'), false);
+    }
+  },
+}).single('photo');
 
 // @route   POST /api/skill-offers
 // @desc    Create a new skill offer
 // @access  Private
 router.post(
   '/',
-  auth, // Ensure user is authenticated
+  auth,
   (req, res, next) => {
-    // Wrap the upload middleware in a custom function to handle errors gracefully
-    uploadSkillPhoto(req, res, function (err) {
+    upload(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
         return res.status(400).json({ msg: err.message });
       } else if (err) {
@@ -34,7 +57,6 @@ router.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // If there are validation errors, delete the uploaded file
       if (req.file) {
         fs.unlink(req.file.path, (err) => {
           if (err) console.error('Error deleting file:', err);
@@ -42,40 +64,48 @@ router.post(
       }
       return res.status(400).json({ errors: errors.array() });
     }
-    
-    const { skills, description, location, remotely, anonymous, shareWithWomenZone, skillsToSwap } = req.body;
-    
-    // Parse skills and skillsToSwap from JSON strings if they were sent that way
-    // This is common for form-data mixed with JSON
+
+    const {
+      skills,
+      description,
+      location,
+      remotely,
+      anonymous,
+      shareWithWomenZone,
+      skillsToSwap,
+    } = req.body;
+
     const parsedSkills = typeof skills === 'string' ? JSON.parse(skills) : skills;
     const parsedSkillsToSwap = skillsToSwap && typeof skillsToSwap === 'string' ? JSON.parse(skillsToSwap) : skillsToSwap;
-    
+
+    if (!parsedSkills || parsedSkills.length === 0) {
+      return res.status(400).json({ msg: 'Skills array cannot be empty.' });
+    }
+
     try {
       const user = await User.findById(req.user.id).select('-password');
       if (!user) {
         return res.status(404).json({ msg: 'User not found' });
       }
-      
+
       const newSkillOffer = new SkillOffer({
         user: req.user.id,
         skills: parsedSkills,
         description,
-        username: anonymous === 'true' ? 'Anonymous User' : user.username,
-        phoneNumber: anonymous === 'true' ? 'Contact via platform' : user.phoneNumber,
+        username: anonymous === 'true' ? 'Anonymous' : user.username,
+        phoneNumber: anonymous === 'true' ? 'Hidden' : user.phoneNumber,
         location,
         remotely: remotely === 'true',
         anonymous: anonymous === 'true',
-        shareWithWomenZone: shareWithWomenZone === 'true', // Handle boolean conversion
+        shareWithWomenZone: shareWithWomenZone === 'true',
         skillsToSwap: parsedSkillsToSwap,
-        photo: req.file ? path.basename(req.file.path) : null, // Store only the filename
+        photo: req.file ? `/uploads/skill_photos/${req.file.filename}` : null,
       });
 
       const skillOffer = await newSkillOffer.save();
-      
       res.json(skillOffer);
     } catch (err) {
       console.error(err.message);
-      // If there's a server error, delete the uploaded file
       if (req.file) {
         fs.unlink(req.file.path, (err) => {
           if (err) console.error('Error deleting file on server error:', err);
@@ -87,7 +117,7 @@ router.post(
 );
 
 // @route   GET /api/skill-offers
-// @desc    Get all skill offers (for marketplace)
+// @desc    Get all skill offers
 // @access  Public
 router.get('/', async (req, res) => {
   try {
@@ -100,7 +130,7 @@ router.get('/', async (req, res) => {
 });
 
 // @route   GET /api/skill-offers/my-skills
-// @desc    Get skill offers by the authenticated user
+// @desc    Get skill offers for the authenticated user
 // @access  Private
 router.get('/my-skills', auth, async (req, res) => {
   try {
@@ -113,8 +143,8 @@ router.get('/my-skills', auth, async (req, res) => {
 });
 
 // @route   GET /api/skill-offers/women-only
-// @desc    Get skill offers shared specifically for the women-only zone
-// @access  Private (only accessible by authenticated female users)
+// @desc    Get skill offers for the women-only zone
+// @access  Private (only for authenticated female users)
 router.get('/women-only', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -130,33 +160,30 @@ router.get('/women-only', auth, async (req, res) => {
   }
 });
 
-
 // @route   DELETE /api/skill-offers/:offer_id
 // @desc    Delete a skill offer
 // @access  Private
 router.delete('/:offer_id', auth, async (req, res) => {
   try {
     const skillOffer = await SkillOffer.findById(req.params.offer_id);
-    
+
     if (!skillOffer) {
       return res.status(404).json({ msg: 'Skill offer not found' });
     }
-    
-    // Check if user is authorized to delete this offer
+
     if (skillOffer.user.toString() !== req.user.id) {
       return res.status(401).json({ msg: 'User not authorized' });
     }
-    
-    // Delete the associated photo file if it exists
+
     if (skillOffer.photo) {
-      const filePath = path.join(__dirname, '..', 'uploads', 'skill_photos', skillOffer.photo);
+      const filePath = path.join(__dirname, '..', skillOffer.photo);
       fs.unlink(filePath, (err) => {
         if (err) console.error('Error deleting file:', err);
       });
     }
-    
-    await skillOffer.deleteOne(); // Use deleteOne() instead of remove()
-    
+
+    await skillOffer.deleteOne();
+
     res.json({ msg: 'Skill offer removed' });
   } catch (err) {
     console.error(err.message);
