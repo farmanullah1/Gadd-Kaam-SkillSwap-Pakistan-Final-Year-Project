@@ -10,10 +10,9 @@ function HomePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [showHelplinePopup, setShowHelplinePopup] = useState(false);
-  const [user, setUser] = useState(null); // State to hold user data for Navbar and conditional rendering
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Check for user data in localStorage on component mount
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -32,13 +31,31 @@ function HomePage() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
-    navigate('/login'); // Redirect to login after logout
+    navigate('/login');
   };
 
-  // New function to handle the "Offer a Skill" button click with a login check
   const handleOfferSkillClick = () => {
     if (user) {
       navigate('/offer-skill');
+    } else {
+      navigate('/login');
+    }
+  };
+
+  const handleFindSkillClick = () => {
+    navigate('/marketplace');
+  };
+
+  // Handler for the "Explore the Women Zone" button
+  const handleWomenZoneClick = () => {
+    if (user) {
+      // Check if the user is female
+      if (user.gender === 'Female') {
+        navigate('/women-zone');
+      } else {
+        // Optional: show a message that this zone is for women only
+        alert("This is a women-only zone. You must be a female user to access it.");
+      }
     } else {
       navigate('/login');
     }
@@ -100,8 +117,6 @@ function HomePage() {
     },
   ];
 
-  const isFemaleUser = user && user.gender === 'Female';
-
   return (
     <div className="home-page-container">
       <Navbar onHelplineClick={openHelplinePopup} onLogout={handleLogout} user={user} />
@@ -118,7 +133,7 @@ function HomePage() {
             <button className="btn btn-primary-orange" onClick={handleOfferSkillClick}>
               {t("hero_offer_skill_btn")}
             </button>
-            <button className="btn btn-secondary-light">
+            <button className="btn btn-secondary-light" onClick={handleFindSkillClick}>
               {t("hero_find_skill_btn")}
             </button>
           </div>
@@ -164,7 +179,7 @@ function HomePage() {
         <section className="section-container featured-skills-section">
           <div className="featured-skills-header">
             <h2 className="section-title-left">{t("featured_skills_title")}</h2>
-            <a href="#" className="view-all-link">
+            <a onClick={handleFindSkillClick} className="view-all-link" style={{ cursor: 'pointer' }}>
               {t("view_all_link")}
             </a>
           </div>
@@ -187,7 +202,7 @@ function HomePage() {
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="star-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                     <span>{skill.rating} ({skill.reviews} reviews)</span>
                   </div>
-                  <a href="#" className="view-details-link">
+                  <a onClick={handleFindSkillClick} className="view-details-link" style={{ cursor: 'pointer' }}>
                     {t("view_details_link")}
                   </a>
                 </div>
@@ -250,8 +265,8 @@ function HomePage() {
         </section>
       )}
 
-      {/* Conditionally render Women Zone section */}
-      {isFemaleUser && (
+      {/* UPDATED: Conditionally render the women-zone section */}
+      {(!user || (user && user.gender === 'Female')) && (
         <section className="section-container women-zone-section">
           <div className="women-zone-content">
             <h2 className="women-zone-title">{t("women_zone_title")}</h2>
@@ -259,18 +274,13 @@ function HomePage() {
               {t("women_zone_description")}
             </p>
           </div>
-          <button className="btn btn-primary-orange women-zone-button">
+          <button className="btn btn-primary-orange women-zone-button" onClick={handleWomenZoneClick}>
             {t("women_zone_button")}
           </button>
         </section>
       )}
 
       <Footer />
-
-      {/* Sticky Chatbot Button
-      <button className="chatbot-sticky-btn" aria-label="Open chatbot">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-      </button> */}
 
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />

@@ -1,9 +1,21 @@
+// src/components/Footer.js
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-function Footer() {
+function Footer(props) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  // New handler for the Marketplace link
+  const handleMarketplaceClick = (e) => {
+    // If no user is logged in (props.user is null),
+    // prevent the default link behavior and navigate to login.
+    if (!props.user) {
+      e.preventDefault();
+      navigate('/login');
+    }
+  };
 
   return (
     <footer className="footer">
@@ -30,7 +42,8 @@ function Footer() {
             <div className="footer-column">
               <h4 className="footer-heading">{t("Quick Links")}</h4>
               <ul>
-                <li><Link to="/marketplace" className="footer-link">{t("Marketplace")}</Link></li>
+                {/* UPDATED: Add the onClick handler to the Marketplace link */}
+                <li><Link to="/marketplace" className="footer-link" onClick={handleMarketplaceClick}>{t("Marketplace")}</Link></li>
                 <li><Link to="/about" className="footer-link">{t("About Us")}</Link></li>
                 <li><Link to="/offer-skill" className="footer-link">{t("Post a Skill")}</Link></li>
               </ul>

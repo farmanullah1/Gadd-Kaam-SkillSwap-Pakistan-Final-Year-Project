@@ -4,7 +4,6 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import HelplinePopup from './HelplinePopup';
-import '../styles/dashboard.css';
 
 function DashboardPage() {
   const navigate = useNavigate();
@@ -13,12 +12,10 @@ function DashboardPage() {
   const [showHelplinePopup, setShowHelplinePopup] = useState(false);
 
   useEffect(() => {
-    // Check for user data in localStorage on component mount
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     } else {
-      // If no user found, redirect to login
       navigate('/login');
     }
   }, [navigate]);
@@ -38,11 +35,11 @@ function DashboardPage() {
     navigate('/login');
   };
 
-  if (!user) {
-    return null; // Or a loading spinner, while user data is being fetched/checked
-  }
-
   const currentPath = location.pathname;
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="dashboard-page-container">
@@ -55,15 +52,16 @@ function DashboardPage() {
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
               Dashboard
             </Link>
-            <Link to="/dashboard/profile" className={`dashboard-nav-item ${currentPath.startsWith('/dashboard/profile') ? 'active' : ''}`}>
+            <Link to="/dashboard/profile" className={`dashboard-nav-item ${currentPath === '/dashboard/profile' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
               Profile
             </Link>
-            <Link to="/dashboard/my-skills" className={`dashboard-nav-item ${currentPath.startsWith('/dashboard/my-skills') ? 'active' : ''}`}>
+            {/* UPDATED: Link to the new My Skills page */}
+            <Link to="/dashboard/my-skills" className={`dashboard-nav-item ${currentPath === '/dashboard/my-skills' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-tool"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z"></path></svg>
               My Skills
             </Link>
-            <Link to="/dashboard/messages" className={`dashboard-nav-item ${currentPath.startsWith('/dashboard/messages') ? 'active' : ''}`}>
+            <Link to="/dashboard/messages" className={`dashboard-nav-item ${currentPath === '/dashboard/messages' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
               Messages
             </Link>
@@ -71,7 +69,7 @@ function DashboardPage() {
         </aside>
 
         <section className="dashboard-content-area">
-          <h1 className="dashboard-welcome-heading">Welcome back, {user.firstName}!</h1>
+          <h1 className="dashboard-welcome-heading">Welcome back, {user.username}!</h1>
           <p className="dashboard-sub-heading">Here's a quick overview of your SkillSwap activity.</p>
 
           <div className="dashboard-summary-grid">
@@ -110,7 +108,8 @@ function DashboardPage() {
               </div>
               <h3 className="action-title">Find a Skill</h3>
               <p className="action-description">Explore the marketplace to discover new skills and connect with talented people in your community.</p>
-              <Link to="/" className="btn btn-primary-orange action-button">Browse Marketplace <span className="arrow-right">→</span></Link>
+              {/* UPDATED: Link to the new Marketplace page */}
+              <Link to="/marketplace" className="btn btn-primary-orange action-button">Browse Marketplace <span className="arrow-right">→</span></Link>
             </div>
 
             <div className="action-card">
