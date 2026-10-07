@@ -1,68 +1,79 @@
 const express = require("express");
 const User = require("../models/User");
 const SkillOffer = require("../models/SkillOffer");       // Marketplace
-const WomenSkillOffer = require("../models/WomenSkillOffer");
- // WomenOnlyZone
+const WomenSkillOffer = require("../models/WomenSkillOffer"); // WomenOnlyZone
 const Report = require("../models/Report");
 const adminAuth = require("../middleware/adminAuth");
 
 const router = express.Router();
 
-// ✅ Get all users
+/**
+ * ✅ Get all users
+ */
 router.get("/users", adminAuth, async (req, res) => {
   try {
     const users = await User.find().select("-password");
     res.json(users);
   } catch (err) {
+    console.error("Error fetching users:", err);
     res.status(500).send("Server error");
   }
 });
 
-// ✅ Delete user
+/**
+ * ✅ Delete user
+ */
 router.delete("/users/:id", adminAuth, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
     res.json({ msg: "User deleted" });
   } catch (err) {
+    console.error("Error deleting user:", err);
     res.status(500).send("Server error");
   }
 });
 
-// ✅ Get all skills (Marketplace + WomenOnlyZone)
+/**
+ * ✅ Get all skills (Marketplace + WomenOnlyZone)
+ */
 router.get("/skills", adminAuth, async (req, res) => {
   try {
-    // Marketplace skills
     const marketplaceSkills = await SkillOffer.find()
       .populate("user", "username email firstName lastName profilePicture cnicFrontPicture cnicBackPicture")
       .lean();
 
-    // Women-only skills
     const womenSkills = await WomenSkillOffer.find()
       .populate("user", "username email firstName lastName profilePicture cnicFrontPicture cnicBackPicture")
       .lean();
 
-    // Add source field
+    // Add source flag + normalize photo path
+    const normalizePhotoPath = (photo) => {
+      if (!photo) return null;
+      return photo.replace(/^\/+/, "").replace(/\\/g, "/"); // remove leading slashes + fix backslashes
+    };
+
     const marketplaceWithSource = marketplaceSkills.map((skill) => ({
       ...skill,
       source: "MarketplacePage",
+      photo: normalizePhotoPath(skill.photo),
     }));
 
     const womenWithSource = womenSkills.map((skill) => ({
       ...skill,
       source: "WomenOnlyZonePage",
+      photo: normalizePhotoPath(skill.photo),
     }));
 
-    // Combine all
-    const allSkills = [...marketplaceWithSource, ...womenWithSource];
-
-    res.json(allSkills);
+    res.json([...marketplaceWithSource, ...womenWithSource]);
   } catch (err) {
     console.error("Error fetching skills:", err);
     res.status(500).send("Server error");
   }
 });
 
-// ✅ Delete skill (works for both collections)
+/**
+ * ✅ Delete skill (checks both collections)
+ */
 router.delete("/skills/:id", adminAuth, async (req, res) => {
   try {
     let skill = await SkillOffer.findById(req.params.id);
@@ -84,7 +95,9 @@ router.delete("/skills/:id", adminAuth, async (req, res) => {
   }
 });
 
-// ✅ Get all reports
+/**
+ * ✅ Get all reports
+ */
 router.get("/reports", adminAuth, async (req, res) => {
   try {
     const reports = await Report.find()
@@ -93,11 +106,14 @@ router.get("/reports", adminAuth, async (req, res) => {
       .populate("reportedSkill", "title");
     res.json(reports);
   } catch (err) {
+    console.error("Error fetching reports:", err);
     res.status(500).send("Server error");
   }
 });
 
-// ✅ Dashboard stats
+/**
+ * ✅ Dashboard stats
+ */
 router.get("/stats", adminAuth, async (req, res) => {
   try {
     const userCount = await User.countDocuments();
@@ -111,6 +127,7 @@ router.get("/stats", adminAuth, async (req, res) => {
       reports: reportCount,
     });
   } catch (err) {
+    console.error("Error fetching stats:", err);
     res.status(500).send("Server error");
   }
 });

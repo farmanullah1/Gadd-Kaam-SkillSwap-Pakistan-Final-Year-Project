@@ -5,6 +5,7 @@ import "../../styles/ManageSkills.css";
 function ManageSkills() {
   const [skills, setSkills] = useState([]);
   const [selectedSkill, setSelectedSkill] = useState(null);
+  const [toast, setToast] = useState(null);
 
   // ✅ Fetch all skills
   useEffect(() => {
@@ -27,13 +28,21 @@ function ManageSkills() {
     if (!window.confirm("Are you sure you want to delete this skill?")) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/admin/skills/${id}`, {
+      const res = await axios.delete(`http://localhost:5000/api/admin/skills/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSkills(skills.filter((skill) => skill._id !== id));
+      showToast(res.data.msg || "Skill deleted");
     } catch (err) {
       console.error("Error deleting skill", err);
+      showToast("Error deleting skill");
     }
+  };
+
+  // ✅ Snackbar Toast
+  const showToast = (message) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
   };
 
   return (
@@ -44,26 +53,38 @@ function ManageSkills() {
         {skills.length > 0 ? (
           skills.map((skill) => (
             <div key={skill._id} className="skill-card">
-              <img
-                src={`http://localhost:5000/${skill.image || "default-skill.png"}`}
-                alt={skill.title || "Untitled Skill"}
-                className="skill-image"
-              />
-              <h3>{skill.title || "Untitled Skill"}</h3>
-              <p><strong>Offered By:</strong> {skill.user?.username || "N/A"}</p>
-              <p><strong>Source:</strong> {skill.source}</p>
-              <button
-                className="view-btn"
-                onClick={() => setSelectedSkill(skill)}
-              >
-                View
-              </button>
-              <button
-                className="delete-btn"
-                onClick={() => deleteSkill(skill._id)}
-              >
-                Delete
-              </button>
+              <div className="skill-card-image-wrapper">
+                <img
+                  src={
+                    skill.photo
+                      ? `http://localhost:5000/${skill.photo}`
+                      : "http://localhost:5000/default-skill.png"
+                  }
+                  alt={skill.title || "Untitled Skill"}
+                  className="skill-card-image"
+                />
+              </div>
+              <h3 className="skill-card-title">
+                {skill.title || skill.skills?.join(", ") || "Untitled Skill"}
+              </h3>
+               <p><strong>Offered By:</strong> {skill.user?.username || "N/A"}</p>
+              <p>
+                <strong>Source:</strong> {skill.source}
+              </p>
+              <div className="skill-card-actions">
+                <button
+                  className="view-btn"
+                  onClick={() => setSelectedSkill(skill)}
+                >
+                  View
+                </button>
+                <button
+                  className="delete-btn"
+                  onClick={() => deleteSkill(skill._id)}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))
         ) : (
@@ -74,22 +95,51 @@ function ManageSkills() {
       {/* ✅ Modal for full details */}
       {selectedSkill && (
         <div className="modal-overlay" onClick={() => setSelectedSkill(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Skill Details</h3>
+          <div className="modal-content fullscreen" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title">Skill Details</h3>
             <img
-              src={`http://localhost:5000/${selectedSkill.image || "default-skill.png"}`}
+              src={
+                selectedSkill.photo
+                  ? `http://localhost:5000/${selectedSkill.photo}`
+                  : "http://localhost:5000/default-skill.png"
+              }
               alt={selectedSkill.title}
               className="modal-skill-image"
             />
             <div className="modal-details">
-              <p><strong>First Name:</strong> {selectedSkill.user?.firstName || "N/A"}</p>
-              <p><strong>Last Name:</strong> {selectedSkill.user?.lastName || "N/A"}</p>
-              <p><strong>Username:</strong> {selectedSkill.user?.username || "N/A"}</p>
-              <p><strong>Skill Name:</strong> {selectedSkill.title}</p>
-              <p><strong>Description:</strong> {selectedSkill.description || "N/A"}</p>
-              <p><strong>Location:</strong> {selectedSkill.location || "N/A"}</p>
-              <p><strong>Anonymous:</strong> {selectedSkill.anonymous ? "Yes" : "No"}</p>
-              <p><strong>Source:</strong> {selectedSkill.source}</p>
+              <p>
+                <strong>First Name:</strong>{" "}
+                {selectedSkill.user?.firstName || "N/A"}
+              </p>
+              <p>
+                <strong>Last Name:</strong>{" "}
+                {selectedSkill.user?.lastName || "N/A"}
+              </p>
+              <p>
+                <strong>Username:</strong>{" "}
+                {selectedSkill.user?.username || "N/A"}
+              </p>
+              <p>
+                <strong>Skill Name:</strong>{" "}
+                {selectedSkill.title || selectedSkill.skills?.join(", ")}
+              </p>
+              <p>
+                <strong>Description:</strong>{" "}
+                {selectedSkill.description || "N/A"}
+              </p>
+              <p>
+                <strong>Location:</strong>{" "}
+                {selectedSkill.location || "N/A"}
+              </p>
+              <p>
+                <strong>Anonymous:</strong>{" "}
+                {selectedSkill.anonymous ? "Yes" : "No"}
+              </p>
+              <p>
+                <strong>Source:</strong> {selectedSkill.source}
+              </p>
+
+              {/* ✅ Show CNIC & Profile Pictures if available */}
               <div className="cnic-images">
                 {selectedSkill.user?.profilePicture && (
                   <img
@@ -114,15 +164,20 @@ function ManageSkills() {
                 )}
               </div>
             </div>
-            <button
-              className="close-btn"
-              onClick={() => setSelectedSkill(null)}
-            >
-              Close
-            </button>
+            <div className="modal-actions">
+              <button
+                className="close-btn"
+                onClick={() => setSelectedSkill(null)}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
+
+      {/* ✅ Snackbar */}
+      {toast && <div className="snackbar">{toast}</div>}
     </div>
   );
 }
