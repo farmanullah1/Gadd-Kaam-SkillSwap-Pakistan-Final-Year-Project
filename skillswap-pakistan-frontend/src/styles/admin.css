@@ -1,0 +1,28 @@
+/* src/styles/admin.css */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  width: 220px;
+  background: #f5f5dc;
+  padding: 20px;
+}
+
+.admin-sidebar a {
+  display: block;
+  margin: 10px 0;
+  color: #333;
+  text-decoration: none;
+}
+
+.admin-sidebar a:hover {
+  color: #e38b40;
+}
+
+.admin-content {
+  flex: 1;
+  padding: 20px;
+  background: #fff;
+}

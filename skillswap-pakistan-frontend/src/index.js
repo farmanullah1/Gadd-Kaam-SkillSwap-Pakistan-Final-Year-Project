@@ -16,9 +16,10 @@ import './styles/my-skills.css';
 import './styles/marketplace.css';
 import './styles/WomenOnlyZonePage.css';
 import './styles/LoadingSpinner.css';
-import './styles/chatbot-modal.css'; // Make sure this CSS import is here
-import './styles/requests.css'; // Ensure requests.css is imported
-import './styles/reviews.css'; // NEW: Import reviews.css
+import './styles/chatbot-modal.css'; 
+import './styles/requests.css';
+import './styles/reviews.css';
+import './styles/admin.css'; // ✅ NEW: Admin dashboard styles
 
 // Import all your components
 import HomePage from './components/HomePage';
@@ -31,14 +32,25 @@ import MySkillPage from './components/MySkillPage';
 import MarketplacePage from './components/MarketplacePage';
 import WomenOnlyZonePage from './components/WomenOnlyZonePage';
 import ReceivedRequestsPage from './components/ReceivedRequestsPage';
-// Import the new Messages and Reviews pages
+
+// New pages
 import MessagesPage from './components/MessagesPage';
 import ReviewsPage from './components/ReviewsPage';
 
-// Import the ChatbotModal from its new, dedicated file
-import ChatbotModal from './components/ChatbotModal'; // CORRECTED IMPORT PATH
+// Admin Components
+import AdminLayout from './components/admin/AdminLayout';
+import AdminDashboard from './components/admin/AdminDashboard';
+import ManageUsers from './components/admin/ManageUsers';
+import ManageSkills from './components/admin/ManageSkills';
+import ManageReports from './components/admin/ManageReports';
 
-import './i18n'; // Assuming you have an i18n setup here
+// Admin route protection
+import AdminRoute from './components/AdminRoute';
+
+// Chatbot
+import ChatbotModal from './components/ChatbotModal';
+
+import './i18n';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 const RootApp = () => {
@@ -52,8 +64,7 @@ const RootApp = () => {
     <React.StrictMode>
       <BrowserRouter>
         <Routes>
-          {/* Pass the toggleChatbot function as a prop to components that need to open the chatbot */}
-          {/* For example, if HomePage has the button, it needs onChatbotToggle */}
+          {/* Public routes */}
           <Route path="/" element={<HomePage onChatbotToggle={toggleChatbot} />} />
           <Route path="/signup" element={<SignupPage onChatbotToggle={toggleChatbot} />} />
           <Route path="/login" element={<LoginPage onChatbotToggle={toggleChatbot} />} />
@@ -64,10 +75,18 @@ const RootApp = () => {
           <Route path="/marketplace" element={<MarketplacePage onChatbotToggle={toggleChatbot} />} />
           <Route path="/women-zone" element={<WomenOnlyZonePage onChatbotToggle={toggleChatbot} />} />
           <Route path="/dashboard/received-requests" element={<ReceivedRequestsPage onChatbotToggle={toggleChatbot} />} />
-          {/* New Routes for Messages and Reviews */}
           <Route path="/dashboard/messages" element={<MessagesPage onChatbotToggle={toggleChatbot} />} />
-          <Route path="/dashboard/reviews" element={<ReviewsPage onChatbotToggle={toggleChatbot} />} /> {/* Corrected path */}
-          {/* Add more routes here as needed, remembering to pass the prop if they have the button */}
+          <Route path="/dashboard/reviews" element={<ReviewsPage onChatbotToggle={toggleChatbot} />} />
+
+          {/* Admin routes */}
+          <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<ManageUsers />} />
+            <Route path="skills" element={<ManageSkills />} />
+            <Route path="reports" element={<ManageReports />} />
+          </Route>
+
+          {/* Misc */}
           <Route path="/about" element={<HomePage onChatbotToggle={toggleChatbot} />} />
           <Route path="/contact" element={<HomePage onChatbotToggle={toggleChatbot} />} />
           <Route path="/faq" element={<HomePage onChatbotToggle={toggleChatbot} />} />
@@ -76,7 +95,8 @@ const RootApp = () => {
           <Route path="/terms-of-service" element={<HomePage onChatbotToggle={toggleChatbot} />} />
           <Route path="/forgot-password" element={<LoginPage onChatbotToggle={toggleChatbot} />} />
         </Routes>
-        {/* Render the ChatbotModal here, outside the Routes, so it can overlay all pages */}
+
+        {/* Chatbot overlay */}
         {showChatbot && <ChatbotModal onClose={toggleChatbot} />}
       </BrowserRouter>
     </React.StrictMode>

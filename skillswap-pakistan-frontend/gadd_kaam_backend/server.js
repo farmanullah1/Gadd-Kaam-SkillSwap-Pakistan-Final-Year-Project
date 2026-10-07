@@ -30,6 +30,7 @@ app.use('/api/profile', require('./routes/profileRoutes'));
 app.use('/api/skill-offers', require('./routes/skillOfferRoutes'));
 app.use('/api/skill-suggestions', require('./routes/skillSuggestionRoutes'));
 app.use('/api/requests', require('./routes/requestRoutes')); // New requests route
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 app.get('/', (req, res) => res.send('API Running'));
 

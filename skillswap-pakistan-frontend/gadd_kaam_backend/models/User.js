@@ -27,14 +27,20 @@ const UserSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     lowercase: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
+    match: [
+      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+      'Please fill a valid email address',
+    ],
   },
   phoneNumber: {
     type: String,
     required: true,
     unique: true,
     trim: true,
-    match: [/^\+?\d{10,14}$/, 'Please fill a valid phone number (e.g., +923001234567 or 03001234567)'],
+    match: [
+      /^\+?\d{10,14}$/,
+      'Please fill a valid phone number (e.g., +923001234567 or 03001234567)',
+    ],
   },
   dateOfBirth: {
     type: Date,
@@ -45,7 +51,10 @@ const UserSchema = new mongoose.Schema({
     required: true,
     unique: true,
     trim: true,
-    match: [/^\d{5}-\d{7}-\d{1}$/, 'Please fill a valid CNIC number (e.g., 12345-1234567-1)'],
+    match: [
+      /^\d{5}-\d{7}-\d{1}$/,
+      'Please fill a valid CNIC number (e.g., 12345-1234567-1)',
+    ],
   },
   gender: {
     type: String,
@@ -59,15 +68,15 @@ const UserSchema = new mongoose.Schema({
   },
   profilePicture: {
     type: String, // Store path to file
-    required: false, // Make optional initially, can be made required later
+    required: false, // Optional
   },
   cnicFrontPicture: {
     type: String, // Store path to file
-    required: false, // Can be made required for verification
+    required: false, // Optional
   },
   cnicBackPicture: {
     type: String, // Store path to file
-    required: false, // Can be made required for verification
+    required: false, // Optional
   },
   registrationDate: {
     type: Date,
@@ -76,11 +85,17 @@ const UserSchema = new mongoose.Schema({
   // Add new fields for profile updates
   location: {
     type: String,
-    required: false, // Not required for registration
+    required: false,
   },
   aboutMe: {
     type: String,
-    required: false, // Not required for registration
+    required: false,
+  },
+  // ✅ New field for admin functionality
+  role: {
+    type: String,
+    enum: ['user', 'admin'], // Only allow "user" or "admin"
+    default: 'user', // Default is "user"
   },
 });
 
