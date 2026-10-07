@@ -1,15 +1,13 @@
-// skillswap-pakistan-frontend/src/components/Footer.js
-
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import i18n from '../i18n'; // Import i18n
+import i18n from '../i18n'; // Import i18n directly for language change listener
 import { Link, useNavigate } from 'react-router-dom';
 
 // Ensure user and onChatbotToggle are destructured from props
 function Footer({ user, onChatbotToggle }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [isSindhiMode, setIsSindhiMode] = useState(i18n.language === 'sd'); // New state for Sindhi mode
+  const [isSindhiMode, setIsSindhiMode] = useState(i18n.language === 'sd'); // State for Sindhi mode
 
   // Effect to update Sindhi mode based on language change
   useEffect(() => {
@@ -25,11 +23,11 @@ function Footer({ user, onChatbotToggle }) {
     };
   }, []);
 
-  // New handler for the Marketplace link
+  // Handler for the Marketplace link to check user login status
   const handleMarketplaceClick = (e) => {
-    // If no user is logged in (user is null),
-    // prevent the default link behavior and navigate to login.
-    if (!user) { // Corrected: Using 'user' directly
+    // If no user is logged in (user is null), prevent default navigation
+    // and instead navigate to the login page.
+    if (!user) {
       e.preventDefault();
       navigate('/login');
     }
@@ -45,7 +43,7 @@ function Footer({ user, onChatbotToggle }) {
   } : {};
 
   return (
-    <footer className={`footer ${isSindhiMode ? 'sindhi-footer-mode' : ''}`} style={sindhiFooterStyle}> {/* Conditional class and inline style for Sindhi mode */}
+    <footer className={`footer ${isSindhiMode ? 'sindhi-footer-mode' : ''}`} style={sindhiFooterStyle}>
       <div className="footer-container">
         <div className="footer-top-section">
           <div className="footer-logo-main">
@@ -67,23 +65,23 @@ function Footer({ user, onChatbotToggle }) {
           </div>
           <div className="footer-links-columns">
             <div className="footer-column">
-              <h4 className="footer-heading">{t("Quick Links")}</h4>
+              <h4 className="footer-heading">{t("footer_quick_links")}</h4> {/* Translated */}
               <ul>
                 <li><Link to="/marketplace" className="footer-link" onClick={handleMarketplaceClick}>{t("navbar_marketplace")}</Link></li>
-                <li><Link to="/about-us" className="footer-link">{t("About Us")}</Link></li>
-                <li><Link to="/offer-skill" className="footer-link">{t("Post a Skill")}</Link></li>
+                <li><Link to="/about-us" className="footer-link">{t("navbar_about_us")}</Link></li> {/* Translated */}
+                <li><Link to="/offer-skill" className="footer-link">{t("post_a_skill")}</Link></li> {/* Translated */}
               </ul>
             </div>
             <div className="footer-column">
-              <h4 className="footer-heading">{t("Support")}</h4>
+              <h4 className="footer-heading">{t("footer_support")}</h4> {/* Translated */}
               <ul>
-                <li><Link to="/faq-page" className="footer-link">FAQ</Link></li>
-                <li><Link to="/contact-us" className="footer-link">{t("Contact Us")}</Link></li>
-                <li><Link to="/dispute-resolution-page" className="footer-link">Dispute Resolution</Link></li>
+                <li><Link to="/faq-page" className="footer-link">{t("faq_link")}</Link></li> {/* Translated */}
+                <li><Link to="/contact-us" className="footer-link">{t("navbar_contact")}</Link></li> {/* Translated */}
+                <li><Link to="/dispute-resolution-page" className="footer-link">{t("dispute_resolution_link")}</Link></li> {/* Translated */}
               </ul>
             </div>
             <div className="footer-column">
-              <h4 className="footer-heading">{t("Follow Us")}</h4>
+              <h4 className="footer-heading">{t("footer_follow_us")}</h4> {/* Translated */}
               <div className="social-icons">
                 <a
                   href="https://facebook.com/"
@@ -117,7 +115,7 @@ function Footer({ user, onChatbotToggle }) {
           </div>
           <div className="footer-bottom-section">
             <p className="footer-copyright">
-              © 2025 Gadd Kaam – SkillSwap Pakistan. All rights reserved. Privacy Policy Terms of Service.
+              © 2025 Gadd Kaam – SkillSwap Pakistan. {t("all_rights_reserved")}. <Link to="/privacy-policy" className="footer-link">{t("footer_privacy_policy")}</Link> <Link to="/terms-of-service" className="footer-link">{t("footer_terms_of_service")}</Link>.
             </p>
           </div>
         </div>

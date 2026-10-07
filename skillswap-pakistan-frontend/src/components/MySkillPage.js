@@ -1,10 +1,10 @@
-// src/components/MySkillPage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import HelplinePopup from './HelplinePopup';
 import LoadingSpinner from './LoadingSpinner';
+import SuccessMessageModal from './SuccessMessageModal'; // Import SuccessMessageModal
 import '../styles/my-skills.css';
 import '../styles/marketplace.css';
 import { useTranslation } from 'react-i18next';
@@ -123,6 +123,8 @@ function MySkillPage({ onChatbotToggle }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSkill, setSelectedSkill] = useState(null);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false); // State for confirmation modal
+  const [skillToDeleteId, setSkillToDeleteId] = useState(null); // State to store ID of skill to delete
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -145,34 +147,43 @@ function MySkillPage({ onChatbotToggle }) {
       setSkills(response.data);
     } catch (err) {
       console.error('Failed to fetch my skills:', err);
-      setError('Failed to load your skills. Please try again.');
+      setError(t('failed_to_load_my_skills_error'));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDeleteOffer = async (skillId) => {
-    // Replace window.confirm with a custom modal or toast
-    // For now, logging to console
-    console.log('User confirmed deletion of skill offer:', skillId);
-    
+  const handleDeleteClick = (skillId) => {
+    setSkillToDeleteId(skillId);
+    setShowDeleteConfirmModal(true);
+  };
+
+  const confirmDeleteOffer = async () => {
+    setShowDeleteConfirmModal(false); // Close modal
+    if (!skillToDeleteId) return; // Should not happen if triggered by modal
+
     setLoading(true);
     setError(null);
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`${process.env.REACT_APP_API_URL}/api/skill-offers/${skillId}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/skill-offers/${skillToDeleteId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('Skill offer deleted successfully!'); // Replaced alert
-      fetchMySkills();
-      setSelectedSkill(null);
+      console.log(t('skill_offer_deleted_success')); // Log success
+      fetchMySkills(); // Refresh the list of skills
+      setSelectedSkill(null); // Close the full details modal if it was open
     } catch (err) {
-      console.error('Failed to delete skill offer:', err);
-      setError('Failed to delete skill offer. Please try again.');
-      console.error('Failed to delete skill offer. Please try again.'); // Replaced alert
+      console.error('Failed to delete skill offer:', err); // Log the actual error
+      setError(t('failed_to_delete_skill_offer_error'));
     } finally {
       setLoading(false);
+      setSkillToDeleteId(null); // Clear the ID after operation
     }
+  };
+
+  const cancelDeleteOffer = () => {
+    setShowDeleteConfirmModal(false);
+    setSkillToDeleteId(null); // Clear the ID
   };
 
   const openHelplinePopup = () => setShowHelplinePopup(true);
@@ -188,7 +199,7 @@ function MySkillPage({ onChatbotToggle }) {
   const currentPath = location.pathname;
 
   if (!user) {
-    return null;
+    return null; // Don't render if user is not logged in
   }
 
   return (
@@ -200,29 +211,29 @@ function MySkillPage({ onChatbotToggle }) {
           <nav className="dashboard-nav">
             <Link to="/dashboard" className={`dashboard-nav-item ${currentPath === '/dashboard' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-              Dashboard
+              {t("navbar_dashboard")}
             </Link>
             <Link to="/dashboard/profile" className={`dashboard-nav-item ${currentPath === '/dashboard/profile' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-              Profile
+              {t("navbar_my_profile")}
             </Link>
             <Link to="/dashboard/my-skills" className={`dashboard-nav-item ${currentPath === '/dashboard/my-skills' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-tool"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z"></path></svg>
-              My Skills
+              {t("navbar_my_skills")}
             </Link>
             <Link to="/marketplace" className={`dashboard-nav-item ${currentPath === '/marketplace' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-              Marketplace
+              {t("navbar_marketplace")}
             </Link>
             {user.gender === 'Female' && (
               <Link to="/women-zone" className={`dashboard-nav-item ${currentPath === '/women-zone' ? 'active' : ''}`}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                Women's Zone
+                {t("navbar_women_zone")}
               </Link>
             )}
             <Link to="/dashboard/received-requests" className={`dashboard-nav-item ${currentPath === '/dashboard/received-requests' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-              Received Requests
+              {t("received_requests_page_title")}
             </Link>
           </nav>
         </aside>
@@ -247,7 +258,7 @@ function MySkillPage({ onChatbotToggle }) {
                     key={skill._id}
                     skill={skill}
                     onViewDetails={setSelectedSkill}
-                    onDeleteOffer={handleDeleteOffer}
+                    onDeleteOffer={handleDeleteClick} // Use new handler for confirmation
                   />
                 ))}
               </div>
@@ -256,8 +267,7 @@ function MySkillPage({ onChatbotToggle }) {
         </section>
       </div>
 
-      {/* Pass onChatbotToggle to the Footer component */}
-      <Footer onChatbotToggle={onChatbotToggle} />
+      <Footer onChatbotToggle={onChatbotToggle} user={user} />
 
       {showHelplinePopup && (
         <HelplinePopup onClose={closeHelplinePopup} />
@@ -267,7 +277,18 @@ function MySkillPage({ onChatbotToggle }) {
         <FullDetailsModal
           skill={selectedSkill}
           onClose={() => setSelectedSkill(null)}
-          onDelete={handleDeleteOffer}
+          onDelete={handleDeleteClick} // Use new handler for confirmation
+        />
+      )}
+
+      {showDeleteConfirmModal && (
+        <SuccessMessageModal
+          isOpen={showDeleteConfirmModal}
+          title={t("delete_confirm_title")}
+          message={t("delete_confirm_message")}
+          onClose={cancelDeleteOffer} // Use onClose to cancel
+          onConfirm={confirmDeleteOffer} // Add onConfirm for deletion
+          type="confirm" // New type for confirmation modal
         />
       )}
     </div>

@@ -1,11 +1,11 @@
-// src/components/SuccessMessageModal.js
-
 import React from 'react';
 import { VscClose } from 'react-icons/vsc';
-import '../styles/popup.css';
+import '../styles/popup.css'; // Ensure this CSS file exists and contains relevant styles
+import { useTranslation } from 'react-i18next'; // Added for consistency, though 'Ok' might be the only translatable part initially
 
-// This is the correct and only declaration of the component
-function SuccessMessageModal({ isOpen, title, message, onClose, type = 'info' }) {
+function SuccessMessageModal({ isOpen, title, message, onClose, onConfirm, type = 'info' }) {
+  const { t } = useTranslation(); // Initialize useTranslation
+
   if (!isOpen) return null;
 
   return (
@@ -17,9 +17,20 @@ function SuccessMessageModal({ isOpen, title, message, onClose, type = 'info' })
         <h3 className="popup-title">{title}</h3>
         <p className="popup-message">{message}</p>
         <div className="popup-actions">
-          <button onClick={onClose} className="btn-primary-orange popup-btn">
-            Ok
-          </button>
+          {type === 'confirm' ? (
+            <>
+              <button onClick={onConfirm} className="btn-primary-orange popup-btn confirm-btn">
+                {t("confirm")} {/* Translated "Confirm" */}
+              </button>
+              <button onClick={onClose} className="btn-secondary-cancel popup-btn">
+                {t("cancel_btn")} {/* Translated "Cancel" */}
+              </button>
+            </>
+          ) : (
+            <button onClick={onClose} className="btn-primary-orange popup-btn">
+              {t("ok")} {/* Translated "Ok" */}
+            </button>
+          )}
         </div>
       </div>
     </div>

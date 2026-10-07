@@ -7,9 +7,11 @@ import Footer from './Footer';
 import HelplinePopup from './HelplinePopup';
 import '../styles/profile.css';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 // Accept onChatbotToggle as a prop
 function ProfilePage({ onChatbotToggle }) {
+  const { t } = useTranslation(); // Initialize the translation hook
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
@@ -181,35 +183,35 @@ function ProfilePage({ onChatbotToggle }) {
           <nav className="dashboard-nav">
             <Link to="/dashboard" className={`dashboard-nav-item ${currentPath === '/dashboard' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-              Dashboard
+              {t('navbar_dashboard')}
             </Link>
             <Link to="/dashboard/profile" className={`dashboard-nav-item ${currentPath === '/dashboard/profile' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-              Profile
+              {t('navbar_my_profile')}
             </Link>
             <Link to="/dashboard/my-skills" className={`dashboard-nav-item ${currentPath === '/dashboard/my-skills' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-tool"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z"></path></svg>
-              My Skills
+              {t('navbar_my_skills')}
             </Link>
             <Link to="/marketplace" className={`dashboard-nav-item ${currentPath === '/marketplace' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-              Marketplace
+              {t('navbar_marketplace')}
             </Link>
             {user.gender === 'Female' && (
               <Link to="/women-only-zone" className={`dashboard-nav-item ${currentPath === '/women-only-zone' ? 'active' : ''}`}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                Women's Zone
+                {t('navbar_women_zone')}
               </Link>
             )}
             <Link to="/dashboard/received-requests" className={`dashboard-nav-item ${currentPath === '/dashboard/received-requests' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-              Received Requests
+              {t('received_requests_page_title')}
             </Link>
           </nav>
         </aside>
 
         <section className="dashboard-content-area">
-          <h1 className="profile-heading">My Profile</h1>
+          <h1 className="profile-heading">{t('profile_page_title')}</h1>
           <form className="profile-form" onSubmit={handleSaveChanges}>
             <div className="profile-header-card">
               <img
@@ -219,10 +221,10 @@ function ProfilePage({ onChatbotToggle }) {
               />
               <div className="profile-info-text">
                 <h3 className="profile-name">{user.firstName} {user.lastName}</h3>
-                <p className="profile-update-prompt">Update your photo and personal details here.</p>
+                <p className="profile-update-prompt">{t('profile_update_prompt')}</p>
               </div>
               <label htmlFor="profile-picture-input" className="btn btn-secondary-outline change-picture-btn">
-                Change Picture
+                {t('change_picture_btn')}
                 <input
                   id="profile-picture-input"
                   type="file"
@@ -235,22 +237,22 @@ function ProfilePage({ onChatbotToggle }) {
 
             <div className="profile-details-grid">
               <div className="form-group-readonly">
-                <label htmlFor="fullName">Full Name</label>
+                <label htmlFor="fullName">{t('full_name_label')}</label>
                 <input type="text" id="fullName" value={fullName} readOnly />
               </div>
 
               <div className="form-group-readonly">
-                <label htmlFor="emailAddress">Email Address</label>
+                <label htmlFor="emailAddress">{t('email_address_label')}</label>
                 <input type="email" id="emailAddress" value={email} readOnly />
               </div>
 
               <div className="form-group-readonly">
-                <label htmlFor="phoneNumber">Phone Number</label>
+                <label htmlFor="phoneNumber">{t('phone_number_label')}</label>
                 <input type="tel" id="phoneNumber" value={phoneNumber} readOnly />
               </div>
 
               <div className="form-group">
-                <label htmlFor="location">Location</label>
+                <label htmlFor="location">{t('location_label')}</label>
                 <input
                   type="text"
                   id="location"
@@ -260,7 +262,7 @@ function ProfilePage({ onChatbotToggle }) {
               </div>
 
               <div className="form-group-full-width">
-                <label htmlFor="aboutMe">About Me</label>
+                <label htmlFor="aboutMe">{t('about_me_label')}</label>
                 <textarea
                   id="aboutMe"
                   value={aboutMe}
@@ -273,8 +275,8 @@ function ProfilePage({ onChatbotToggle }) {
 
             {isEditing && (
               <div className="profile-action-buttons">
-                  <button type="button" className="btn btn-secondary-outline" onClick={handleDiscardChanges}>Discard Changes</button>
-                  <button type="submit" className="btn btn-primary-orange">Save Changes</button>
+                  <button type="button" className="btn btn-secondary-outline" onClick={handleDiscardChanges}>{t('discard_changes_btn')}</button>
+                  <button type="submit" className="btn btn-primary-orange">{t('save_changes_btn')}</button>
               </div>
             )}
 

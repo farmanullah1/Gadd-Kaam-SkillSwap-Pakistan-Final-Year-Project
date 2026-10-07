@@ -1,4 +1,3 @@
-// src/pages/LoginPage.js
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -6,9 +5,11 @@ import Footer from '../components/Footer';
 import HelplinePopup from '../components/HelplinePopup';
 import SuccessMessageModal from '../components/SuccessMessageModal';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 // Accept onChatbotToggle as a prop
 function LoginPage({ onChatbotToggle }) {
+  const { t } = useTranslation(); // Use translation hook
   const navigate = useNavigate();
   const [credential, setCredential] = useState('');
   const [password, setPassword] = useState('');
@@ -47,7 +48,8 @@ function LoginPage({ onChatbotToggle }) {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      // Use process.env.REACT_APP_API_URL for the API endpoint
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
         credential,
         password,
       });
@@ -58,8 +60,8 @@ function LoginPage({ onChatbotToggle }) {
       localStorage.setItem('user', JSON.stringify(response.data.user));
       setUser(response.data.user);
 
-      // Show success modal instead of alert
-      setSuccessMessage('You have successfully logged in!');
+      // Show success modal
+      setSuccessMessage(t('login_success_message')); // Use translation key
       setShowSuccessModal(true);
 
     } catch (err) {
@@ -69,7 +71,7 @@ function LoginPage({ onChatbotToggle }) {
       } else if (err.response && err.response.data && err.response.data.msg) {
         setError(err.response.data.msg);
       } else {
-        setError('An unexpected error occurred during login. Please try again.');
+        setError(t('login_unexpected_error')); // Use translation key
       }
     } finally {
       setLoading(false);
@@ -87,52 +89,50 @@ function LoginPage({ onChatbotToggle }) {
 
       <main className="login-section section-container">
         <div className="login-form-card">
-          <h2 className="login-title">Welcome Back!</h2>
-          <p className="login-subtitle">Log in to access your account and start swapping skills.</p>
+          <h2 className="login-title">{t("login_welcome_back")}</h2>
+          <p className="login-subtitle">{t("login_access_account")}</p>
 
           <form className="login-form" onSubmit={handleSubmit}>
             {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
 
             <div className="form-group">
-              <label htmlFor="credential">Email, Username, or CNIC</label>
+              <label htmlFor="credential">{t("login_credential_label")}</label>
               <input
                 type="text"
                 id="credential"
                 value={credential}
                 onChange={(e) => setCredential(e.target.value)}
-                placeholder="Enter your credentials"
+                placeholder={t("login_credential_placeholder")}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t("signup_password_label")}</label>
               <input
                 type="password"
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder={t("login_password_placeholder")}
                 required
               />
-              <Link to="/forgot-password" className="forgot-password-link">Forgot password?</Link>
+              <Link to="/forgot-password" className="forgot-password-link">{t("login_forgot_password")}</Link>
             </div>
 
             <button type="submit" className="btn btn-primary-orange login-btn" disabled={loading}>
-              {loading ? 'Logging In...' : 'Log In'}
+              {loading ? t('login_logging_in') : t('navbar_login_btn')}
             </button>
 
             <p className="signup-prompt">
-              Don't have an account? <Link to="/signup" className="signup-link">Sign Up</Link>
+              {t("login_no_account_prompt")} <Link to="/signup" className="signup-link">{t("navbar_signup_btn")}</Link>
             </p>
           </form>
         </div>
       </main>
 
-      {/* Pass onChatbotToggle to the Footer component */}
-      <Footer onChatbotToggle={onChatbotToggle} />
+      <Footer onChatbotToggle={onChatbotToggle} user={user} />
 
-      {/* Attach onClick handler to the chatbot sticky button */}
       <button className="chatbot-sticky-btn" aria-label="Open chatbot" onClick={onChatbotToggle}>
         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
       </button>
@@ -141,10 +141,9 @@ function LoginPage({ onChatbotToggle }) {
         <HelplinePopup onClose={closeHelplinePopup} />
       )}
 
-      {/* New Success Message Modal */}
       <SuccessMessageModal
         isOpen={showSuccessModal}
-        title="Login Successful!"
+        title={t("login_success_title")}
         message={successMessage}
         onClose={handleSuccessModalClose}
       />

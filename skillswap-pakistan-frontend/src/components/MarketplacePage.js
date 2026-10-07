@@ -13,7 +13,7 @@ import { FaPaperPlane, FaTimes } from 'react-icons/fa';
 
 // Shared SkillCard component
 const SkillCard = ({ skill, onViewDetails }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(); // Initialize useTranslation here
   const placeholderImage = 'https://placehold.co/400x240/e0e0e0/666666?text=No+Image';
   const imageUrl = skill.photo ? `${process.env.REACT_APP_API_URL}${skill.photo}` : placeholderImage;
 
@@ -30,13 +30,13 @@ const SkillCard = ({ skill, onViewDetails }) => {
       <div className="skill-card-content">
         <h3 className="skill-card-title">{skill.skills.join(', ')}</h3>
         <p className="skill-card-author">
-          {t('offer_skill_label')} by {skill.anonymous ? t('anonymous_label') : skill.username}
+          {t('offer_skill_label')} {t('by_label')} {skill.anonymous ? t('anonymous_label') : skill.username}
         </p>
-        <p className="skill-card-description">{skill.description}</p>
+        <div className="skill-card-description">{skill.description}</div>
         <div className="skill-card-tags">
           {skill.remotely && <span className="skill-card-tag">{t('remotely_label')}</span>}
           {skill.anonymous && <span className="skill-card-tag">{t('anonymous_label')}</span>}
-          {skill.shareWithWomenZone && <span className="skill-card-tag">{t('step2_women_zone_switch')}</span>}
+          {skill.shareWithWomenZone && <span className="skill-card-tag">{t('women_only_zone_tag')}</span>}
         </div>
         <div className="skill-card-actions">
           <button className="btn-view-details" onClick={() => onViewDetails(skill)}>
@@ -50,7 +50,7 @@ const SkillCard = ({ skill, onViewDetails }) => {
 
 // FullDetailsModal component
 const FullDetailsModal = ({ skill, onClose }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(); // Initialize useTranslation here
   const [showRequestForm, setShowRequestForm] = useState(false);
   const [requestSkill, setRequestSkill] = useState('');
 
@@ -68,12 +68,11 @@ const FullDetailsModal = ({ skill, onClose }) => {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('Request sent successfully!'); // Changed from alert()
+      console.log(t('request_sent_success_message'));
       onClose(); // Close modal after sending
     } catch (err) {
       console.error('Failed to send request:', err);
-      // You might want to implement a custom modal/toast for user feedback here
-      console.error('Failed to send request. Please try again.'); // Changed from alert()
+      console.error(t('request_sent_error_message'));
     }
   };
 
@@ -86,7 +85,7 @@ const FullDetailsModal = ({ skill, onClose }) => {
         <div className="full-details-header">
           <h2 className="full-details-title">{skill.skills.join(', ')}</h2>
           <p className="full-details-author">
-            {t('offer_skill_label')} by {skill.anonymous ? t('anonymous_label') : skill.username}
+            {t('offer_skill_label')} {t('by_label')} {skill.anonymous ? t('anonymous_label') : skill.username}
           </p>
         </div>
         <img
@@ -116,7 +115,7 @@ const FullDetailsModal = ({ skill, onClose }) => {
           </div>
           {skill.shareWithWomenZone && (
             <div className="full-details-info-box">
-              <h3 className="full-details-info-label">{t('step2_women_zone_switch')}</h3>
+              <h3 className="full-details-info-label">{t('women_only_zone_tag')}</h3>
               <p className="full-details-info-value">{t('yes')}</p>
             </div>
           )}
@@ -132,17 +131,17 @@ const FullDetailsModal = ({ skill, onClose }) => {
               <FaPaperPlane style={{ marginRight: '8px' }} /> {t('request_btn')}
             </button>
           ) : (
-            <div className="request-form-section"> {/* New class for styling */}
-              <label htmlFor="requestSkillInput">Specify the skill you want from them:</label>
+            <div className="request-form-section">
+              <label htmlFor="requestSkillInput">{t('specify_skill_wanted_label')}</label>
               <textarea
                 id="requestSkillInput"
-                placeholder="e.g., I need help with React.js tutoring in exchange for web design."
+                placeholder={t('request_skill_placeholder')}
                 value={requestSkill}
                 onChange={(e) => setRequestSkill(e.target.value)}
                 rows="4"
-              />
+              ></textarea>
               <button className="btn-send-request" onClick={handleSendRequest}>
-                Send Request
+                {t('send_request_btn')}
               </button>
             </div>
           )}
@@ -160,7 +159,7 @@ function MarketplacePage({ onChatbotToggle }) { // Accept onChatbotToggle as a p
   const [user, setUser] = useState(null);
   const [showHelplinePopup, setShowHelplinePopup] = useState(false);
   const [skills, setSkills] = useState([]);
-  const [loading, setLoading] = useState(true); // FIX: Corrected useState initialization
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSkill, setSelectedSkill] = useState(null);
 
@@ -186,7 +185,7 @@ function MarketplacePage({ onChatbotToggle }) { // Accept onChatbotToggle as a p
       setSkills(response.data);
     } catch (err) {
       console.error('Failed to fetch marketplace skills:', err);
-      setError('Failed to load marketplace skills. Please try again.');
+      setError(t('failed_to_load_marketplace_skills_error'));
     } finally {
       setLoading(false);
     }
@@ -217,29 +216,29 @@ function MarketplacePage({ onChatbotToggle }) { // Accept onChatbotToggle as a p
           <nav className="dashboard-nav">
             <Link to="/dashboard" className={`dashboard-nav-item ${currentPath === '/dashboard' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-              Dashboard
+              {t('navbar_dashboard')}
             </Link>
             <Link to="/dashboard/profile" className={`dashboard-nav-item ${currentPath === '/dashboard/profile' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-              Profile
+              {t('navbar_my_profile')}
             </Link>
             <Link to="/dashboard/my-skills" className={`dashboard-nav-item ${currentPath === '/dashboard/my-skills' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-tool"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z"></path></svg>
-              My Skills
+              {t('navbar_my_skills')}
             </Link>
             <Link to="/marketplace" className={`dashboard-nav-item ${currentPath === '/marketplace' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-              Marketplace
+              {t('navbar_marketplace')}
             </Link>
             {user.gender === 'Female' && (
               <Link to="/women-zone" className={`dashboard-nav-item ${currentPath === '/women-zone' ? 'active' : ''}`}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                Women's Zone
+                {t('navbar_women_zone')}
               </Link>
             )}
             <Link to="/dashboard/received-requests" className={`dashboard-nav-item ${currentPath === '/dashboard/received-requests' ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-              Received Requests
+              {t('received_requests_page_title')}
             </Link>
           </nav>
         </aside>

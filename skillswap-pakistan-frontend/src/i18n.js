@@ -1,10 +1,9 @@
-// src/i18n.js
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector'; // Added LanguageDetector
+import LanguageDetector from 'i18next-browser-languagedetector';
 
 i18n
-  .use(LanguageDetector) // Use LanguageDetector for automatic language detection
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     debug: true,
@@ -20,6 +19,52 @@ i18n
           "dark_mode_toggle": "Toggle dark mode",
           "change_language": "Change language",
           "call_helpline": "Call helpline",
+          "by_label": "by",
+          "remotely_label": "Remotely",
+          "anonymous_label": "Anonymous",
+          "women_only_zone_tag": "Women's Zone",
+          "not_specified": "Not specified",
+          "specify_skill_wanted_label": "Specify the skill you want from them:",
+          "request_skill_placeholder": "e.g., I need help with React.js tutoring in exchange for web design.",
+          "send_request_btn": "Send Request",
+          "request_sent_success_message": "Request sent successfully!",
+          "request_sent_error_message": "Failed to send request. Please try again.",
+          "access_denied_female_only": "Access Denied: This zone is for female users only.",
+          "failed_to_load_women_only_skills_error": "Failed to load women-only skills. Please try again.",
+          "failed_to_load_marketplace_skills_error": "Failed to load marketplace skills. Please try again.",
+          "ok": "Ok",
+          "all_rights_reserved": "All rights reserved.",
+          "confirm": "Confirm", // New generic confirm button text
+
+          // Received Requests Page
+          "offered_by": "Offered by",
+          "received_requests_page_title": "Received Requests",
+          "received_requests_page_subtitle": "Manage skill swap requests from other community members.",
+          "no_requests_received": "You haven't received any skill requests yet.",
+          "requested_by": "Requested by",
+          "offered_skill_label_in_request": "Offered Skill",
+          "message_label": "Message",
+          "date_received": "Date Received",
+          "accept_btn": "Accept",
+          "decline_btn": "Decline",
+          "requested_your_skill": "Requested your skill",
+          "sender_offers_in_return": "Sender offers in return",
+          "cancel_btn": "Cancel",
+          "request_accepted_by": "Request Accepted by {{username}}! 🎉",
+          "contact_them_to_coordinate": "You can now contact them to coordinate your skill swap.",
+          "contact_details_heading": "Contact Details:",
+          "name_label": "Name",
+          "phone_label": "Phone",
+          "failed_to_load_requests_error": "Failed to load requests. Please try again.",
+          "request_accepted_notification": "Request accepted! The user has been notified.",
+          "failed_to_accept_request_error": "Failed to accept request. Please try again.",
+          "request_cancelled_notification": "Request cancelled.",
+          "failed_to_cancel_request_error": "Failed to cancel request. Please try again.",
+          "pending_requests_section_title": "Pending Requests",
+          "accepted_requests_section_title": "Accepted Requests",
+          "no_new_requests_message_p1": "You currently have no new skill requests or accepted swaps.",
+          "no_new_requests_message_p2": "When someone requests one of your skills, it will appear here.",
+
 
           // Navbar
           "navbar_home": "Home",
@@ -89,6 +134,9 @@ i18n
           "footer_privacy_policy": "Privacy Policy",
           "footer_terms_of_service": "Terms of Service",
           "Empowering_communities_by_connecting_skills_cash_free": "Empowering communities by connecting skills, cash-free.",
+          "post_a_skill": "Post a Skill",
+          "faq_link": "FAQ",
+          "dispute_resolution_link": "Dispute Resolution",
 
 
           // Language names for display
@@ -164,6 +212,11 @@ i18n
           "skill_not_specified": "Not specified",
           "yes": "Yes",
           "no": "No",
+          "failed_to_load_my_skills_error": "Failed to load your skills. Please try again.",
+          "skill_offer_deleted_success": "Skill offer deleted successfully!",
+          "failed_to_delete_skill_offer_error": "Failed to delete skill offer. Please try again.",
+          "delete_confirm_title": "Confirm Deletion",
+          "delete_confirm_message": "Are you sure you want to delete this skill offer? This action cannot be undone.",
 
           // --- Marketplace Page Translations ---
           "marketplace_page_title": "Skill Marketplace",
@@ -176,6 +229,19 @@ i18n
           "women_only_zone_page_subtitle": "A dedicated space for women to safely share and swap skills.",
           "no_women_zone_skills_available": "No skills available in the Women-Only Zone right now. Check back later!",
 
+
+          // --- Login Page Translations ---
+          "login_welcome_back": "Welcome Back!",
+          "login_access_account": "Log in to access your account and start swapping skills.",
+          "login_credential_label": "Email, Username, or CNIC",
+          "login_credential_placeholder": "Enter your credentials",
+          "login_password_placeholder": "Enter your password",
+          "login_forgot_password": "Forgot password?",
+          "login_logging_in": "Logging In...",
+          "login_no_account_prompt": "Don't have an account?",
+          "login_success_message": "You have successfully logged in!",
+          "login_unexpected_error": "An unexpected error occurred during login. Please try again.",
+          "login_success_title": "Login Successful!",
 
           // --- Signup Page Translations ---
           "signup_join_gadd_kaam": "Join Gadd Kaam",
@@ -198,23 +264,32 @@ i18n
           "signup_confirmPassword_label": "Confirm Password",
           "signup_create_account_btn": "Create Account",
           "signup_already_have_account": "Already have an account?",
-          "signup_login_link": "Log in",
+          "signup_login_link": "Log In",
+          "signup_success_message": "Account has been successfully created! Please log in.",
+          "signup_error_gender_required": "Please select your gender.",
+          "signup_unexpected_error": "An unexpected error occurred during signup.",
+          "signup_gender_label": "Choose Male or Female",
+          "signup_gender_male": "Male",
+          "signup_gender_female": "Female",
+          "signup_creating_account": "Creating Account...",
+          "signup_success_modal_title": "Account Created!",
 
-          // Signup Form Errors
-          "signup_error_firstName_required": "First Name is required.",
-          "signup_error_lastName_required": "Last Name is required.",
-          "signup_error_profilePic_required": "Profile Picture is required.",
-          "signup_error_username_required": "Username is required.",
-          "signup_error_phoneNumber_required": "Phone Number is required.",
-          "signup_error_email_required": "Email is required.",
-          "signup_error_dob_required": "Date of Birth is required.",
-          "signup_error_cnic_invalid": "CNIC Number must be 13 digits.",
-          "signup_error_cnicFrontPic_required": "CNIC Front Picture is required.",
-          "signup_error_cnicBackPic_required": "CNIC Back Picture is required.",
-          "signup_error_password_required": "Password is required.",
-          "signup_error_confirmPassword_required": "Passwords do not match.", // Corrected from "Confirm Password is required."
-          "signup_error_passwords_mismatch": "Passwords do not match.",
-          "signup_success_message": "Account created successfully!"
+
+          // Chatbot Translations
+          "chatbot_welcome_message": "Welcome to Gadd Kaam – SkillSwap Pakistan! 🤝\nEmpowering communities by connecting skills and opportunities.\nHow can I assist you today in Sindhi or Urdu? Ask me anything about our Marketplace, Women-Only Zone, posting skills, or support like FAQs and dispute resolution.",
+          "chatbot_dummy_response": "I'm a simple AI assistant for now. How else can I help with information about Gadd Kaam?",
+          "chatbot_input_placeholder": "Type your message here...",
+
+          // Helpline Popup
+          "helpline_popup_title": "Gadd Kaam Helpline",
+          "helpline_number": "📞 +92-300-1234567",
+          "helpline_note": "Available 24/7 for support.",
+
+          // Logout Confirmation
+          "logout_confirm_title": "Confirm Logout",
+          "logout_confirm_message": "Are you sure you want to log out?",
+          "logout_cancel_btn": "No, Cancel",
+          "logout_confirm_btn": "Yes, Log Out",
         },
       },
       ur: {
@@ -223,6 +298,51 @@ i18n
           "dark_mode_toggle": "ڈارک موڈ ٹوگل کریں",
           "change_language": "زبان تبدیل کریں",
           "call_helpline": "ہیلپ لائن پر کال کریں",
+          "by_label": "پاران",
+          "remotely_label": "دور سے",
+          "anonymous_label": "گمنام",
+          "women_only_zone_tag": "خواتین کا زون",
+          "not_specified": "تفصیل نہیں دی گئی",
+          "specify_skill_wanted_label": "وہ مہارت بتائیں جو آپ ان سے چاہتے ہیں:",
+          "request_skill_placeholder": "مثال کے طور پر، مجھے ویب ڈیزائن کے بدلے ری ایکٹ ڈاٹ جے ایس ٹیوٹرنگ میں مدد کی ضرورت ہے۔",
+          "send_request_btn": "درخواست بھیجیں",
+          "request_sent_success_message": "درخواست کامیابی سے بھیجی گئی!",
+          "request_sent_error_message": "درخواست بھیجنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
+          "access_denied_female_only": "رسائی سے انکار: یہ علاقہ صرف خواتین صارفین کے لیے ہے۔",
+          "failed_to_load_women_only_skills_error": "صرف خواتین کی مہارتیں لوڈ کرنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
+          "failed_to_load_marketplace_skills_error": "مارکیٹ پلیس کی مہارتیں لوڈ کرنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
+          "ok": "ٹھیک ہے",
+          "all_rights_reserved": "تمام حقوق محفوظ ہیں۔",
+          "confirm": "تصدیق کریں",
+
+          // Received Requests Page (Urdu)
+          "offered_by": "پیش کردہ از",
+          "received_requests_page_title": "موصول شدہ درخواستیں",
+          "received_requests_page_subtitle": "کمیونٹی کے دیگر اراکین سے مہارت کے تبادلے کی درخواستوں کا انتظام کریں۔",
+          "no_requests_received": "آپ کو ابھی تک مہارت کی کوئی درخواست موصول نہیں ہوئی ہے۔",
+          "requested_by": "درخواست کردہ از",
+          "offered_skill_label_in_request": "پیش کردہ مہارت",
+          "message_label": "پیغام",
+          "date_received": "موصول ہونے کی تاریخ",
+          "accept_btn": "قبول کریں",
+          "decline_btn": "رد کریں",
+          "requested_your_skill": "آپ کی مہارت کی درخواست کی گئی",
+          "sender_offers_in_return": "بھیجنے والا بدلے میں پیش کرتا ہے",
+          "cancel_btn": "منسوخ کریں",
+          "request_accepted_by": "{{username}} نے درخواست قبول کر لی! 🎉",
+          "contact_them_to_coordinate": "اب آپ ان سے اپنی مہارت کے تبادلے کو مربوط کرنے کے لیے رابطہ کر سکتے ہیں۔",
+          "contact_details_heading": "رابطے کی تفصیلات:",
+          "name_label": "نام",
+          "phone_label": "فون",
+          "failed_to_load_requests_error": "درخواستیں لوڈ کرنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
+          "request_accepted_notification": "درخواست قبول ہو گئی! صارف کو مطلع کر دیا گیا ہے۔",
+          "failed_to_accept_request_error": "درخواست قبول کرنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
+          "request_cancelled_notification": "درخواست منسوخ کر دی گئی۔",
+          "failed_to_cancel_request_error": "درخواست منسوخ کرنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
+          "pending_requests_section_title": "زیر التواء درخواستیں",
+          "accepted_requests_section_title": "منظور شدہ درخواستیں",
+          "no_new_requests_message_p1": "آپ کے پاس فی الحال کوئی نئی مہارت کی درخواستیں یا منظور شدہ تبادلے نہیں ہیں۔",
+          "no_new_requests_message_p2": "جب کوئی آپ کی مہارت میں سے کسی ایک کی درخواست کرے گا تو وہ یہاں ظاہر ہو گا۔",
 
           // Navbar (Urdu)
           "navbar_home": "ہوم",
@@ -291,6 +411,10 @@ i18n
           "footer_privacy_policy": "پرائیویسی پالیسی",
           "footer_terms_of_service": "سروس کی شرائط",
           "Empowering_communities_by_connecting_skills_cash_free": "مہارتوں کو نقد کے بغیر جوڑ کر کمیونٹیز کو بااختیار بنانا۔",
+          "post_a_skill": "ایک مہارت پوسٹ کریں",
+          "faq_link": "اکثر پوچھے گئے سوالات",
+          "dispute_resolution_link": "تنازعہ کا حل",
+
 
           // Language names for display (Urdu)
           "lang_en": "انگریزی",
@@ -365,6 +489,11 @@ i18n
           "skill_not_specified": "واضح نہیں کیا گیا",
           "yes": "ہاں",
           "no": "نہیں",
+          "failed_to_load_my_skills_error": "آپ کی مہارتیں لوڈ کرنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
+          "skill_offer_deleted_success": "مہارت کی پیشکش کامیابی سے حذف ہو گئی!",
+          "failed_to_delete_skill_offer_error": "مہارت کی پیشکش حذف کرنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
+          "delete_confirm_title": "تصدیق حذف کریں",
+          "delete_confirm_message": "کیا آپ واقعی اس مہارت کی پیشکش کو حذف کرنا چاہتے ہیں؟ یہ کارروائی کالعدم نہیں کی جا سکتی۔",
 
           // --- Marketplace Page Translations (Urdu) ---
           "marketplace_page_title": "مہارت مارکیٹ پلیس",
@@ -376,6 +505,19 @@ i18n
           "women_only_zone_page_title": "خواتین کے لیے مخصوص مہارت زون",
           "women_only_zone_page_subtitle": "خواتین کے لیے مہارتیں محفوظ طریقے سے شیئر کرنے اور تبادلہ کرنے کے لیے ایک مخصوص جگہ۔",
           "no_women_zone_skills_available": "اس وقت خواتین کے لیے مخصوص زون میں کوئی مہارت دستیاب نہیں ہے۔ بعد میں دوبارہ چیک کریں!",
+
+          // --- Login Page Translations (Urdu) ---
+          "login_welcome_back": "خوش آمدید!",
+          "login_access_account": "اپنے اکاؤنٹ تک رسائی حاصل کرنے اور مہارتوں کا تبادلہ شروع کرنے کے لیے لاگ ان کریں۔",
+          "login_credential_label": "ای میل، صارف نام، یا شناختی کارڈ",
+          "login_credential_placeholder": "اپنی اسناد درج کریں",
+          "login_password_placeholder": "اپنا پاس ورڈ درج کریں",
+          "login_forgot_password": "پاس ورڈ بھول گئے؟",
+          "login_logging_in": "لاگ ان ہو رہا ہے...",
+          "login_no_account_prompt": "اکاؤنٹ نہیں ہے؟",
+          "login_success_message": "آپ کامیابی سے لاگ ان ہو گئے ہیں!",
+          "login_unexpected_error": "لاگ ان کے دوران ایک غیر متوقع خرابی پیش آئی۔ براہ کرم دوبارہ کوشش کریں۔",
+          "login_success_title": "لاگ ان کامیاب!",
 
           // --- Signup Page Translations (Urdu) ---
           "signup_join_gadd_kaam": "گڈ کام میں شامل ہوں",
@@ -399,22 +541,30 @@ i18n
           "signup_create_account_btn": "اکاؤنٹ بنائیں",
           "signup_already_have_account": "پہلے سے ہی اکاؤنٹ ہے؟",
           "signup_login_link": "لاگ ان کریں",
+          "signup_success_message": "اکاؤنٹ کامیابی سے بن گیا! براہ کرم لاگ ان کریں۔",
+          "signup_error_gender_required": "براہ کرم اپنی جنس منتخب کریں۔",
+          "signup_unexpected_error": "سائن اپ کے دوران ایک غیر متوقع خرابی پیش آئی۔",
+          "signup_gender_label": "مرد یا عورت منتخب کریں",
+          "signup_gender_male": "مرد",
+          "signup_gender_female": "عورت",
+          "signup_creating_account": "اکاؤنٹ بنا رہا ہے...",
+          "signup_success_modal_title": "اکاؤنٹ بن گیا!",
 
-          // Signup Form Errors (Urdu)
-          "signup_error_firstName_required": "پہلا نام درکار ہے۔",
-          "signup_error_lastName_required": "آخری نام درکار ہے۔",
-          "signup_error_profilePic_required": "پروفائل تصویر درکار ہے۔",
-          "signup_error_username_required": "صارف نام درکار ہے۔",
-          "signup_error_phoneNumber_required": "فون نمبر درکار ہے۔",
-          "signup_error_email_required": "ای میل درکار ہے۔",
-          "signup_error_dob_required": "تاریخ پیدائش درکار ہے۔",
-          "signup_error_cnic_invalid": "شناختی کارڈ نمبر 13 ہندسوں کا ہونا چاہیے۔",
-          "signup_error_cnicFrontPic_required": "شناختی کارڈ سامنے کی تصویر درکار ہے۔",
-          "signup_error_cnicBackPic_required": "شناختی کارڈ پیچھے کی تصویر درکار ہے۔",
-          "signup_error_password_required": "پاس ورڈ درکار ہے۔",
-          "signup_error_confirmPassword_required": "پاس ورڈ کی تصدیق درکار ہے۔",
-          "signup_error_passwords_mismatch": "پاس ورڈ میل نہیں کھاتے۔",
-          "signup_success_message": "اکاؤنٹ کامیابی سے بن گیا!"
+          // Chatbot Translations (Urdu)
+          "chatbot_welcome_message": "گڈ کام – اسکل سویپ پاکستان میں خوش آمدید! 🤝\nمہارتوں اور مواقع کو جوڑ کر کمیونٹیز کو بااختیار بنانا۔\nمیں آج آپ کی سندھی یا اردو میں کیسے مدد کر سکتا ہوں؟ ہمارے مارکیٹ پلیس، خواتین کے زون، مہارتیں پوسٹ کرنے، یا سپورٹ جیسے سوالات اور تنازعات کے حل کے بارے میں کچھ بھی پوچھیں۔",
+          "chatbot_dummy_response": "میں فی الحال ایک سادہ AI اسسٹنٹ ہوں۔ گڈ کام کے بارے میں مزید معلومات کے ساتھ میں آپ کی اور کیسے مدد کر سکتا ہوں؟",
+          "chatbot_input_placeholder": "یہاں اپنا پیغام لکھیں...",
+
+          // Helpline Popup (Urdu)
+          "helpline_popup_title": "گڈ کام ہیلپ لائن",
+          "helpline_number": "📞 923001234567+",
+          "helpline_note": "مدد کے لیے 24/7 دستیاب ہے۔",
+
+          // Logout Confirmation (Urdu)
+          "logout_confirm_title": "لاگ آؤٹ کی تصدیق کریں",
+          "logout_confirm_message": "کیا آپ واقعی لاگ آؤٹ کرنا چاہتے ہیں؟",
+          "logout_cancel_btn": "نہیں، منسوخ کریں",
+          "logout_confirm_btn": "ہاں، لاگ آؤٹ کریں",
         },
       },
       sd: {
@@ -423,6 +573,51 @@ i18n
           "dark_mode_toggle": "اونداهي موڊ کي تبديل ڪريو",
           "change_language": "ٻولي تبديل ڪريو",
           "call_helpline": "هلپ لائن تي ڪال ڪريو",
+          "by_label": "پاران",
+          "remotely_label": "ريموٽلي",
+          "anonymous_label": "گمنام",
+          "women_only_zone_tag": "صرف عورتن جو علائقو",
+          "not_specified": "بيان نه ڪيو ويو",
+          "specify_skill_wanted_label": "اهو مهارت ٻڌايو جيڪو توهان انهن کان چاهيو ٿا:",
+          "request_skill_placeholder": "مثال طور، مون کي ويب ڊيزائن جي بدلي ۾ React.js ٽيوٽرنگ ۾ مدد جي ضرورت آهي.",
+          "send_request_btn": "درخواست موڪليو",
+          "request_sent_success_message": "درخواست ڪاميابيءَ سان موڪلي وئي!",
+          "request_sent_error_message": "درخواست موڪلڻ ۾ ناڪامي. مهرباني ڪري ٻيهر ڪوشش ڪريو.",
+          "access_denied_female_only": "رسائي رد ٿيل: هي علائقو صرف عورتن لاءِ آهي.",
+          "failed_to_load_women_only_skills_error": "عورتن جي مهارتن کي لوڊ ڪرڻ ۾ ناڪامي. مهرباني ڪري ٻيهر ڪوشش ڪريو.",
+          "failed_to_load_marketplace_skills_error": "مارڪيٽ جي مهارتن کي لوڊ ڪرڻ ۾ ناڪامي. مهرباني ڪري ٻيهر ڪوشش ڪريو.",
+          "ok": "ٺيڪ آهي",
+          "all_rights_reserved": "سڀ حق محفوظ.",
+          "confirm": "تصديق ڪريو",
+
+          // Received Requests Page (Sindhi)
+          "offered_by": "پيش ڪيل پاران",
+          "received_requests_page_title": "موصول ٿيل درخواستون",
+          "received_requests_page_subtitle": "ڪميونٽي جي ٻين ميمبرن کان مهارت جي تبادلي جي درخواستن جو انتظام ڪريو.",
+          "no_requests_received": "توهان کي اڃا تائين ڪا به مهارت جي درخواست موصول نه ٿي آهي.",
+          "requested_by": "درخواست ڪيل پاران",
+          "offered_skill_label_in_request": "پيش ڪيل مهارت",
+          "message_label": "پيغام",
+          "date_received": "موصول ٿيڻ جي تاريخ",
+          "accept_btn": "قبول ڪريو",
+          "decline_btn": "رد ڪريو",
+          "requested_your_skill": "توهان جي مهارت جي درخواست ڪئي وئي",
+          "sender_offers_in_return": "موڪليندڙ بدلي ۾ پيش ڪري ٿو",
+          "cancel_btn": "رد ڪريو",
+          "request_accepted_by": "درخواست {{username}} پاران قبول ڪئي وئي! 🎉",
+          "contact_them_to_coordinate": "هاڻي توهان انهن سان پنهنجي مهارت جي بدلي کي هموار ڪرڻ لاءِ رابطو ڪري سگهو ٿا.",
+          "contact_details_heading": "رابطي جي تفصيل:",
+          "name_label": "نالو",
+          "phone_label": "فون",
+          "failed_to_load_requests_error": "درخواستون لوڊ ڪرڻ ۾ ناڪامي. مهرباني ڪري ٻيهر ڪوشش ڪريو.",
+          "request_accepted_notification": "درخواست قبول ٿي وئي! استعمال ڪندڙ کي مطلع ڪيو ويو آهي.",
+          "failed_to_accept_request_error": "درخواست قبول ڪرڻ ۾ ناڪامي. مهرباني ڪري ٻيهر ڪوشٽ ڪريو.",
+          "request_cancelled_notification": "درخواست رد ڪئي وئي.",
+          "failed_to_cancel_request_error": "درخواست رد ڪرڻ ۾ ناڪامي. مهرباني ڪري ٻيهر ڪوشش ڪريو.",
+          "pending_requests_section_title": "زير التوا درخواستون",
+          "accepted_requests_section_title": "قبول ڪيل درخواستون",
+          "no_new_requests_message_p1": "توهان وٽ هن وقت ڪا به نئين مهارت جي درخواست يا قبول ٿيل مٽاسٽا نه آهي.",
+          "no_new_requests_message_p2": "جڏهن ڪو توهان جي مهارتن مان ڪنهن هڪ جي درخواست ڪندو ته اها هتي ظاهر ٿيندي.",
 
           // Navbar (Sindhi)
           "navbar_home": "گھر",
@@ -479,7 +674,7 @@ i18n
 
           // Women's Zone Section (Sindhi)
           "women_zone_title": "خاتونن لاءِ هڪ محفوظ جاءِ",
-          "women_zone_description": "اسان جو عورتن لاءِ مخصوص اسڪل زون عورتن کي اعتماد سان ڳنڍڻ، سکڻ ۽ مهارتن جو تبادلو ڪرڻ لاءِ هڪ محفوظ ۽ مددگار ماحول فراهم ڪري ٿو.",
+          "women_zone_description": "اسان جو عورتن لاءِ مخصوص اسڪل زون عورتن کي اعتماد سان شيئر ڪرڻ، سکڻ ۽ مهارتن جو تبادلو ڪرڻ لاءِ هڪ محفوظ ۽ مددگار ماحول فراهم ڪري ٿو.",
           "women_zone_button": "خاتونن جي زون کي ڳوليو",
 
           // Footer (Sindhi)
@@ -491,6 +686,9 @@ i18n
           "footer_privacy_policy": "پرائيويسي پاليسي",
           "footer_terms_of_service": "سروس جون شرطون",
           "Empowering_communities_by_connecting_skills_cash_free": "مهارتن کي ڳنڍڻ، بغير نقد، جي ذريعي ڪميونٽين کي بااختيار بڻائڻ.",
+          "post_a_skill": "هڪ مهارت پوسٽ ڪريو",
+          "faq_link": "اڪثر پڇيا ويندڙ سوال",
+          "dispute_resolution_link": "تڪرار جو حل",
 
           // Language names for display (Sindhi)
           "lang_en": "انگريزي",
@@ -565,6 +763,12 @@ i18n
           "skill_not_specified": "واضح نه ڪيل",
           "yes": "ها",
           "no": "نه",
+          "failed_to_load_my_skills_error": "توهان جي مهارتن کي لوڊ ڪرڻ ۾ ناڪامي. مهرباني ڪري ٻيهر ڪوشش ڪريو.",
+          "skill_offer_deleted_success": "مهارت جي پيشڪش ڪاميابي سان حذف ٿي وئي!",
+          "failed_to_delete_skill_offer_error": "مهارت جي پيشڪش حذف ڪرڻ ۾ ناڪامي. مهرباني ڪري ٻيهر ڪوشش ڪريو.",
+          "delete_confirm_title": "حذف ڪرڻ جي تصديق ڪريو",
+          "delete_confirm_message": "ڇا توهان پڪ آهيو ته توهان هن مهارت جي پيشڪش کي حذف ڪرڻ چاهيو ٿا؟ هي عمل واپس نٿو وٺي سگهجي.",
+
 
           // --- Marketplace Page Translations (Sindhi) ---
           "marketplace_page_title": "مهارت مارڪيٽ پليس",
@@ -576,6 +780,19 @@ i18n
           "women_only_zone_page_title": "خاتونن لاءِ مخصوص اسڪل زون",
           "women_only_zone_page_subtitle": "عورتن لاءِ هڪ وقف ٿيل جاءِ جتي هو محفوظ طور تي صلاحيتون شيئر ۽ تبادلو ڪري سگهن ٿيون.",
           "no_women_zone_skills_available": "هن وقت خاتونن لاءِ مخصوص زون ۾ ڪا به مهارت دستياب ناهي. بعد ۾ ٻيهر چيڪ ڪريو!",
+
+          // --- Login Page Translations (Sindhi) ---
+          "login_welcome_back": "ڀليڪار!",
+          "login_access_account": "پنهنجي اڪائونٽ تائين رسائي ۽ صلاحيتن جو تبادلو شروع ڪرڻ لاءِ لاگ ان ٿيو.",
+          "login_credential_label": "اي ميل، يوزر نالو، يا سي اين آءِ سي",
+          "login_credential_placeholder": "پنهنجي سندون داخل ڪريو",
+          "login_password_placeholder": "پنهنجو پاسورڊ داخل ڪريو",
+          "login_forgot_password": "پاسورڊ وسري ويو؟",
+          "login_logging_in": "لاگ ان ٿي رهيو آهي...",
+          "login_no_account_prompt": "اڪائونٽ ناهي؟",
+          "login_success_message": "توهان ڪاميابي سان لاگ ان ٿي ويا آهيو!",
+          "login_unexpected_error": "لاگ ان دوران هڪ اڻڄاتل خرابي پيش آئي. مهرباني ڪري ٻيهر ڪوشش ڪريو.",
+          "login_success_title": "لاگ ان ڪامياب!",
 
           // --- Signup Page Translations (Sindhi) ---
           "signup_join_gadd_kaam": "گڊ ڪام ۾ شامل ٿيو",
@@ -599,37 +816,30 @@ i18n
           "signup_create_account_btn": "اڪائونٽ ٺاهيو",
           "signup_already_have_account": "اڳ ۾ ئي اڪائونٽ آهي؟",
           "signup_login_link": "لاگ ان ٿيو",
-          // Add these inside the 'translation' object for 'en', 'ur', and 'sd' respectively
+          "signup_success_message": "اڪائونٽ ڪاميابي سان ٺاهيو ويو! مهرباني ڪري لاگ ان ٿيو.",
+          "signup_error_gender_required": "مهرباني ڪري توهان جي جنس چونڊيو.",
+          "signup_unexpected_error": "سائن اپ دوران هڪ اڻڄاتل خرابي پيش آئي.",
+          "signup_gender_label": "مرد يا عورت چونڊيو",
+          "signup_gender_male": "مرد",
+          "signup_gender_female": "عورت",
+          "signup_creating_account": "اڪائونٽ ٺاهي رهيو آهي...",
+          "signup_success_modal_title": "اڪائونٽ ٺهي ويو!",
 
-          // For English:
-          "chatbot_welcome_message": "Welcome to Gadd Kaam – SkillSwap Pakistan! 🤝\nEmpowering communities by connecting skills and opportunities.\nHow can I assist you today in Sindhi or Urdu? Ask me anything about our Marketplace, Women-Only Zone, posting skills, or support like FAQs and dispute resolution.",
-          "chatbot_dummy_response": "I'm a simple AI assistant for now. How else can I help with information about Gadd Kaam?",
-          "chatbot_input_placeholder": "Type your message here...",
-
-          // For Urdu:
-          "chatbot_welcome_message": "گڈ کام – اسکل سویپ پاکستان میں خوش آمدید! 🤝\nمہارتوں اور مواقع کو جوڑ کر کمیونٹیز کو بااختیار بنانا۔\nمیں آج آپ کی سندھی یا اردو میں کیسے مدد کر سکتا ہوں؟ ہمارے مارکیٹ پلیس، خواتین کے زون، مہارتیں پوسٹ کرنے، یا سپورٹ جیسے سوالات اور تنازعات کے حل کے بارے میں کچھ بھی پوچھیں۔",
-          "chatbot_dummy_response": "میں فی الحال ایک سادہ AI اسسٹنٹ ہوں۔ گڈ کام کے بارے میں مزید معلومات کے ساتھ میں آپ کی اور کیسے مدد کر سکتا ہوں؟",
-          "chatbot_input_placeholder": "یہاں اپنا پیغام لکھیں...",
-
-          // For Sindhi:
+          // Chatbot Translations (Sindhi)
           "chatbot_welcome_message": "گڊ ڪام – اسڪل سوائيپ پاڪستان ۾ ڀليڪار! 🤝\nصلاحيتن ۽ موقعن کي ڳنڍي ڪميونٽيز کي بااختيار بڻائڻ.\nمان اڄ توهان جي سنڌي يا اردو ۾ ڪيئن مدد ڪري سگهان ٿو؟ اسان جي مارڪيٽ پليس، عورتن لاءِ مخصوص زون، مهارتون پوسٽ ڪرڻ، يا FAQs ۽ تڪراري حل جهڙين مدد بابت ڪجهه به پڇو.",
           "chatbot_dummy_response": "مان هن وقت هڪ سادو AI اسسٽنٽ آهيان. گڊ ڪام بابت وڌيڪ معلومات سان مان توهان جي وڌيڪ ڪيئن مدد ڪري سگهان ٿو؟",
           "chatbot_input_placeholder": "هتي پنهنجو پيغام لکو...",
-          // Signup Form Errors (Sindhi)
-          "signup_error_firstName_required": "پهريون نالو لازمي آهي.",
-          "signup_error_lastName_required": "آخري نالو لازمي آهي.",
-          "signup_error_profilePic_required": "پروفائل تصوير لازمي آهي.",
-          "signup_error_username_required": "يوزر نالو لازمي آهي.",
-          "signup_error_phoneNumber_required": "فون نمبر لازمي آهي.",
-          "signup_error_email_required": "اي ميل لازمي آهي.",
-          "signup_error_dob_required": "ڄمڻ جي تاريخ لازمي آهي.",
-          "signup_error_cnic_invalid": "سي اين آءِ سي نمبر 13 عددن جو هجڻ گهرجي.",
-          "signup_error_cnicFrontPic_required": "سي اين آءِ سي سامهون جي تصوير لازمي آهي.",
-          "signup_error_cnicBackPic_required": "سي اين آءِ سي پٺيان جي تصوير لازمي آهي.",
-          "signup_error_password_required": "پاسورڊ لازمي آهي.",
-          "signup_error_confirmPassword_required": "پاسورڊ جي تصديق لازمي آهي.",
-          "signup_error_passwords_mismatch": "پاسورڊ هڪجهڙا ناهن.",
-          "signup_success_message": "اڪائونٽ ڪاميابي سان ٺاهيو ويو!"
+
+          // Helpline Popup (Sindhi)
+          "helpline_popup_title": "گڊ ڪام هيلپ لائن",
+          "helpline_number": "📞 +92-300-1234567",
+          "helpline_note": "مدد لاءِ 24/7 دستياب آهي.",
+
+          // Logout Confirmation (Sindhi)
+          "logout_confirm_title": "لاگ آئوٽ جي تصديق ڪريو",
+          "logout_confirm_message": "ڇا توهان پڪ آهيو ته توهان لاگ آئوٽ ڪرڻ چاهيو ٿا؟",
+          "logout_cancel_btn": "نه، رد ڪريو",
+          "logout_confirm_btn": "ها، لاگ آئوٽ ڪريو",
         },
       },
     },

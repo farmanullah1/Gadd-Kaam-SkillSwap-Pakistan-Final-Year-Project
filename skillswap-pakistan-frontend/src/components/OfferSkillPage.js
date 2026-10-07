@@ -11,7 +11,7 @@ import axios from 'axios';
 import LoadingSpinner from './LoadingSpinner';
 import SuccessMessageModal from './SuccessMessageModal'; 
 
-// Import step components
+// Import step components (these will need their own translation integration if they contain text)
 import Step1 from './OfferSkillSteps/Step1';
 import Step2 from './OfferSkillSteps/Step2';
 import Step3 from './OfferSkillSteps/Step3';
@@ -108,12 +108,12 @@ function OfferSkillPage({ onChatbotToggle }) {
         },
       });
 
-      setSuccessMessage('Skill offer published successfully!');
+      setSuccessMessage(t('signup_success_message')); // Use translation key
       setShowSuccessModal(true);
 
     } catch (err) {
       console.error('Failed to publish skill offer:', err);
-      const errorMessage = err.response?.data?.message || 'Failed to publish skill offer. Please try again.';
+      const errorMessage = err.response?.data?.message || t('offer_publish_error_message'); // New key for general error
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -190,7 +190,7 @@ function OfferSkillPage({ onChatbotToggle }) {
 
       <SuccessMessageModal
         isOpen={showSuccessModal}
-        title="Success!"
+        title={t('success_modal_title')} // New key
         message={successMessage}
         onClose={handleCloseSuccessModal}
         type="success"

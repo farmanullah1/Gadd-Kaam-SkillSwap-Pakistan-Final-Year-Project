@@ -124,7 +124,7 @@
     border: 1px solid var(--border-color, #444444); /* Fallback border color */
     /* Input field background in dark mode: a slightly lighter dark */
     background-color: var(--secondary-light, #444); /* Fallback dark background */
-    color: var(--dark-text-light, #e0e0e0); /* Text color inside input field, fallback */
+    color: var(--dark-text-light, #050505); /* Text color inside input field, fallback */
     border-radius: 25px;
     font-size: 1em;
     margin-right: 10px;
