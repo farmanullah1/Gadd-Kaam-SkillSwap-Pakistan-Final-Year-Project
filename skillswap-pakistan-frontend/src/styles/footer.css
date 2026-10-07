@@ -177,3 +177,26 @@
     justify-content: center;
   }
 }
+
+/* --- Sindhi Mode Styles for Footer --- */
+.sindhi-footer-mode .footer-link,
+.sindhi-footer-mode .footer-heading,
+.sindhi-footer-mode .footer-copyright,
+.sindhi-footer-mode .footer-copyright a {
+  color: white !important;
+  font-weight: bold !important;
+  text-shadow: 1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black; /* Text shadow for readability */
+}
+
+.sindhi-footer-mode .footer-logo-text-main {
+  color: white !important;
+  font-weight: bold !important;
+  text-shadow: 2px 2px 3px black, -2px -2px 3px black, 2px -2px 3px black, -2px 2px 3px black; /* Stronger shadow for logo */
+}
+
+/* For footer social icons, ensure stroke and fill are white and have shadow */
+.sindhi-footer-mode .social-icons svg {
+  stroke: white !important;
+  fill: white !important;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.7)); /* Drop shadow for icons */
+}

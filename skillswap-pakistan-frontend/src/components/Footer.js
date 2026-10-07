@@ -1,13 +1,29 @@
 // skillswap-pakistan-frontend/src/components/Footer.js
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import i18n from '../i18n'; // Import i18n
 import { Link, useNavigate } from 'react-router-dom';
 
 // Ensure user and onChatbotToggle are destructured from props
 function Footer({ user, onChatbotToggle }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [isSindhiMode, setIsSindhiMode] = useState(i18n.language === 'sd'); // New state for Sindhi mode
+
+  // Effect to update Sindhi mode based on language change
+  useEffect(() => {
+    const handleLanguageChange = (lng) => {
+      setIsSindhiMode(lng === 'sd');
+    };
+    i18n.on('languageChanged', handleLanguageChange);
+    // Initial check in case component mounts after i18n is initialized
+    setIsSindhiMode(i18n.language === 'sd');
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, []);
 
   // New handler for the Marketplace link
   const handleMarketplaceClick = (e) => {
@@ -19,8 +35,17 @@ function Footer({ user, onChatbotToggle }) {
     }
   };
 
+  // Define inline style for Sindhi mode background
+  const sindhiFooterStyle = isSindhiMode ? {
+    backgroundImage: `url(${process.env.PUBLIC_URL}/Footer-sindhi.png)`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    transition: 'background-image 0.5s ease-in-out',
+  } : {};
+
   return (
-    <footer className="footer">
+    <footer className={`footer ${isSindhiMode ? 'sindhi-footer-mode' : ''}`} style={sindhiFooterStyle}> {/* Conditional class and inline style for Sindhi mode */}
       <div className="footer-container">
         <div className="footer-top-section">
           <div className="footer-logo-main">
@@ -44,18 +69,17 @@ function Footer({ user, onChatbotToggle }) {
             <div className="footer-column">
               <h4 className="footer-heading">{t("Quick Links")}</h4>
               <ul>
-                {/* UPDATED: Add the onClick handler to the Marketplace link */}
-                <li><Link to="/marketplace" className="nav-link-mobile" onClick={handleMarketplaceClick}>{t("navbar_marketplace")}</Link></li> {/* <-- ADDED onClick HERE */}
-                <li><Link to="/about" className="footer-link">{t("About Us")}</Link></li>
+                <li><Link to="/marketplace" className="footer-link" onClick={handleMarketplaceClick}>{t("navbar_marketplace")}</Link></li>
+                <li><Link to="/about-us" className="footer-link">{t("About Us")}</Link></li>
                 <li><Link to="/offer-skill" className="footer-link">{t("Post a Skill")}</Link></li>
               </ul>
             </div>
             <div className="footer-column">
               <h4 className="footer-heading">{t("Support")}</h4>
               <ul>
-                <li><Link to="/faq" className="footer-link">FAQ</Link></li>
-                <li><Link to="/contact" className="footer-link">{t("Contact Us")}</Link></li>
-                <li><Link to="/dispute" className="footer-link">Dispute Resolution</Link></li>
+                <li><Link to="/faq-page" className="footer-link">FAQ</Link></li>
+                <li><Link to="/contact-us" className="footer-link">{t("Contact Us")}</Link></li>
+                <li><Link to="/dispute-resolution-page" className="footer-link">Dispute Resolution</Link></li>
               </ul>
             </div>
             <div className="footer-column">
@@ -97,7 +121,6 @@ function Footer({ user, onChatbotToggle }) {
             </p>
           </div>
         </div>
-        {/* ADD the onClick handler here */}
         <div className="chatbot-icon-container" onClick={onChatbotToggle}>
           <svg
             xmlns="http://www.w3.org/2000/svg"

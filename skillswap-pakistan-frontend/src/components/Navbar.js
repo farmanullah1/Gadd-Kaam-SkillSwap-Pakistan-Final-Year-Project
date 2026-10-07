@@ -19,6 +19,7 @@ function Navbar(props) {
   const [showLanguageOptions, setShowLanguageOptions] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isSindhiMode, setIsSindhiMode] = useState(i18n.language === 'sd'); // New state for Sindhi mode
 
   const profileMenuRef = useRef(null);
 
@@ -30,6 +31,20 @@ function Navbar(props) {
     }
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
   }, [isDarkMode]);
+
+  // Effect to update Sindhi mode based on language change
+  useEffect(() => {
+    const handleLanguageChange = (lng) => {
+      setIsSindhiMode(lng === 'sd');
+    };
+    i18n.on('languageChanged', handleLanguageChange);
+    // Initial check in case component mounts after i18n is initialized
+    setIsSindhiMode(i18n.language === 'sd');
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -50,6 +65,7 @@ function Navbar(props) {
   const selectLanguage = (langCode) => {
     i18n.changeLanguage(langCode);
     setShowLanguageOptions(false);
+    // The useEffect above will handle setting isSindhiMode
   };
 
   const handleProfileClick = () => {
@@ -77,7 +93,7 @@ function Navbar(props) {
       // Check if the user is female
       if (props.user.gender !== 'Female') {
         e.preventDefault(); // Prevent navigation for non-female users
-        alert("This is a women-only zone. You must be a female user to access it.");
+        console.log("This is a women-only zone. You must be a female user to access it."); // Replaced alert with console.log
       }
     } else {
       e.preventDefault(); // Prevent default link navigation
@@ -91,6 +107,15 @@ function Navbar(props) {
 
   // Condition to check if the women-zone link should be visible
   const shouldShowWomenZone = !props.user || (props.user && props.user.gender === 'Female');
+
+  // Define inline style for Sindhi mode background
+  const sindhiNavbarStyle = isSindhiMode ? {
+    backgroundImage: `url(${process.env.PUBLIC_URL}/Navbar-sindhi.png)`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    transition: 'background-image 0.5s ease-in-out',
+  } : {};
 
   return (
     <>
@@ -129,7 +154,7 @@ function Navbar(props) {
         </div>
       </div>
 
-      <nav className="navbar sticky-header">
+      <nav className={`navbar sticky-header ${isSindhiMode ? 'sindhi-navbar-mode' : ''}`} style={sindhiNavbarStyle}>
         <div className="navbar-content">
           <Link to="/" className="navbar-logo">
             <img
@@ -141,7 +166,7 @@ function Navbar(props) {
                 e.target.src = "https://placehold.co/48x48?text=GK";
               }}
             />
-            Gadd Kaam
+            <span>Gadd Kaam</span>
           </Link>
 
           <div className="navbar-mobile-menu-button">
@@ -178,12 +203,11 @@ function Navbar(props) {
 
           <div className="navbar-links-desktop">
             <Link to="/marketplace" className="nav-link">{t("navbar_marketplace")}</Link>
-            <Link to="/about" className="nav-link">{t("navbar_about_us")}</Link>
-            {/* UPDATED: Conditionally render the women-zone link */}
+            <Link to="/about-us" className="nav-link">{t("navbar_about_us")}</Link>
             {shouldShowWomenZone && (
               <Link to="/women-zone" className="nav-link" onClick={handleWomenZoneClick}>{t("navbar_women_zone")}</Link>
             )}
-            <Link to="/contact" className="nav-link">{t("navbar_contact")}</Link>
+            <Link to="/contact-us" className="nav-link">{t("navbar_contact")}</Link>
 
             {props.user ? (
               <div className="profile-dropdown-container" ref={profileMenuRef}>
@@ -217,12 +241,11 @@ function Navbar(props) {
         {isMenuOpen && (
           <div className="navbar-mobile-menu">
             <Link to="/marketplace" className="nav-link-mobile">{t("navbar_marketplace")}</Link>
-            <Link to="/about" className="nav-link-mobile">{t("navbar_about_us")}</Link>
-            {/* UPDATED: Conditionally render the women-zone link in the mobile menu */}
+            <Link to="/about-us" className="nav-link-mobile">{t("navbar_about_us")}</Link>
             {shouldShowWomenZone && (
               <Link to="/women-zone" className="nav-link-mobile" onClick={handleWomenZoneClick}>{t("navbar_women_zone")}</Link>
             )}
-            <Link to="/contact" className="nav-link-mobile">{t("navbar_contact")}</Link>
+            <Link to="/contact-us" className="nav-link-mobile">{t("navbar_contact")}</Link>
             {props.user ? (
               <>
                 <Link to="/dashboard" className="btn btn-login-mobile">Dashboard</Link>

@@ -108,7 +108,6 @@
   background-color: var(--background-beige);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   padding: 1rem 1.5rem;
-  /* IMPORTANT: Reverted to sticky position */
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -131,7 +130,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  text-decoration: none; /* Add this to remove underline from Link */
+  text-decoration: none;
 }
 
 .logo-image {
@@ -142,7 +141,7 @@
 }
 
 .navbar-links-desktop {
-  display: flex; /* Changed from 'none' for desktop view */
+  display: flex;
   align-items: center;
   gap: 2rem;
 }
@@ -177,7 +176,7 @@
 }
 
 .btn-signup:hover {
-  background-color: rgba(227, 139, 64, 0.9); /* Slightly darker orange */
+  background-color: rgba(227, 139, 64, 0.9);
   color: white;
 }
 
@@ -253,7 +252,6 @@
   background-color: var(--red-error-light);
   color: white;
 }
-
 
 /* Mobile Menu */
 .navbar-mobile-menu-button {
@@ -348,4 +346,33 @@
   .navbar-mobile-menu.open {
     display: flex;
   }
+}
+
+/* --- Sindhi Mode Styles for Navbar --- */
+.sindhi-navbar-mode .nav-link,
+.sindhi-navbar-mode .navbar-logo span,
+.sindhi-navbar-mode .utility-btn span,
+.sindhi-navbar-mode .language-options button,
+.sindhi-navbar-mode .profile-dropdown-menu .dropdown-item,
+.sindhi-navbar-mode .btn,
+.sindhi-navbar-mode .btn-login,
+.sindhi-navbar-mode .btn-signup,
+.sindhi-navbar-mode .nav-link-mobile,
+.sindhi-navbar-mode .btn-login-mobile,
+.sindhi-navbar-mode .btn-signup-mobile {
+  color: white !important;
+  font-weight: bold !important;
+  text-shadow: 1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black; /* Text shadow for readability */
+}
+
+.sindhi-navbar-mode .navbar-logo {
+  color: white !important; /* Ensure logo text color is white */
+  text-shadow: 2px 2px 3px black, -2px -2px 3px black, 2px -2px 3px black, -2px 2px 3px black; /* Stronger shadow for logo */
+}
+
+/* Ensure SVG icons also change color and have shadow */
+.sindhi-navbar-mode svg {
+  stroke: white !important;
+  fill: white !important;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.7)); /* Drop shadow for icons */
 }
