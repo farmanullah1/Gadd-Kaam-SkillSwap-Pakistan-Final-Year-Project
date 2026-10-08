@@ -1,5 +1,4 @@
-/* src/index.css */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Noto+Sans+Arabic:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
 /* ── Design tokens (CSS custom properties used by all sheets) ── */
@@ -93,5 +92,28 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
+
+/* ── Multilingual & RTL Support (Urdu & Sindhi) ── */
+[dir="rtl"],
+body.rtl-mode {
+  text-align: right;
+  direction: rtl;
+}
+
+body.lang-ur,
+[dir="rtl"].lang-ur {
+  font-family: 'Noto Nastaliq Urdu', 'Noto Sans Arabic', 'Inter', system-ui, sans-serif;
+  line-height: 1.8;
+}
+
+body.lang-sd,
+[dir="rtl"].lang-sd {
+  font-family: 'Noto Sans Arabic', 'Noto Nastaliq Urdu', 'Inter', system-ui, sans-serif;
+  line-height: 1.7;
+}
+
+[dir="rtl"] .transform-origin-left {
+  transform-origin: right !important;
+}

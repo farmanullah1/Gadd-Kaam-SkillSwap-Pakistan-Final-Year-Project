@@ -8,9 +8,13 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    debug: true,
+    debug: false,
     fallbackLng: 'en',
-    lng: "en", // Explicitly set default language
+    detection: {
+      order: ['localStorage', 'cookie', 'navigator', 'htmlTag'],
+      caches: ['localStorage'],
+      lookupLocalStorage: 'i18nextLng',
+    },
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },
@@ -3561,4 +3565,38 @@ const englishFallbackBundle = i18n.getResourceBundle('en', 'translation') || {};
   });
 });
 
+// Automatically synchronize document language, text direction (RTL / LTR), and body classes
+export const applyLanguageDirection = (lng) => {
+  const currentLang = lng || i18n.language || 'en';
+  const isRTL = currentLang === 'ur' || currentLang === 'sd';
+  
+  if (typeof document !== 'undefined') {
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+    
+    if (isRTL) {
+      document.body.classList.add('rtl-mode');
+    } else {
+      document.body.classList.remove('rtl-mode');
+    }
+    
+    document.body.classList.remove('lang-en', 'lang-ur', 'lang-sd');
+    document.body.classList.add(`lang-${currentLang}`);
+  }
+};
+
+// Apply language direction immediately on bootstrap
+if (typeof window !== 'undefined') {
+  applyLanguageDirection(i18n.language);
+}
+
+// Listen for language changes and persist to localStorage
+i18n.on('languageChanged', (lng) => {
+  applyLanguageDirection(lng);
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('i18nextLng', lng);
+  }
+});
+
 export default i18n;
+

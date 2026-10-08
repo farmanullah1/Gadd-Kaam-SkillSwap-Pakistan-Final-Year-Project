@@ -245,6 +245,35 @@ function Navbar(props) {
               <Link to="/signup" className="block text-center py-3.5 bg-gradient-to-r from-primary-orange to-orange-500 text-white hover:to-orange-600 rounded-2xl font-extrabold shadow-lg shadow-orange-500/15 transition-all duration-200" onClick={() => setIsMenuOpen(false)}>{t('navbar_signup_btn')}</Link>
             </div>
           )}
+          {/* Mobile Language Switcher */}
+          <div className="flex items-center justify-between p-3 bg-slate-100/60 dark:bg-slate-900/60 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 mt-3">
+            <span className="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+              <Globe size={15} /> {t('change_language') || 'Language'}
+            </span>
+            <div className="flex items-center gap-1">
+              <button 
+                type="button" 
+                onClick={(e) => { selectLanguage('en', e); setIsMenuOpen(false); }}
+                className={`px-3 py-1.5 text-xs rounded-xl font-bold transition-all ${i18n.language?.startsWith('en') ? 'bg-primary-orange text-white shadow-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200/50'}`}
+              >
+                EN
+              </button>
+              <button 
+                type="button" 
+                onClick={(e) => { selectLanguage('ur', e); setIsMenuOpen(false); }}
+                className={`px-3 py-1.5 text-xs rounded-xl font-bold transition-all ${i18n.language?.startsWith('ur') ? 'bg-primary-orange text-white shadow-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200/50'}`}
+              >
+                اردو
+              </button>
+              <button 
+                type="button" 
+                onClick={(e) => { selectLanguage('sd', e); setIsMenuOpen(false); }}
+                className={`px-3 py-1.5 text-xs rounded-xl font-bold transition-all ${i18n.language?.startsWith('sd') ? 'bg-primary-orange text-white shadow-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200/50'}`}
+              >
+                سنڌي
+              </button>
+            </div>
+          </div>
         </>
       );
     }
@@ -283,6 +312,35 @@ function Navbar(props) {
             <Link to="/signup" className="block text-center py-3.5 bg-gradient-to-r from-primary-orange to-orange-500 text-white hover:to-orange-600 rounded-2xl font-extrabold shadow-lg shadow-orange-500/15 transition-all duration-200" onClick={() => setIsMenuOpen(false)}>{t('navbar_signup_btn')}</Link>
           </div>
         )}
+        {/* Mobile Language Switcher */}
+        <div className="flex items-center justify-between p-3 bg-slate-100/60 dark:bg-slate-900/60 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 mt-3">
+          <span className="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+            <Globe size={15} /> {t('change_language') || 'Language'}
+          </span>
+          <div className="flex items-center gap-1">
+            <button 
+              type="button" 
+              onClick={(e) => { selectLanguage('en', e); setIsMenuOpen(false); }}
+              className={`px-3 py-1.5 text-xs rounded-xl font-bold transition-all ${i18n.language?.startsWith('en') ? 'bg-primary-orange text-white shadow-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200/50'}`}
+            >
+              EN
+            </button>
+            <button 
+              type="button" 
+              onClick={(e) => { selectLanguage('ur', e); setIsMenuOpen(false); }}
+              className={`px-3 py-1.5 text-xs rounded-xl font-bold transition-all ${i18n.language?.startsWith('ur') ? 'bg-primary-orange text-white shadow-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200/50'}`}
+            >
+              اردو
+            </button>
+            <button 
+              type="button" 
+              onClick={(e) => { selectLanguage('sd', e); setIsMenuOpen(false); }}
+              className={`px-3 py-1.5 text-xs rounded-xl font-bold transition-all ${i18n.language?.startsWith('sd') ? 'bg-primary-orange text-white shadow-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200/50'}`}
+            >
+              سنڌي
+            </button>
+          </div>
+        </div>
       </>
     );
   };
@@ -328,7 +386,7 @@ function Navbar(props) {
                   aria-expanded={showLanguageOptions}
                 >
                   <Globe size={15} className={defaultSindhiIconColor} />
-                  <span>{i18n.language.toUpperCase()}</span>
+                  <span>{i18n.language?.startsWith('ur') ? 'اردو' : (i18n.language?.startsWith('sd') ? 'سنڌي' : 'EN')}</span>
                   <ChevronDown size={12} style={{ transition: 'transform 0.2s', transform: showLanguageOptions ? 'rotate(180deg)' : 'none' }} className={defaultSindhiIconColor} />
                 </button>
                 {showLanguageOptions && (
