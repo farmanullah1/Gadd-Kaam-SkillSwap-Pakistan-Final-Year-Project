@@ -345,3 +345,124 @@ body.dark-mode .btn-ghost {
   background: #162033 !important;
   border-color: rgba(255, 255, 255, 0.12) !important;
 }
+
+/* ── UI/UX Enhancement: Custom Sleek Scrollbar ── */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* ── UI/UX Enhancement: Form Controls & Input Focus Glow ── */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
+  border-color: var(--primary-orange) !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.15) !important;
+}
+
+/* ── UI/UX Enhancement: Universal Card Elevation & Depth ── */
+.skill-card,
+.feature-card,
+.dashboard-card,
+.testimonial-card,
+.stat-card,
+.info-card,
+.content-card {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.skill-card:hover,
+.feature-card:hover,
+.dashboard-card:hover,
+.testimonial-card:hover,
+.stat-card:hover,
+.info-card:hover,
+.content-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04) !important;
+  border-color: rgba(var(--primary-orange-rgb), 0.35) !important;
+}
+
+body.dark-mode .skill-card:hover,
+body.dark-mode .feature-card:hover,
+body.dark-mode .dashboard-card:hover,
+body.dark-mode .testimonial-card:hover,
+body.dark-mode .stat-card:hover,
+body.dark-mode .info-card:hover,
+body.dark-mode .content-card:hover {
+  box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.45), 0 0 15px -3px rgba(255, 107, 0, 0.15) !important;
+}
+
+/* ── UI/UX Enhancement: Tactile Button Click Depression ── */
+button:active:not(:disabled),
+.btn:active:not(:disabled),
+.btn-primary-orange:active,
+.btn-landing-primary:active,
+.btn-signup:active {
+  transform: scale(0.97) !important;
+  transition: transform 0.08s ease !important;
+}
+
+/* ── UI/UX Enhancement: Accessible Focus Visible Indicator ── */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--primary-orange) !important;
+  outline-offset: 2px !important;
+}
+
+/* ── UI/UX Enhancement: Subtle Gradient Glow Badges ── */
+.badge-glow {
+  background: linear-gradient(135deg, rgba(255, 107, 0, 0.12), rgba(245, 158, 11, 0.15));
+  border: 1px solid rgba(255, 107, 0, 0.25);
+  box-shadow: 0 2px 8px rgba(255, 107, 0, 0.1);
+}
+
+/* ── UI/UX Enhancement: Smooth Transition for Theme Switch ── */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Exclude transform and layout animations from global property transition */
+.reveal, .reveal-up, .reveal-left, .reveal-right, .reveal-scale,
+.skill-card, .feature-card, .dashboard-card,
+img, video, canvas {
+  transition-property: all;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
