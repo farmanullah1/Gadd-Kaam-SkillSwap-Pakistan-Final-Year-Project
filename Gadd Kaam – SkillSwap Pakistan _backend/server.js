@@ -7,6 +7,8 @@ const cors = require('cors');
 const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 
@@ -17,7 +19,36 @@ dotenv.config({ path: path.join(__dirname, 'config', '.env') });
 // Connect to Database
 connectDB();
 
-// Allowed Origins for Frontend (supports both Vite default 5173 and CRA/custom 3000)
+// 1. Security Headers (Helmet)
+app.use(
+    helmet({
+        crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allows uploaded images to load across origins
+        crossOriginEmbedderPolicy: false
+    })
+);
+
+// 2. Rate Limiting to prevent brute-force attacks and abuse
+const generalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 500, // Limit each IP to 500 requests per 15 mins
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Too many requests from this IP, please try again after 15 minutes' }
+});
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 30, // Limit each IP to 30 authentication attempts per 15 mins
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Too many authentication attempts. Please try again in 15 minutes.' }
+});
+
+app.use('/api', generalLimiter);
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+
+// 3. Allowed Origins for Frontend (supports both Vite default 5173 and CRA/custom 3000)
 const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
@@ -28,27 +59,26 @@ if (process.env.CLIENT_URL) {
     allowedOrigins.push(process.env.CLIENT_URL);
 }
 
-// Init Middleware
+// 4. CORS Configuration
 const corsOptions = {
     origin: function (origin, callback) {
-        // allow requests with no origin (like mobile apps, curl, postman)
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
             callback(null, true);
         } else {
-            callback(null, true); // Permissive in dev to avoid blocking
+            callback(new Error('Blocked by CORS policy'));
         }
     },
     credentials: true,
     optionsSuccessStatus: 200 
 };
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Mount static directory for images
+// 5. Mount static directory for images
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Health Check Endpoint
+// 6. Health Check Endpoint
 app.get('/api/health', (req, res) => {
     const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
     res.status(200).json({
@@ -60,7 +90,7 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// Define Routes
+// 7. Define Routes
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/profile', require('./routes/profileRoutes'));
@@ -77,7 +107,7 @@ app.get('/api/locations', (req, res) => res.json(require('./utils/locations')));
 
 app.get('/', (req, res) => res.json({ message: 'Gadd Kaam – SkillSwap Pakistan API is running' }));
 
-// 404 Handler for Unmatched API routes
+// 8. 404 Handler for Unmatched API routes
 app.use('*', (req, res) => {
     res.status(404).json({
         success: false,
@@ -85,7 +115,7 @@ app.use('*', (req, res) => {
     });
 });
 
-// Centralized Error Handling Middleware
+// 9. Centralized Error Handling Middleware
 app.use((err, req, res, next) => {
     console.error('Unhandled server error:', err);
     res.status(err.status || 500).json({
@@ -94,7 +124,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Setup HTTP Server and Socket.io
+// 10. Setup HTTP Server and Socket.io
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {

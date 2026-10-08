@@ -10,13 +10,13 @@ const adminAuth = [
       
       // Check if user exists and has admin role
       if (!user || user.role !== 'admin') {
-        return res.status(403).json({ msg: 'Access denied: Admins only' });
+        return res.status(403).json({ success: false, msg: 'Access denied: Admins only' });
       }
       
       next();
     } catch (err) {
       console.error('Admin Auth Error:', err.message);
-      res.status(500).send('Server Error');
+      res.status(500).json({ success: false, msg: 'Server error during admin verification' });
     }
   }
 ];

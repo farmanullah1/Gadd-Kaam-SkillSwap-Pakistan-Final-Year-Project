@@ -1,18 +1,24 @@
 // middleware/auth.js
 const jwt = require('jsonwebtoken');
-const keys = require('../config/keys'); // Import your keys
+const keys = require('../config/keys');
 
 const auth = (req, res, next) => {
-  // Get token from the 'Authorization' header
+  // Support both x-auth-token and Authorization: Bearer <token>
+  let token = req.header('x-auth-token');
   const authHeader = req.header('Authorization');
 
-  // Check if header exists and is in the correct format (Bearer <token>)
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ msg: 'No token, authorization denied' });
+  if (!token && authHeader) {
+    if (authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7).trim();
+    } else {
+      token = authHeader.trim();
+    }
   }
 
-  // Extract the token from the header (e.g., 'Bearer <token>' -> '<token>')
-  const token = authHeader.split(' ')[1];
+  // Check if no token
+  if (!token) {
+    return res.status(401).json({ success: false, msg: 'No token provided, authorization denied' });
+  }
 
   // Verify token
   try {
@@ -20,7 +26,7 @@ const auth = (req, res, next) => {
     req.user = decoded.user;
     next();
   } catch (err) {
-    res.status(401).json({ msg: 'Token is not valid' });
+    return res.status(401).json({ success: false, msg: 'Token is invalid or expired' });
   }
 };
 

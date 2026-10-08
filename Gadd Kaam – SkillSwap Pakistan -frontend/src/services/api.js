@@ -26,12 +26,20 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle common errors (e.g. 401 Unauthorized)
+// Response interceptor to handle common errors (e.g. 401 Unauthorized / Token Expiration)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Optional: Handle token expiration / logout logic if needed
+      const isAuthUrl = error.config && error.config.url && (error.config.url.includes('/auth/login') || error.config.url.includes('/auth/register'));
+      if (!isAuthUrl) {
+        // Clear expired or invalidated credentials
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+          window.location.href = '/login?expired=true';
+        }
+      }
     }
     return Promise.reject(error);
   }
