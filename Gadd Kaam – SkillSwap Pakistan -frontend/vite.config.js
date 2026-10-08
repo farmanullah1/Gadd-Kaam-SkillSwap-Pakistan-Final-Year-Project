@@ -1,6 +1,5 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
-import fs from 'fs';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ mode }) => {
@@ -15,31 +14,8 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       // Direct backward-compatible mapping for frontend API calls
-      'process.env.REACT_APP_API_URL': JSON.stringify(env.REACT_APP_API_URL || 'http://localhost:5000'),
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY || ''),
-    },
-    esbuild: {
-      loader: 'jsx',
-      include: /src\/.*\.js$/,
-      exclude: [],
-    },
-    optimizeDeps: {
-      esbuildOptions: {
-        plugins: [
-          {
-            name: 'load-js-files-as-jsx',
-            setup(build) {
-              build.onLoad({ filter: /src\/.*\.js$/ }, async (args) => {
-                const contents = await fs.promises.readFile(args.path, 'utf8');
-                return {
-                  loader: 'jsx',
-                  contents,
-                };
-              });
-            },
-          },
-        ],
-      },
+      'process.env.REACT_APP_API_URL': JSON.stringify(env.VITE_API_URL || env.REACT_APP_API_URL || 'http://localhost:5000'),
+      'process.env.GEMINI_API_KEY': JSON.stringify(env.VITE_GEMINI_API_KEY || env.GEMINI_API_KEY || ''),
     },
     build: {
       rollupOptions: {
