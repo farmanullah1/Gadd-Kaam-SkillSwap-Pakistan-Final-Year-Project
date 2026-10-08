@@ -980,3 +980,80 @@ body.dark-mode .document-media {
   color: var(--text-medium);
   margin-top: 2px;
 }
+
+/* --- RESPONSIVE MOBILE MESSAGES STYLING --- */
+.chat-back-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  padding: 6px;
+  margin-right: 6px;
+  cursor: pointer;
+  color: var(--text-dark);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.chat-back-btn:hover {
+  background: var(--background-section);
+  color: var(--primary-orange);
+}
+
+@media (max-width: 900px) {
+  .chat-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .messages-page-wrapper {
+    height: calc(100vh - 160px);
+    width: 100%;
+    margin: 0;
+    border-radius: 16px;
+  }
+
+  .messages-page-wrapper.has-active-chat .messages-list-sidebar {
+    display: none !important;
+  }
+
+  .messages-page-wrapper:not(.has-active-chat) .active-conversation-area {
+    display: none !important;
+  }
+
+  .messages-list-sidebar {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    border-right: none !important;
+  }
+
+  .active-conversation-area {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+  }
+
+  .chat-header {
+    padding: 12px 14px;
+  }
+
+  .chat-actions {
+    gap: 6px;
+  }
+
+  .chat-action-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .message-input-area {
+    padding: 10px 12px;
+  }
+
+  .conversation-item-info h4 {
+    font-size: 0.95rem;
+  }
+
+  .last-message-preview {
+    font-size: 0.82rem;
+  }
+}

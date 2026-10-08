@@ -13,7 +13,7 @@ import ReportUserModal from '../components/ReportUserModal'; // ✅ Imported Rep
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import {
-  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star, Search, Send, CheckCircle, AlertTriangle, Paperclip, Image, Video, FileText, Phone, PhoneOff, Mic, MicOff, VideoOff, Monitor
+  Home, User, Settings, ShoppingCart, Shield, Mail, MessageSquare, Star, Search, Send, CheckCircle, AlertTriangle, Paperclip, Image, Video, FileText, Phone, PhoneOff, Mic, MicOff, VideoOff, Monitor, ChevronLeft
 } from 'lucide-react';
 
 const getPlaceholderImage = (size = 50) => `https://placehold.co/${size}x${size}/e0e0e0/666666?text=User`;
@@ -85,7 +85,7 @@ const ChatMessage = ({ message, currentUserId }) => {
   );
 };
 
-const ConversationInterface = ({ activeConversation, onSkillReceivedConfirmed, currentUserId, socket, onNewMessage }) => {
+const ConversationInterface = ({ activeConversation, onSkillReceivedConfirmed, currentUserId, socket, onNewMessage, onBackToList }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
@@ -403,6 +403,17 @@ const ConversationInterface = ({ activeConversation, onSkillReceivedConfirmed, c
     <div className="conversation-container">
       <div className="chat-header">
         <div className="chat-partner-info">
+          {onBackToList && (
+            <button 
+              type="button" 
+              className="chat-back-btn" 
+              onClick={onBackToList}
+              aria-label="Back to conversations"
+              title="Back to conversations"
+            >
+              <ChevronLeft size={22} />
+            </button>
+          )}
           <img
             src={headerProfilePic}
             alt={activeConversation.participant}
@@ -1030,7 +1041,7 @@ function MessagesPage({ onChatbotToggle }) {
           {loading ? (
             <LoadingSpinner />
           ) : (
-            <div className="messages-page-wrapper">
+            <div className={`messages-page-wrapper ${activeConversation ? 'has-active-chat' : ''}`}>
               <div className="messages-list-sidebar">
                 <div className="messages-header">
                   <h1>{t('navbar_messages')}</h1>
@@ -1096,6 +1107,7 @@ function MessagesPage({ onChatbotToggle }) {
                   currentUserId={user.id}
                   socket={socket}
                   onNewMessage={handleSidebarMessageUpdate}
+                  onBackToList={() => setActiveConversation(null)}
                 />
               </div>
             </div>

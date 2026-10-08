@@ -481,3 +481,47 @@ img, video, canvas {
   }
 }
 
+/* ── UI/UX Enhancement: Universal Responsive Layouts & Touch Comfort ── */
+.responsive-container {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1rem, 3vw, 2rem);
+  padding-right: clamp(1rem, 3vw, 2rem);
+}
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overflow-touch-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.overflow-touch-x::-webkit-scrollbar {
+  display: none;
+}
+
+/* Prevent unwanted horizontal overflow page-wide */
+html, body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+/* Responsive Fluid Headings & Content Protection */
+h1, .h1 {
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+p, span, a {
+  overflow-wrap: break-word;
+}
+
+

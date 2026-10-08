@@ -156,8 +156,8 @@ body.dark-mode .marketplace-filters-search {
 /* --- 4. SKILL CARDS GRID --- */
 .skill-card-container, .women-only-skill-card-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 2rem;
 }
 
 /* --- 5. SKILL CARD --- */
@@ -700,9 +700,15 @@ input:checked + .toggle-slider::before {
   box-shadow: 0 15px 30px rgba(227, 139, 64, 0.4);
 }
 
-/* --- 7. RESPONSIVE (Mobile) --- */
+/* --- 7. RESPONSIVE (Mobile & Tablet) --- */
 @media (max-width: 900px) {
-  .marketplace-header h1 { font-size: 2.2rem; }
+  .marketplace-page, .women-only-zone-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .marketplace-header h1, .women-only-zone-header h1 {
+    font-size: 2.2rem;
+  }
   
   .modal-scroll-content {
     flex-direction: column; /* Stack image on top of details */
@@ -711,7 +717,7 @@ input:checked + .toggle-slider::before {
   
   .modal-left-column {
     flex: none;
-    height: 250px;
+    height: 240px;
   }
   
   .modal-right-column {
@@ -721,6 +727,7 @@ input:checked + .toggle-slider::before {
   
   .full-details-modal-content {
     max-height: 95vh;
+    width: 95%;
   }
   
   .details-grid {
@@ -728,5 +735,65 @@ input:checked + .toggle-slider::before {
     gap: 15px;
   }
   
-  .skill-card-container { grid-template-columns: 1fr; }
+  .skill-card-container, .women-only-skill-card-container {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .marketplace-page, .women-only-zone-page {
+    padding: 1rem 0.5rem;
+  }
+
+  .marketplace-header {
+    margin-bottom: 2rem;
+  }
+
+  .marketplace-header h1, .women-only-zone-header h1 {
+    font-size: 1.85rem !important;
+  }
+
+  .marketplace-header p, .women-only-zone-header p {
+    font-size: 0.95rem !important;
+  }
+
+  .marketplace-filters-search {
+    padding: 1rem 0.85rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+  }
+
+  .search-bar {
+    padding: 0.65rem 0.9rem;
+    border-radius: 12px;
+  }
+
+  .skill-card-container, .women-only-skill-card-container {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .skill-card {
+    border-radius: 16px;
+  }
+
+  .skill-card-image-wrapper {
+    height: 180px;
+  }
+
+  .skill-card-content {
+    padding: 1.25rem 1rem;
+  }
+
+  .filter-tag {
+    font-size: 0.78rem;
+    padding: 6px 10px;
+  }
+
+  .initial-request-btn {
+    font-size: 1.1rem;
+    padding: 14px;
+    border-radius: 12px;
+  }
 }

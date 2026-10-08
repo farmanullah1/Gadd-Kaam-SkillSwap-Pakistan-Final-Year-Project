@@ -156,12 +156,13 @@ body.dark-mode .shape { opacity: 0.1; } /* Subtler shapes in dark mode */
 }
 
 .hero-headline {
-  font-size: 4.3rem;
+  font-size: clamp(2.2rem, 5vw + 1rem, 4.3rem);
   font-weight: 900;
-  line-height: 1.1;
+  line-height: 1.15;
   margin-bottom: 20px;
   color: var(--text-dark);
-  letter-spacing: -1px;
+  letter-spacing: -0.02em;
+  word-break: break-word;
 }
 
 /* --- TYPEWRITER ANIMATION (NEW) --- */
@@ -3313,12 +3314,45 @@ body.dark-mode .ticker-skill-gave {
 @media (max-width: 900px) {
   .hero-section {
     min-height: auto;
+    padding: 60px 16px 40px;
+  }
+
+  .hero-content {
+    flex-direction: column;
+    gap: 36px;
+    text-align: center;
+  }
+
+  .hero-text-wrapper {
+    max-width: 100%;
+  }
+
+  .hero-badge {
+    margin: 0 auto 20px;
+  }
+
+  .hero-cta-group,
+  .hero-btn-group {
+    justify-content: center;
+  }
+
+  .hero-visual {
+    width: 100%;
+    max-width: 460px;
   }
 
   .hero-section::after,
   .hero-visual::before {
     transform: none;
     opacity: 0.35;
+  }
+
+  .section-container {
+    padding: 60px 16px;
+  }
+
+  .section-title {
+    font-size: clamp(1.8rem, 4vw + 0.5rem, 2.5rem);
   }
 }
 
